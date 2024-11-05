@@ -1,0 +1,138 @@
+
+    <link href="https://fonts.googleapis.com/css2?family=Revalia&display=swap" rel="stylesheet">
+<style>
+    .success-message {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    }
+    .error-message {
+        background-color: #f44336; 
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    }
+    .success-message1 {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    }
+    .error-message1 {
+        background-color: #f44336;
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    }
+</style>
+
+<link rel="stylesheet" href="/user/login.css">
+    <p class="welcome">Welcome To Capture Pro</p>
+    <p class="moment">Capture the moment with the best gear.</p>
+    <div class="login-container">
+        <div class="login-box">
+            <h2>Login</h2>
+
+            <% if (successMessage) { %>
+                <div id="successMessage" class="success-message">
+                    <p><%= successMessage %></p>
+                </div>
+            <% } %>
+
+            <% if (errorMessage) { %>
+                <div id="errorMessage" class="error-message">
+                    <p><%= errorMessage %></p>
+                </div>
+            <% } %>
+            <% if (errorMessage1) { %>
+                <div id="errorMessage1" class="error-message1">
+                    <p><%= errorMessage1 %></p>
+                </div>
+            <% } %>
+            
+            <% if (successMessage1) { %>
+                <div id="successMessage1" class="success-message1">
+                    <p><%= successMessage1 %></p>
+                </div>
+            <% } %>
+            
+
+            <form id="loginForm" action="login" method="POST">
+                <div class="input-box">
+                    <label>Email</label>
+                    <input type="text" id="email" name="email" class="input">
+                    <div id="emailError" class="error-messages" style="color: red;"></div>
+                </div>
+                <div class="input-box">
+                    <label>Password</label>
+                    <input type="password" id="password" name="password" class="input">
+                    <div id="passwordError" class="error-messages" style="color: red;"></div>
+                    <p class="Forgot"><a href="/user/emailVerify">Forgot password?</a></p>
+                </div>
+                <div><button type="submit" class="btn">Login</button></div><br>
+                <div><a type="submit" href="auth/Google" id="gbutton" class="btn1">Login to Google</a> </div>              
+                 <p class="dont">Don't have an account? <span class="signupbut"><a href="/user/signup">Sign up</a></span></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+    
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+    
+    document.getElementById('emailError').textContent = '';
+    document.getElementById('passwordError').textContent = '';
+
+    let isValid = true; 
+
+    
+    if (email === "") {
+        document.getElementById('emailError').textContent = "Email is required.";
+        isValid = false; 
+    } else if (!emailPattern.test(email)) {
+        document.getElementById('emailError').textContent = "Please enter a valid email address.";
+        isValid = false; 
+    }
+
+    if (password === "") {
+        document.getElementById('passwordError').textContent = "Password is required.";
+        isValid = false; 
+    } else if (password.length < 6) {
+        document.getElementById('passwordError').textContent = "Password must be at least 6 characters long.";
+        isValid = false; 
+    }
+
+    if (!isValid) {
+        event.preventDefault(); 
+    }
+});
+
+setTimeout(function() {
+    const errorMsg = document.getElementById('errorMessage1');
+    const successMsg = document.getElementById('successMessage1');
+    const errorMsgAlt = document.getElementById('errorMessage');
+    const successMsgAlt = document.getElementById('successMessage');
+
+    if (errorMsg) errorMsg.style.display = 'none';
+    if (successMsg) successMsg.style.display = 'none';
+    if (errorMsgAlt) errorMsgAlt.style.display = 'none';
+    if (successMsgAlt) successMsgAlt.style.display = 'none';
+}, 4000);
+
+    </script>
+

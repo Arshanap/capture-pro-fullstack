@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign-up Page</title>
+    <link rel="stylesheet" href="/user/signup.css">
+
+    <style>
+    .error-message {
+        background-color: #f44336; /* Red background */
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    }
+    
+    </style>
+
+</head>
+<body>
+    <p class="welcome">Join Capture Pro</p>
+    <div class="signup-container">
+        <div class="signup-box">
+            <h2>Sign Up</h2>
+
+            <% if (errorMessage) { %>
+                <div class="error-message" id="errorMessage">
+                    <p><%= errorMessage %></p>
+                </div>
+            <% } %>            
+
+            <form id="signupForm" action="signup" method="POST">
+                <div class="input-box">
+                    <label>Full Name</label>
+                    <input type="text" id="name" name="name" class="input">
+                    <div id="nameError" class="error-messages" style="color: red;"></div> 
+                </div>
+                <div class="input-box">
+                    <label>Phone Number</label>
+                    <input type="number"id="phone" name="phone" class="input">
+                    <div id="phoneError" class="error-messages" style="color: red;"></div> 
+                </div>
+                <div class="input-box">
+                    <label>Email</label>
+                    <input type="email" id="email" name="email" class="input">
+                    <div id="emailError" class="error-messages" style="color: red;"></div> 
+                </div>
+                <div class="input-box">
+                    <label>Password</label>
+                    <input type="password" id="password" name="password" class="input">
+                    <div id="passwordError" class="error-messages" style="color: red;"></div>
+                </div>
+                <div class="input-box">
+                    <label>Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" class="input">
+                    <div id="confirmPasswordError" class="error-messages" style="color: red;"></div> 
+                </div>
+                <button type="submit" class="btn">Sign Up</button><br><br>
+                <a type="button" href="auth/Google" class="btn1">Login to Google</a>
+                <p class="dont">Already have an account? <span class="loginbut"><a href="/user/login">Login</a></span></p>
+            </form>
+           
+            
+            <script>
+                document.getElementById('signupForm').addEventListener('submit', function(event) {
+                    const name = document.getElementById('name').value.trim();
+                    const phone = document.getElementById('phone').value.trim();
+                    const email = document.getElementById('email').value.trim();
+                    const password = document.getElementById('password').value.trim();
+                    const confirmPassword = document.getElementById('confirm_password').value.trim();
+            
+                    const namePattern = /^[A-Za-z\s]+$/;
+                    const phonePattern = /^(?!.*(\d)\1{4})[0-9]{10}$/; // Prevents repeating the same digit more than 5 times
+                    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+                    const passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&()-+=])[A-Za-z\d!@#$%^&()-+=]{8,64}$/; // Strong password
+            
+                    document.getElementById('nameError').textContent = '';
+                    document.getElementById('phoneError').textContent = '';
+                    document.getElementById('emailError').textContent = '';
+                    document.getElementById('passwordError').textContent = '';
+                    document.getElementById('confirmPasswordError').textContent = '';
+            
+                    let isValid = true;
+            
+                    // Name Validation
+                    if (name === "") {
+                        document.getElementById('nameError').textContent = "Full name is required. Kindly provide your complete name.";
+                        isValid = false;
+                    } else if (!namePattern.test(name)) {
+                        document.getElementById('nameError').textContent = "Please use only letters and spaces in your name.";
+                        isValid = false;
+                    }
+            
+                    // Phone Validation
+                    if (phone === "") {
+                        document.getElementById('phoneError').textContent = "Please enter your phone number.";
+                        isValid = false;
+                    } else if (!phonePattern.test(phone)) {
+                        document.getElementById('phoneError').textContent = "Please enter a valid 10-digit phone number, without repeating the same digit more than five times.";
+                        isValid = false;
+                    }
+            
+                    // Email Validation
+                    if (email === "") {
+                        document.getElementById('emailError').textContent = "Please enter your email address.";
+                        isValid = false;
+                    } else if (!emailPattern.test(email)) {
+                        document.getElementById('emailError').textContent = "Please enter a valid email address.";
+                        isValid = false;
+                    }
+            
+                    // Password Validation
+                    if (password === "") {
+                        document.getElementById('passwordError').textContent = "Please enter your password.";
+                        isValid = false;
+                    } else if (!passwordPattern.test(password)) {
+                        document.getElementById('passwordError').textContent = "Password must be 8-64 characters, include an uppercase letter, a lowercase letter, a number, and a special character.";
+                        isValid = false;
+                    }
+            
+                    // Confirm Password Validation
+                    if (confirmPassword === "") {
+                        document.getElementById('confirmPasswordError').textContent = "Please confirm your password.";
+                        isValid = false;
+                    } else if (password !== confirmPassword) {
+                        document.getElementById('confirmPasswordError').textContent = "Passwords do not match.";
+                        isValid = false;
+                    }
+            
+                    // Prevent form submission if validation fails
+                    if (!isValid) {
+                        event.preventDefault();
+                    }
+                });
+            </script>
+            
+            <script>
+                // Wait for the document to load
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Set a timeout to hide the error message after 4 seconds
+                    setTimeout(function() {
+                        const errorMsg = document.getElementById('errorMessage');
+                        if (errorMsg) {
+                            errorMsg.style.display = 'none';
+                        }
+                    }, 4000); // 4000 milliseconds = 4 seconds
+                });
+            </script>
+            
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+            
+</body>
+</html>
+

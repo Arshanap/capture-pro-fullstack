@@ -1,0 +1,625 @@
+<!doctype html>
+<html class="no-js" lang="zxx">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>eCommerce HTML-5 Template </title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="manifest" href="site.webmanifest">
+<link rel="shortcut icon" type="image/x-icon" href="/assets1/img/favicon.ico">
+
+<!-- CSS here -->
+<link rel="stylesheet" href="/assets1/css/flaticon.css">
+<link rel="stylesheet" href="/assets1/css/owl.carousel.min.css">
+<link rel="stylesheet" href="/assets1/css/slicknav.css">
+<link rel="stylesheet" href="/assets1/css/animate.min.css">
+<link rel="stylesheet" href="/assets1/css/magnific-popup.css">
+<link rel="stylesheet" href="/assets1/css/fontawesome-all.min.css">
+<link rel="stylesheet" href="/assets1/css/themify-icons.css">
+<link rel="stylesheet" href="/assets1/css/slick.css">
+<link rel="stylesheet" href="/assets1/css/nice-select.css">
+<link rel="stylesheet" href="/assets1/css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<style>
+     .breadcrumb {
+    padding: 10px 15px;
+    background-color: #f8f9fa;
+    width: 260px;
+    border-radius: 4px;
+    display: flex;
+    list-style: none;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    padding: 0 5px;
+    color: #6c757d; /*Gray color*/
+}
+
+.breadcrumb-item a {
+    text-decoration: none;
+    color: #007bff; /* Bootstrap primary color */
+}
+
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+    #ddbtn{
+        width: 140px;
+        margin-right: 30px;
+        border-radius: 5px;
+    }
+    #dbtn{
+        width: 140px;
+        margin-right: 30px;
+        border-radius: 5px;
+    }
+    #cbtn{
+        width: 140px;
+        margin-right: 30px;
+        border-radius: 5px;
+    }
+    #ccbtn{
+        width: 140px;
+        margin-right: 30px;
+        border-radius: 5px;
+    }
+.addbtn{
+    width: 70px;
+}
+    /* Styling for the form in the Add New Address tab */
+.tab-content .form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.tab-content .form-control {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+}
+
+.tab-content button.btn-primary {
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+}
+
+/* Styling for Address List Tab */
+.tab-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.container .row {
+    margin-top: 10px;
+}
+
+.card {
+    margin-bottom: 20px;
+    border: 1px solid #ddd; /* Light border for structure */
+    border-radius: 8px;
+}
+
+.card .card-body {
+    padding: 15px;
+    text-align: center;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.card-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #666;
+    text-align: left; /* Align address text for better readability */
+}
+
+.card-footer {
+    border-top: 1px solid #ddd;
+    padding: 10px;
+}
+
+.card-footer .btn {
+    margin: 0 5px;
+    flex: 1;
+}
+
+/* Ensure equal spacing between form fields and cards */
+.form-group, .card {
+    margin: 10px auto;
+}
+
+.container, .form-row {
+    max-width: 100%;
+}
+.logout-btn {
+            background-color: #dc3545; /* Bootstrap's danger color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px; /* Smaller padding */
+            font-size: 14px; /* Smaller font-size */
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+/* Reset some default styles */
+body, h1, h2, h3, h4, h5, h6, p {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Main container styling */
+.main-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar styling */
+.sidebar {
+    width: 250px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-right: 1px solid #ddd; /* Add border line between sidebar and main content */
+    height: 500px;
+}
+
+.profile-card {
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd; /* Add border line under profile card */
+    padding-bottom: 20px;
+}
+
+.profile-card img {
+    border-radius: 50%;
+}
+
+.nav-link {
+    display: block;
+    padding: 10px;
+    color: #007bff;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd; /* Border around each nav link */
+}
+
+.nav-link:hover {
+    background-color: #e9ecef;
+}
+
+.nav-link.active {
+    background-color: #007bff;
+    color: white;
+}
+
+strong.text-uppercase {
+    display: block;
+    margin: 20px 0 10px;
+    font-weight: bold;
+}
+
+/* Main content area styling */
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #ffffff;
+    overflow-y: auto;
+    border-left: 1px solid #ddd; /* Border line between main content and sidebar */
+}
+
+.card {
+    margin-bottom: 20px;
+    border: 1px solid #ddd; /* Border around each card */
+    border-radius: 4px;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd; /* Border line below card title */
+    padding-bottom: 10px;
+}
+
+/* Tabs styling */
+.nav-tabs {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd; /* Border line below tabs */
+}
+
+.nav-item .nav-link {
+    border: 1px solid #ddd; /* Border around each tab link */
+    border-radius: 0.25rem;
+}
+
+.nav-link.active {
+    border: 1px solid #007bff;
+    background-color: #007bff;
+    color: white;
+}
+
+.tab-content {
+    border: 1px solid #ddd; /* Border around tab content */
+    border-radius: 0.25rem;
+    padding: 15px;
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: 1px solid #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: 1px solid #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Address cards styling */
+.card-footer .btn {
+    margin-left: 5px;
+}
+
+.card-footer {
+    border-top: 1px solid #ddd; /* Border line above footer buttons */
+    padding-top: 10px;
+}
+/* .header-div{
+    border: 0, 0, 0, 5px solid black;
+} */
+
+</style>
+<body>
+
+    <header>
+        <!-- Header Start -->
+       <div id="header-div" class="header-area">
+            <div class="main-header ">
+                <!-- <div class="header-top top-bg d-none d-lg-block">
+                   <div class="container-fluid">
+                       <div class="col-xl-12">
+                            <div class="row d-flex justify-content-between align-items-center">
+                                <div class="header-info-left d-flex"> -->
+                                    <!-- <div class="flag">
+                                        <img src="assets/img/icon/header_icon.png" alt="">
+                                    </div> -->
+                                    <!-- <div class="select-this">
+                                        <form action="#">
+                                            <div class="select-itms">
+                                                <select name="select" id="select1">
+                                                    <option value="">USA</option>
+                                                    <option value="">SPN</option>
+                                                    <option value="">CDA</option>
+                                                    <option value="">USD</option>
+                                                </select>
+                                            </div>
+                                        </form>
+                                    </div> -->
+                                    <!-- <ul class="contact-now">     
+                                        <li>+777 2345 7886</li>
+                                    </ul> -->
+                                <!-- </div> -->
+                                <!-- <div class="header-info-right">
+                                   <ul>                                          
+                                       <li><a href="login.html">My Account </a></li>
+                                       <li><a href="product_list.html">Wish List  </a></li>
+                                       <li><a href="cart.html">Shopping</a></li>
+                                       <li><a href="cart.html">Cart</a></li>
+                                       <li><a href="checkout.html">Checkout</a></li>
+                                   </ul>
+                                </div> -->
+                            <!-- </div>
+                       </div>
+                   </div>
+                </div> -->
+               <div class="header-bottom  header-sticky">
+                    <div class="container-fluid">
+                        <div class="row align-items-center">
+                            <!-- Logo -->
+                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-3">
+                                <div class="logo">
+                                  <a href=""><img style="width: 120px;" src="/assets1/img/logo/capturelogo.png" alt=""></a>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-8 col-md-7 col-sm-5">
+                                <!-- Main-menu -->
+                                <div class="main-menu f-right d-none d-lg-block">
+                                    <nav>                                                
+                                        <ul id="navigation">                                                                                                                                     
+                                            <li><a href="/user/home">Home</a></li>
+                                            <li><a href="">Catagori</a></li>
+                                            <li class=""><a href="#">Products</a>
+                                                <ul class="submenu">
+                                                    <li><a href=""> camera</a></li>
+                                                    <li><a href=""> lens</a></li>
+                                                    <li><a href=""> Bag</a></li>
+                                                    <li><a href=""> Others</a></li>
+                                                </ul>
+                                            </li>
+                                            <!-- <li><a href="">Blog</a>
+                                                <ul class="submenu">
+                                                    <li><a href="">Blog</a></li>
+                                                    <li><a href="">Blog Details</a></li>
+                                                </ul>
+                                            </li> -->
+                                            <!-- <li><a href="#">Pages</a>
+                                                <ul class="submenu">
+                                                    <li><a href="">Login</a></li>
+                                                    <li><a href="">Card</a></li>
+                                                    <li><a href="">Element</a></li>
+                                                    <li><a href="">About</a></li>
+                                                    <li><a href="">Confirmation</a></li>
+                                                    <li><a href="">Shopping Cart</a></li>
+                                                    <li><a href="">Product Checkout</a></li>
+                                                </ul>
+                                            </li> -->
+                                            <li><a href="">Contact Us</a></li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div> 
+                            <div class="col-xl-5 col-lg-3 col-md-3 col-sm-3 fix-card">
+                                <ul class="header-right f-right d-none d-lg-block d-flex justify-content-between">
+                                    <li class="d-none d-xl-block">
+                                        <div class="form-box f-right ">
+                                            <input type="text" name="Search" placeholder="Search products">
+                                            <div class="search-icon">
+                                                <!-- <i class="fas fa-search special-tag"></i> -->
+                                            </div>
+                                        </div>
+                                     </li>
+                                    <li class=" d-none d-xl-block">
+                                        <div class="favorit-items">
+                                            <i class="far fa-heart"></i>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="shopping-card">
+                                            <a href="/user/cart"><i class="fas fa-shopping-cart"></i></a>
+                                        </div>
+                                    </li>
+                                    <li class="d-none d-lg-block">  <a href="/user/account" class="btn header-btnw"><i class="fas fa-user"></i></a></li>
+                                    <li class=" d-none d-xl-block">
+                                        
+                                        <!-- Logout Button -->
+                                        <a href="/user/logout">
+                                            <button  class="logout-btn">
+                                                <i class="fas fa-sign-out-alt"></i>out
+                                            </button>
+                                        </a>
+                                    
+                                </li>
+                                   <!-- <li class="d-none d-lg-block"> <a href="/admin/login" class="btn header-btn">Sign in</a></li> -->
+                                </ul>
+                            </div>
+                            <!-- Mobile Menu -->
+                            <div class="col-12">
+                                <div class="mobile_menu d-block d-lg-none"></div>
+                            </div>
+                        </div>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/user/home">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/user/account">Account</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">My Order</li>
+                            </ol>
+                        </nav>
+                    </div>
+               </div>
+            </div>
+       </div>
+        <!-- Header End -->
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="profile-card">
+                <img src="https://via.placeholder.com/80" alt="User Profile Picture">
+                <h5></h5>
+                <p><%=user.email%></p>
+            </div>
+            <a href="/user/account" class="nav-link ">Address Management</a>
+            <strong class="text-uppercase">Orders</strong>
+            <a href="#" class="nav-link active">My Orders</a>
+        </aside>
+    
+        <!-- Main Content Area -->
+        <section class="main-content">
+                
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">My Orders</h5>
+                    <hr>
+                    
+                    <!-- Order List -->
+                    <div class="order-list">
+                        <!-- Order #1 -->
+                        <div class="card mb-3">
+                            <div class="card-header d-flex justify-content-between">
+                                <span><strong>Order #12345</strong></span>
+                                <span class="text-muted">Placed on: 2024-10-28</span>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Status:</strong> Shipped</p>
+                                <p><strong>Total:</strong> $120.00</p>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <img src="https://via.placeholder.com/100" alt="Product Image" class="img-fluid">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h6>Camera Model X</h6>
+                                        <p>Quantity: 1</p>
+                                        <p>Price: $120.00</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex justify-content-end">
+                                <button id="ccbtn" class="btn-primary btn-sm mr-2">View Details</button>
+                                <button id="cbtn" class="btn-danger btn-sm">Cancel Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Order #2 -->
+                        <div class="card mb-3">
+                            <div class="card-header d-flex justify-content-between">
+                                <span><strong>Order #12346</strong></span>
+                                <span class="text-muted">Placed on: 2024-10-27</span>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Status:</strong> Delivered</p>
+                                <p><strong>Total:</strong> $80.00</p>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <img src="https://via.placeholder.com/100" alt="Product Image" class="img-fluid">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h6>Lens Model Y</h6>
+                                        <p>Quantity: 1</p>
+                                        <p>Price: $80.00</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex justify-content-end">
+                                <button  id="ddbtn" class=" btn-primary btn-sm">View Details</button>
+                                <button id="dbtn" class=" btn-danger btn-sm">Cancel Order</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Add more orders as needed -->
+                    </div>
+                </div>
+            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+
+        <!-- Footer Start-->
+        <div class="footer-area footer-padding">
+            <div class="container">
+                <div class="row d-flex justify-content-between">
+                    <div class="col-xl-3 col-lg-3 col-md-5 col-sm-6">
+                       <div class="single-footer-caption mb-50">
+                         <div class="single-footer-caption mb-30">
+                              <!-- logo -->
+                             <div class="footer-logo">
+                                <a href=""><img style="width: 80px;" src="/assets1/img/logo/capturelogo.png" alt=""></a>
+                            </div>
+                             <div class="footer-tittle">
+                                 <div class="footer-pera">
+                                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore.</p>
+                                </div>
+                             </div>
+                         </div>
+                       </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-3 col-md-3 col-sm-5">
+                        <div class="single-footer-caption mb-50">
+                            <div class="footer-tittle">
+                                <h4>Quick Links</h4>
+                                <ul>
+                                    <li><a href="#">About</a></li>
+                                    <li><a href="#"> Offers & Discounts</a></li>
+                                    <li><a href="#"> Get Coupon</a></li>
+                                    <li><a href="#">  Contact Us</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-7">
+                        <div class="single-footer-caption mb-50">
+                            <div class="footer-tittle">
+                                <h4>New Products</h4>
+                                <ul>
+                                    <li><a href="#">Woman Cloth</a></li>
+                                    <li><a href="#">Fashion Accessories</a></li>
+                                    <li><a href="#"> Man Accessories</a></li>
+                                    <li><a href="#"> Rubber made Toys</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-5 col-sm-7">
+                        <div class="single-footer-caption mb-50">
+                            <div class="footer-tittle">
+                                <h4>Support</h4>
+                                <ul>
+                                 <li><a href="#">Frequently Asked Questions</a></li>
+                                 <li><a href="#">Terms & Conditions</a></li>
+                                 <li><a href="#">Privacy Policy</a></li>
+                                 <li><a href="#">Privacy Policy</a></li>
+                                 <li><a href="#">Report a Payment Issue</a></li>
+                             </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Footer bottom -->
+                <div class="row">
+                 <div class="col-xl-7 col-lg-7 col-md-7">
+                     <div class="footer-copy-right">
+                         <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="ti-heart" aria-hidden="true"></i> by <a href="" target="_blank">Capture Pro</a>
+            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>                   </div>
+                 </div>
+                  <div class="col-xl-5 col-lg-5 col-md-5">
+                     <div class="footer-copy-right f-right">
+                         <!-- social -->
+                         <div class="footer-social">
+                             <a href="#"><i class="fab fa-twitter"></i></a>
+                             <a href="#"><i class="fab fa-facebook-f"></i></a>
+                             <a href="#"><i class="fab fa-behance"></i></a>
+                             <a href="#"><i class="fas fa-globe"></i></a>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+            </div>
+        </div>
+ 
+    </footer>
+    <script>
+        document.querySelector('form').addEventListener('submit', function(event) {
+    if (!this.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    this.classList.add('was-validated');
+});
+
+    </script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

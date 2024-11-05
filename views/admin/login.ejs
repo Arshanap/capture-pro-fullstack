@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Revalia&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/admin/login.css">
+</head>
+<body>
+    <p class="welcome">Admin Side</p>
+    <p class="moment">Welcome To Capture Pro</p>
+    <div class="login-container">
+        <div class="login-box">
+            <h2>Login</h2>
+            <form id="loginForm" action="login" method="POST">
+                <div class="input-box">
+                    <label>Email</label>
+                    <input type="text" id="email" name="email" class="input">
+                    <div id="emailError" class="error-message" style="color: red;"></div>
+                </div>
+                <div class="input-box">
+                    <label>Password</label>
+                    <input type="password" id="password" name="password" class="input">
+                    <div id="passwordError" class="error-message" style="color: red;"></div>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+    document.getElementById('emailError').textContent = '';
+    document.getElementById('passwordError').textContent = '';
+
+    let isValid = true; 
+
+    if (email === "") {
+        document.getElementById('emailError').textContent = "Email is required.";
+        isValid = false; 
+    } else if (!emailPattern.test(email)) {
+        document.getElementById('emailError').textContent = "Please enter a valid email address.";
+        isValid = false;
+    }
+
+    if (password === "") {
+        document.getElementById('passwordError').textContent = "Password is required.";
+        isValid = false; 
+    } else if (password.length < 6) {
+        document.getElementById('passwordError').textContent = "Password must be at least 6 characters long.";
+        isValid = false; 
+    }
+
+    
+    if (!isValid) {
+        event.preventDefault(); 
+    }
+});
+
+    </script>
+</body>
+</html>

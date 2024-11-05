@@ -1,0 +1,154 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(49deg, #77989b 50%, #4d4c4c 50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+}
+
+.signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.signup-box {
+    background-color: rgba(99, 98, 98, 0.9);
+    padding: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    max-width: 400px;
+    width: 100%;
+}
+
+h2 {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 24px;
+    color: #fff;
+}
+
+/* Input Fields */
+.input-box {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    outline: none;
+    background-color: #ede9e9;
+}
+
+.input-box label {
+    color: #fff;
+    font-size: 17px;
+}
+
+/* Button Styling */
+.btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #FA7E4E;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.btn1 {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    background-color: #ed1f08;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background-color: #f5713d;
+}
+
+/* Welcome and Moment Text */
+.welcome {
+    position: absolute;
+    top: 6%;
+    color: #fff;
+    font-size: 3vw;
+    text-align: center;
+    width: 100%;
+    font-family: 'Revalia', cursive;
+}
+
+/* Additional Links */
+.dont {
+    text-align: center;
+    margin-top: 10px;
+    color: #fff;
+}
+
+.loginbut a {
+    color: rgb(10, 10, 148);
+    text-decoration: none;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .signup-box {
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    .btn {
+        font-size: 16px;
+    }
+
+    .welcome {
+        font-size: 5vw;
+        top: 8%;
+    }
+
+    .btn1 {
+        font-size: 16px;
+    }
+
+    .moment {
+        font-size: 3vw;
+        top: 14%;
+    }
+}
+
+@media (max-width: 768px) {
+    .welcome {
+        font-size: 4vw;
+        top: 8%;
+    }
+
+    .moment {
+        font-size: 2vw;
+        top: 13%;
+    }
+}

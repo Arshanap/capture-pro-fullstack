@@ -1,0 +1,947 @@
+<!doctype html>
+<html class="no-js" lang="zxx">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>eCommerce HTML-5 Template </title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="manifest" href="site.webmanifest">
+		<link rel="shortcut icon" type="image/x-icon" href="/assets1/img/favicon.ico">
+
+		<!-- CSS here -->
+            <link rel="stylesheet" href="/assets1/css/bootstrap.min.css">
+            <link rel="stylesheet" href="/assets1/css/owl.carousel.min.css">
+            <link rel="stylesheet" href="/assets1/css/flaticon.css">
+            <link rel="stylesheet" href="/assets1/css/slicknav.css">
+            <link rel="stylesheet" href="/assets1/css/animate.min.css">
+            <link rel="stylesheet" href="/assets1/css/magnific-popup.css">
+            <link rel="stylesheet" href="/assets1/css/fontawesome-all.min.css">
+            <link rel="stylesheet" href="/assets1/css/themify-icons.css">
+            <link rel="stylesheet" href="/assets1/css/slick.css">
+            <link rel="stylesheet" href="/assets1/css/nice-select.css">
+            <link rel="stylesheet" href="/assets1/css/style.css">
+            <link rel="stylesheet" href="sweetalert2.min.css">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+   </head>
+   <style>
+    .success2-message {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    }
+    .error2-message {
+        background-color: #f44336; /* Red background */
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    }
+#logout-btn {
+    background-color: #dc3545; /* Bootstrap's danger color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px; /* Smaller padding */
+    font-size: 14px; /* Smaller font-size */
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+        }
+    .hidden {
+    display: none !important;
+}
+    .breadcrumb {
+    padding: 10px 15px;
+    background-color: #f8f9fa;
+    width: 220px;
+    border-radius: 4px;
+    display: flex;
+    list-style: none;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    padding: 0 5px;
+    color: #6c757d; /*Gray color*/
+}
+
+.breadcrumb-item a {
+    text-decoration: none;
+    color: #007bff; /* Bootstrap primary color */
+}
+
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+    .related-products {
+    text-align: center;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.section-heading {
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.section-divider {
+    width: 100%;
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 10px 0;
+}
+
+.single-product .price ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.single-product .price ul li {
+    display: inline;
+    font-size: 1rem;
+    color: #333;
+}
+
+.single-product .price .discount {
+    text-decoration: line-through;
+    color: #999;
+    margin-left: 10px;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    .related-products .col-md-4 {
+        flex: 0 0 50%; /* Show 2 products per row on medium screens */
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 576px) {
+    .related-products .col-md-4 {
+        flex: 0 0 100%; /* Show 1 product per row on small screens */
+        max-width: 100%;
+    }
+
+    .section-heading {
+        font-size: 1.25rem; /* Adjust heading font size for small screens */
+    }
+
+    .single-product .price ul li {
+        font-size: 0.85rem;
+    }
+}
+
+    .related-products {
+    text-align: center;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.section-heading {
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.section-divider {
+    width: 100%;
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 10px 0;
+}
+
+.single-product {
+    margin-bottom: 1.5rem;
+}
+
+.single-product .price ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.single-product .price ul li {
+    display: inline;
+    font-size: 1rem;
+    color: #333;
+}
+
+.single-product .price .discount {
+    text-decoration: line-through;
+    color: #999;
+    margin-left: 10px;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    .single-product .price ul li {
+        font-size: 0.9rem;
+    }
+
+    .related-products .col-md-4 {
+        flex: 0 0 50%; /* Show 2 products per row on medium screens */
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 576px) {
+    .related-products .col-md-4 {
+        flex: 0 0 100%; /* Show 1 product per row on small screens */
+        max-width: 100%;
+    }
+
+    .section-heading {
+        font-size: 1.25rem; /* Adjust heading font size for small screens */
+    }
+
+    .single-product .price ul li {
+        font-size: 0.85rem;
+    }
+}
+#logout-btn i {
+    margin-right: 0px; /* Adjust space between icon and text */
+}
+#logout-btn:hover {
+    background-color: #c82333;
+}
+    /* Base styles for all screen sizes */
+.single-product {
+    max-width: 90%; /* Default width for cards */
+    margin: 0 auto;
+}
+
+.product-img img {
+    max-height: 200px; /* Default image height */
+    object-fit: contain;
+}
+
+.product-caption {
+    padding: 10px;
+    min-height: 150px;
+}
+
+.mb-60 {
+    margin-bottom: 30px; /* Decrease space between cards */
+}
+
+/* Reduce size for large screens */
+@media (min-width: 1200px) {
+    .single-product {
+        max-width: 80%; /* Further reduce width for larger screens */
+    }
+    .product-img img {
+        max-height: 180px; /* Smaller image on large screens */
+    }
+    .product-caption {
+        min-height: 130px; /* Reduce caption height */
+    }
+}
+
+/* Adjust sizes for medium screens */
+@media (min-width: 768px) and (max-width: 1199px) {
+    .single-product {
+        max-width: 95%; /* Slightly larger width for medium screens */
+    }
+    .product-img img {
+        max-height: 220px; /* Slightly larger image for medium screens */
+    }
+    .product-caption {
+        min-height: 160px;
+    }
+}
+
+/* Adjust sizes for small screens */
+@media (max-width: 767px) {
+    .single-product {
+        max-width: 100%; /* Full width for small screens */
+    }
+    .product-img img {
+        max-height: 160px; /* Smaller images on small screens */
+    }
+    .product-caption {
+        min-height: 140px;
+    }
+}
+/* Styling the account icon button */
+.header-btnw {
+    display: inline-block;
+    padding: 5px 5px;   /* Padding around the icon */
+    /* background-color: #007bff; Button background color */
+    border-radius: 50%;  /* Makes the button circular */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth hover transition */
+    border: none; /* Removes border */
+    text-align: center; /* Centers the icon */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Styling the icon inside the button */
+.header-btn i {
+    font-size: 20px; /* Size of the icon */
+    color: #fff; /* Icon color */
+    vertical-align: middle; /* Centers the icon vertically */
+}
+
+/* Hover effect */
+.header-btn:hover {
+    /* background-color: #0056b3; Darken button background on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+}
+
+/* Smaller screens (responsive behavior for mobile) */
+@media (max-width: 991px) {
+    .header-btn {
+        display: none; /* Hides the button on small screens */
+    }
+}
+        /* Styling for the product section */
+        .product-main-img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .product-thumb-img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 5px;
+        }
+
+        .product-thumb-img.active {
+            border-color: #007bff;
+        }
+
+        .product-info {
+            margin-top: 20px;
+        }
+
+        .product-info h2 {
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+
+        .product-info .price {
+            font-size: 24px;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .product-description {
+            margin-top: 30px;
+        }
+
+        .wishlist-btn {
+            background-color: #ff6f61;
+            color: white;
+            border: none;
+            margin-right: 10px;
+        }
+
+        .wishlist-btn:hover {
+            background-color: #ff4f41;
+        }
+
+
+   </style>
+   <body>
+       
+    <!-- Preloader Start -->
+   
+    <!-- Preloader Start -->
+     
+
+    <header>
+        <!-- Header Start -->
+       <div class="header-area">
+            <div class="main-header ">
+                <!-- <div class="header-top top-bg d-none d-lg-block">
+                   <div class="container-fluid">
+                       <div class="col-xl-12">
+                            <div class="row d-flex justify-content-between align-items-center">
+                                <div class="header-info-left d-flex"> -->
+                                    <!-- <div class="flag">
+                                        <img src="assets/img/icon/header_icon.png" alt="">
+                                    </div> -->
+                                    <!-- <div class="select-this">
+                                        <form action="#">
+                                            <div class="select-itms">
+                                                <select name="select" id="select1">
+                                                    <option value="">USA</option>
+                                                    <option value="">SPN</option>
+                                                    <option value="">CDA</option>
+                                                    <option value="">USD</option>
+                                                </select>
+                                            </div>
+                                        </form>
+                                    </div> -->
+                                    <!-- <ul class="contact-now">     
+                                        <li>+777 2345 7886</li>
+                                    </ul> -->
+                                <!-- </div> -->
+                                <!-- <div class="header-info-right">
+                                   <ul>                                          
+                                       <li><a href="login.html">My Account </a></li>
+                                       <li><a href="product_list.html">Wish List  </a></li>
+                                       <li><a href="cart.html">Shopping</a></li>
+                                       <li><a href="cart.html">Cart</a></li>
+                                       <li><a href="checkout.html">Checkout</a></li>
+                                   </ul>
+                                </div> -->
+                            <!-- </div>
+                       </div>
+                   </div>
+                </div> -->
+               <div class="header-bottom  header-sticky">
+                
+                    <div class="container-fluid">
+                        <div class="row align-items-center">
+                            <!-- Logo -->
+                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-3">
+                                <div class="logo">
+                                  <a href=""><img style="width: 120px;" src="/assets1/img/logo/capturelogo.png" alt=""></a>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-8 col-md-7 col-sm-5">
+                                <!-- Main-menu -->
+                                <div class="main-menu f-right d-none d-lg-block">
+                                    <nav>                                                
+                                        <ul id="navigation">                                                                                                                                     
+                                            <li><a href="/user/home">Home</a></li>
+                                            <li><a href="">Catagori</a></li>
+                                            <li class=""><a href="#">Products</a>
+                                                <ul class="submenu">
+                                                    <li><a href=""> camera</a></li>
+                                                    <li><a href=""> lens</a></li>
+                                                    <li><a href=""> Bag</a></li>
+                                                    <li><a href=""> Others</a></li>
+                                                </ul>
+                                            </li>
+                                            <!-- <li><a href="">Blog</a>
+                                                <ul class="submenu">
+                                                    <li><a href="">Blog</a></li>
+                                                    <li><a href="">Blog Details</a></li>
+                                                </ul>
+                                            </li> -->
+                                            <!-- <li><a href="#">Pages</a>
+                                                <ul class="submenu">
+                                                    <li><a href="">Login</a></li>
+                                                    <li><a href="">Card</a></li>
+                                                    <li><a href="">Element</a></li>
+                                                    <li><a href="">About</a></li>
+                                                    <li><a href="">Confirmation</a></li>
+                                                    <li><a href="">Shopping Cart</a></li>
+                                                    <li><a href="">Product Checkout</a></li>
+                                                </ul>
+                                            </li> -->
+                                            <li><a href="">Contact Us</a></li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div> 
+                            <div class="col-xl-5 col-lg-3 col-md-3 col-sm-3 fix-card">
+                                <ul class="header-right f-right d-none d-lg-block d-flex justify-content-between">
+                                    <li class="d-none d-xl-block">
+                                        <div class="form-box f-right ">
+                                            <input type="text" name="Search" placeholder="Search products">
+                                            <div class="search-icon">
+                                                <!-- <i class="fas fa-search special-tag"></i> -->
+                                            </div>
+                                        </div>
+                                     </li>
+                                    <li class=" d-none d-xl-block">
+                                        <div class="favorit-items">
+                                            <i class="far fa-heart"></i>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="shopping-card">
+                                            <a href="/user/cart"><i class="fas fa-shopping-cart"></i></a>
+                                        </div>
+                                    </li>
+                                    <li class="d-none d-lg-block">  <a href="/user/account" class="btn header-btnw"><i class="fas fa-user"></i></a></li>
+                                    <li class=" d-none d-xl-block">
+                                        
+                                        <!-- Logout Button -->
+                                        <a href="/user/logout">
+                                            <button id="logout-btn">
+                                                <i class="fas fa-sign-out-alt"></i>out
+                                            </button>
+                                        </a>
+                                    
+                                </li>
+                                   <!-- <li class="d-none d-lg-block"> <a href="/admin/login" class="btn header-btn">Sign in</a></li> -->
+                                </ul>
+                            </div>
+                            <!-- Mobile Menu -->
+                            <div class="col-12">
+                                <div class="mobile_menu d-block d-lg-none"></div>
+                            </div>
+                        </div>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/user/home">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Product</li>
+                            </ol>
+                        </nav>
+                    </div>
+               </div>
+            </div>
+       </div>
+        <!-- Header End -->
+    </header>
+
+    <div class="container my-5">
+        <div class="row">
+            
+            <!-- Product Images Section with Zoom -->
+            <!-- <div class="col-md-6">
+                <div class="product-image mb-3">
+                    <img src="/uploads/re-image/<%= prodata.productImage[0] %>" alt="Main Product Image" class="img-fluid product-main-img" id="main-product-img" onmouseover="zoomIn(this)" onmouseout="zoomOut(this)">
+                </div>
+                <div class="row">
+                    <% prodata.productImage.forEach((image, index) => { %>
+                        <div class="col-3">
+                            <img src="/uploads/re-image/<%= image %>" alt="Thumbnail Image <%= index + 1 %>" class="img-fluid product-thumb-img" onclick="changeImage(this)">
+                        </div>
+                    <% }) %>
+                </div>
+            </div> -->
+            <div class="col-md-6">
+                <div class="product-image mb-3 pd_img">
+                    <img src="/uploads/re-image/<%= prodata.productImage[0] %>" 
+                         alt="Main Product Image" 
+                         class="img-fluid product-main-img" 
+                         id="mainProductImage"
+                         onmouseenter="hideSideElements()" 
+                         onmouseleave="showSideElements()">
+                </div>
+                <div class="row">
+                    <% prodata.productImage.forEach((image, index) => { %>
+                        <div class="col-3">
+                            <img src="/uploads/re-image/<%= image %>" 
+                                 alt="Thumbnail Image <%= index + 1 %>" 
+                                 class="img-fluid product-thumb-img" 
+                                 onclick="changeMainImage('/uploads/re-image/<%= image %>')">
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+            
+    
+            <!-- Product Details Section -->
+            <div class="col-md-6">
+                <div class="product-info">
+                    <h2><%= prodata.productName %></h2>
+                    <div class="price">₹<%= prodata.salePrice %></div>
+                    <% if (prodata.regularPrice > prodata.salePrice) { %>
+                        <li class="discount">₹<%= prodata.regularPrice %></li>
+                    <% } %>
+                    <div class="product-ratting">
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star low-star"></i>
+                        <i class="far fa-star low-star"></i>
+                    </div>
+                    <% if (prodata.count <= 0) { %>
+                        <li style="color: #ff4f41;">out of stock</li>
+                    <% } else { %>
+                        <li style="color: green;">Available</li>
+                    <% } %>
+
+                    <input style="width: 50px;" id="quantityInput" type="number" value="1" min="1">
+                    <div id="otpSuccess" class="error-messages" style="color: rgb(28, 237, 17);"></div> 
+                    <div id="otpError" class="error-messages" style="color: red;"></div> 
+                    <!-- Wishlist and Add to Cart Buttons -->
+                    <div id="divbutton" class="d-flex align-items-center mt-3 divbutton">
+                        <button  class="btn wishlist-btn"><i class="fas fa-heart"></i> Add to Wishlist</button>
+                        <button class="btn btn-primary" id="cartbtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                    </div>
+            </div>
+        </div>
+    
+        <!-- Product Description and Review Tabs -->
+        <div class="mt-5">
+            <!-- Tab Headings -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link" id="description-tab" onclick="toggleTab('description')" role="tab">Description</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="reviews-tab" onclick="toggleTab('reviews')" role="tab">Reviews</a>
+                </li>
+            </ul>
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <div class="tab-pane" id="description" role="tabpanel">
+                    <p><%= prodata.description %></p>
+                </div>
+                <div class="tab-pane" id="reviews" role="tabpanel">
+                    <p>1.Anna K. <br>
+                        ⭐⭐⭐⭐⭐ <br>
+                        "Absolutely love this camera! The image quality is stunning, and the autofocus is super fast. Great value for the price. Highly recommended for both beginners and pros!"<br>
+                        2.James L.<br>
+                        ⭐⭐⭐⭐☆<br>
+                        "Excellent camera overall. The build quality is great, and the features are exactly what I needed for my photography projects. Only drawback is the battery life, which could be better."<br>
+                        3.Emily R.<br>
+                        ⭐⭐⭐⭐⭐<br>
+                        "This product exceeded my expectations. It’s lightweight, easy to use, and delivers amazing shots even in low-light conditions. Perfect for travel photography!"<br>
+                        4.Michael B.<br>
+                        ⭐⭐⭐☆☆<br>
+                        "Decent camera with good performance, but I found it a bit difficult to navigate the settings initially. Works well once you get used to it, but there’s a learning curve."<br>
+                        5.Sophia W.<br>
+                        ⭐⭐⭐⭐⭐<br>
+                        "I'm thrilled with my purchase! The camera captures sharp details and has a ton of features that make it versatile. Great for anyone looking to upgrade."<br>
+                        6.David P.<br>
+                        ⭐⭐⭐⭐☆<br>
+                        "Solid camera with fantastic lens options. The manual mode provides good control for experienced photographers. A little pricey, but worth it for serious hobbyists."<br>
+                        7.Olivia H.<br>
+                        ⭐⭐⭐☆☆<br>
+                        "Not bad for the price, but I had some issues with the autofocus in certain conditions. Still, the overall picture quality is impressive."<br>
+                        8.Chris T.<br>
+                        ⭐⭐⭐⭐⭐<br>
+                        "A brilliant choice for video as well! The stabilization and 4K quality are outstanding. I use it for vlogging, and it’s perfect for my needs."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+        <!-- Related Products Section -->
+
+        <div class="related-products mt-5">
+            <h3 class="section-heading">Products</h3>
+            <hr class="section-divider">
+            <div class="row">
+                
+                <% if (relatedProdatas && relatedProdatas.length > 0) { %>
+                    <% relatedProdatas.forEach((product) => { %>
+                        <div class="col-md-4">
+                            <div class="single-product mb-4">
+                                <div class="product-img">
+                                    <a href="/user/productlist?id=<%= product._id %>">
+                                        <img src="/uploads/re-image/<%= product.productImage && product.productImage[0] ? product.productImage[0] : 'default-image.jpg' %>" 
+                                             alt="Related Product Image" 
+                                             class="img-fluid">
+                                    </a>
+                                </div>
+                                <div class="product-caption">
+                                    <h4><%= product.productName %></h4>
+                                    <div class="price">
+                                        <ul>
+                                            <li>₹<%= product.salePrice %></li>
+                                            <% if (product.regularPrice > product.salePrice) { %>
+                                                <li class="discount">₹<%= product.regularPrice %></li>
+                                            <% } %>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <p>No related products available.</p>
+                <% } %>                
+            </div>
+            <hr class="section-divider">
+        </div>        
+        
+    </div>
+    
+   
+</div>
+    <!-- Bootstrap JS -->
+    <footer>
+
+        <!-- Footer Start-->
+        <div class="footer-area footer-padding">
+            <div class="container">
+                <div class="row d-flex justify-content-between">
+                    <div class="col-xl-3 col-lg-3 col-md-5 col-sm-6">
+                       <div class="single-footer-caption mb-50">
+                         <div class="single-footer-caption mb-30">
+                              <!-- logo -->
+                             <div class="footer-logo">
+                                 <a href=""><img style="width: 80px;" src="/assets1/img/logo/capturelogo.png" alt=""></a>
+                             </div>
+                             <div class="footer-tittle">
+                                 <div class="footer-pera">
+                                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore.</p>
+                                </div>
+                             </div>
+                         </div>
+                       </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-3 col-md-3 col-sm-5">
+                        <div class="single-footer-caption mb-50">
+                            <div class="footer-tittle">
+                                <h4>Quick Links</h4>
+                                <ul>
+                                    <li><a href="#">About</a></li>
+                                    <li><a href="#"> Offers & Discounts</a></li>
+                                    <li><a href="#"> Get Coupon</a></li>
+                                    <li><a href="#">  Contact Us</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-7">
+                        <div class="single-footer-caption mb-50">
+                            <div class="footer-tittle">
+                                <h4>New Products</h4>
+                                <ul>
+                                    <li><a href="#">Woman Cloth</a></li>
+                                    <li><a href="#">Fashion Accessories</a></li>
+                                    <li><a href="#"> Man Accessories</a></li>
+                                    <li><a href="#"> Rubber made Toys</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-5 col-sm-7">
+                        <div class="single-footer-caption mb-50">
+                            <div class="footer-tittle">
+                                <h4>Support</h4>
+                                <ul>
+                                 <li><a href="#">Frequently Asked Questions</a></li>
+                                 <li><a href="#">Terms & Conditions</a></li>
+                                 <li><a href="#">Privacy Policy</a></li>
+                                 <li><a href="#">Privacy Policy</a></li>
+                                 <li><a href="#">Report a Payment Issue</a></li>
+                             </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Footer bottom -->
+                <div class="row">
+                 <div class="col-xl-7 col-lg-7 col-md-7">
+                     <div class="footer-copy-right">
+                         <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+   Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="ti-heart" aria-hidden="true"></i> by <a href="" target="_blank">Capture Pro</a>
+   <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>                   </div>
+                 </div>
+                  <div class="col-xl-5 col-lg-5 col-md-5">
+                     <div class="footer-copy-right f-right">
+                         <!-- social -->
+                         <div class="footer-social">
+                             <a href="#"><i class="fab fa-twitter"></i></a>
+                             <a href="#"><i class="fab fa-facebook-f"></i></a>
+                             <a href="#"><i class="fab fa-behance"></i></a>
+                             <a href="#"><i class="fas fa-globe"></i></a>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+            </div>
+        </div>
+        <!-- Footer End-->
+ 
+    </footer>
+
+    <script>
+        // Default active tab content
+        document.getElementById("description").classList.add("active");
+        document.getElementById("description-tab").classList.add("active");
+    
+        function toggleTab(tabId) {
+            // Remove active class from both tabs and tab contents
+            document.getElementById("description").classList.remove("active");
+            document.getElementById("reviews").classList.remove("active");
+            document.getElementById("description-tab").classList.remove("active");
+            document.getElementById("reviews-tab").classList.remove("active");
+    
+            // Add active class to the selected tab and its content
+            document.getElementById(tabId).classList.add("active");
+            document.getElementById(tabId + "-tab").classList.add("active");
+        }
+
+        setTimeout(() => {
+        const successMessage = document.getElementById('success2-message');
+        const errorMessage = document.getElementById('error2-message');
+        const idsuss= document.getElementById("message");
+        const errmessage = document.getElementById("message-err")
+        
+        if (idsuss.textContent!=='') {
+            successMessage.style.transition = "opacity 0.5s ease"; // Optional fade effect
+            successMessage.style.opacity = "0"; // Hide message with fade
+            idsuss.textContent=''
+            setTimeout(() => successMessage.style.display = "none", 500); // Remove from view
+        }
+ 
+        if (errmessage.textContent!=='') {
+            errorMessage.style.transition = "opacity 0.5s ease"; // Optional fade effect
+            errorMessage.style.opacity = "0"; // Hide message with fade
+            errmessage.textContent=''
+            setTimeout(() => errorMessage.style.display = "none", 500); // Remove from view
+        }
+    }, 3000);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Include Axios from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+     <!-- JS here -->
+     
+         <!-- All JS Custom Plugins Link Here here -->
+         <script src="/assets1/js/vendor/modernizr-3.5.0.min.js"></script>
+         <!-- Jquery, Popper, Bootstrap -->
+         <script src="/assets1/js/vendor/jquery-1.12.4.min.js"></script>
+         <script src="/assets1/js/popper.min.js"></script>
+         <script src="/assets1/js/bootstrap.min.js"></script>
+         <!-- Jquery Mobile Menu -->
+         <script src="/assets1/js/jquery.slicknav.min.js"></script>
+ 
+         <!-- Jquery Slick , Owl-Carousel Plugins -->
+         <script src="/assets1/js/owl.carousel.min.js"></script>
+         <script src="/assets1/js/slick.min.js"></script>
+ 
+         <!-- One Page, Animated-HeadLin -->
+         <script src="/assets1/js/wow.min.js"></script>
+         <script src="/assets1/js/animated.headline.js"></script>
+         <script src="/assets1/js/jquery.magnific-popup.js"></script>
+ 
+         <!-- Scrollup, nice-select, sticky -->
+         <script src="/assets1/js/jquery.scrollUp.min.js"></script>
+         <script src="/assets1/js/jquery.nice-select.min.js"></script>
+         <script src="/assets1/js/jquery.sticky.js"></script>
+         
+         <!-- contact js -->
+         <script src="/assets1/js/contact.js"></script>
+         <script src="/assets1/js/jquery.form.js"></script>
+         <script src="/assets1/js/jquery.validate.min.js"></script>
+         <script src="/assets1/js/mail-script.js"></script>
+         <script src="/assets1/js/jquery.ajaxchimp.min.js"></script>
+         
+         <!-- Jquery Plugins, main Jquery -->	
+         <script src="/assets1/js/plugins.js"></script>
+         <script src="/assets1/js/main.js"></script>
+
+<script src="/hover-extended-magnify 5/extm.min.js"></script>
+<!-- jQuery CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5/WDJ6GTf6hZ+fUpt0/RI5uURYYl1XBO0pz0Jhe" crossorigin="anonymous"></script>
+<script>
+ function addToCart() {
+    const value = document.getElementById("quantityInput").value.trim();
+    const productId = '<%= prodata._id %>';
+    
+    axios.post("/user/addToCart", { value: value, id: productId })
+    .then(function(response) {
+        console.log("Response received:", response);
+        if (response.data.success) {
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Product has been saved",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                window.location.href = response.data.redirectUrl;
+            });
+        } else {
+            Swal.fire({
+                position: "top-end",
+                icon: "warning",
+                title: "This Product already exist",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    })
+    .catch(function(error) {
+        console.error("Error adding to cart:", error);
+        Swal.fire({
+            position: "top-end",
+            icon: "warning",
+            title: "An error occurred during OTP verification.",
+            showConfirmButton: false,
+            timer: 1500
+        });
+    });
+ }
+
+document.getElementById('cartbtn').addEventListener('click', addToCart);
+</script>
+<script>
+ setTimeout(() => {
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+        const idsuss= document.getElementById("otpSuccess");
+        const errmessage = document.getElementById("otpError")
+        
+        if (idsuss.textContent!=='') {
+            successMessage.style.transition = "opacity 0.5s ease"; // Optional fade effect
+            successMessage.style.opacity = "0"; // Hide message with fade
+            idsuss.textContent=''
+            setTimeout(() => successMessage.style.display = "none", 500); // Remove from view
+        }
+ 
+        if (errmessage.textContent!=='') {
+            errorMessage.style.transition = "opacity 0.5s ease"; // Optional fade effect
+            errorMessage.style.opacity = "0"; // Hide message with fade
+            errmessage.textContent=''
+            setTimeout(() => errorMessage.style.display = "none", 500); // Remove from view
+        }
+    }, 3000); 
+</script>
+<script>
+        function changeImage(element) {
+            const mainImage = document.getElementById('main-product-img');
+            mainImage.src = element.src;
+
+            const thumbnails = document.querySelectorAll('.product-thumb-img');
+            thumbnails.forEach(thumb => thumb.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function changeMainImage(imageUrl) {
+        const mainProductImage = document.getElementById('mainProductImage');
+        mainProductImage.src = imageUrl;
+
+        mainProductImage.onload = function() {
+        $('.pd_img img').extmDestroy(); 
+        $('.pd_img img').extm({
+          zoomLevel:2,
+          position:'right',
+          offset:{x:0,y:0},
+          rightPad:20,
+          height:'auto'
+        }); 
+    }
+  }
+
+    
+    $(document).ready(function() {
+        $('.pd_img img').extm({
+            zoomLevel: 2, 
+            position:'right',
+            offset: { x: 0, y: 0 },
+            rightPad: 20,
+            height:'auto',
+        });
+    });
+
+
+function hideSideElements() {
+    document.getElementById('divbutton').classList.add('hidden');
+}
+
+function showSideElements() {
+    document.getElementById('divbutton').classList.remove('hidden');
+}
+ </script>
+ 
+         
+     </body>
+ </html>

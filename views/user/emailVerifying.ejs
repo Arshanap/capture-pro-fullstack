@@ -1,0 +1,78 @@
+
+<link href="https://fonts.googleapis.com/css2?family=Revalia&display=swap" rel="stylesheet">
+<style>
+    .success-message {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    }
+    .error-message {
+        background-color: #f44336; /* Red background */
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    }
+</style>
+
+<link rel="stylesheet" href="/user/login.css">
+    <p class="welcome">Welcome To Capture Pro</p>
+    <p class="moment">Please Enter your valid email.</p>
+    <div class="login-container">
+        <div class="login-box">
+            <h2>Email verifying</h2>
+            <form id="loginForm" action="/user/emailVerify" method="POST">
+                <div class="input-box">
+                    <label>Email</label>
+                    <input type="text" id="email" name="email" class="input">
+                    <div id="emailError" class="error-messages" style="color: red;"></div>
+                </div>
+                <div><button type="submit" class="btn">Submit</button></div>
+                <p class="dont">Do you remember password? <span class="signupbut"><a href="/user/login">login</a></span></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+    
+    const email = document.getElementById('email').value.trim();
+
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    document.getElementById('emailError').textContent = '';
+
+    let isValid = true; 
+
+    
+    if (email === "") {
+        document.getElementById('emailError').textContent = "Email is required.";
+        isValid = false; 
+    } else if (!emailPattern.test(email)) {
+        document.getElementById('emailError').textContent = "Please enter a valid email address.";
+        isValid = false; 
+    }
+
+    if (!isValid) {
+        event.preventDefault(); 
+    }
+});
+function hideMessageAfterDelay() {
+    setTimeout(() => {
+        const successMessage = document.getElementById("successMessage");
+        const errorMessage = document.getElementById("errorMessage");
+
+        if (successMessage) {
+            successMessage.style.display = "none";
+        }
+        if (errorMessage) {
+            errorMessage.style.display = "none";
+        }
+    }, 4000);
+}
+
+window.onload = hideMessageAfterDelay;
+    </script>

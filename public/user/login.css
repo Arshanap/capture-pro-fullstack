@@ -1,0 +1,179 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(49deg, #77989b 50%, #4d4c4c 50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.login-box {
+    /* background-color: rgba(99, 98, 98, 0.9);  Slight transparency for better contrast */
+    padding: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    max-width: 400px;
+    width: 100%;
+}
+
+h2 {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 24px;
+    color: #fff;
+}
+
+/* Input Fields */
+.input-box {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    outline: none;
+    background-color: #ede9e9;
+}
+
+.input-box label {
+    color: #fff;
+    font-size: 17px;
+}
+
+/* Button Styling */
+.btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #FA7E4E;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.btn1 {
+    margin-top: 60px;
+    width: 100%;
+    padding: 8px;
+    background-color: #ed1f08;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+
+.btn:hover {
+    /* background-color: #f5713d; */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+/* Welcome and Moment Text */
+.welcome {
+    position: absolute;
+    top: 10%;
+    color: #fff;
+    font-size: 3vw;
+    text-align: center;
+    width: 100%;
+    font-family: 'Revalia', cursive;
+}
+
+.moment {
+    position: absolute;
+    top: 17%;
+    color: #fff;
+    font-size: 1.5vw;
+    text-align: center;
+    width: 100%;
+    font-family: 'Revalia', cursive;
+}
+
+/* Additional Links */
+.Forgot {
+    text-align: right;
+    margin-top: 5px;
+    color: rgb(4, 4, 159);
+    font-size: 14px;
+}
+
+.Forgot a {
+    color: rgb(4, 4, 159);
+    text-decoration: none;
+}
+
+.dont {
+    text-align: center;
+    margin-top: 50px;
+    color: #fff;
+}
+
+.signupbut a {
+    color: rgb(10, 10, 148);
+    text-decoration: none;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .login-box {
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    .btn {
+        font-size: 16px;
+    }
+
+    .btn1 {
+        font-size: 16px;
+    }
+
+    .welcome {
+        font-size: 5vw;
+        top: 8%;
+    }
+
+    .moment {
+        font-size: 3vw;
+        top: 14%;
+    }
+}
+
+@media (max-width: 768px) {
+    .welcome {
+        font-size: 4vw;
+        top: 8%;
+    }
+
+    .moment {
+        font-size: 2vw;
+        top: 13%;
+    }
+}

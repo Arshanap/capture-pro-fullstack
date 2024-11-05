@@ -1,0 +1,191 @@
+
+<link rel="stylesheet" href="/user/verfyOTP.css">
+
+<style>
+    .success-message {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    }
+    .error-message {
+        background-color: #f44336; 
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    }
+    .custom-alert {
+        display: none;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        text-align: center;
+    }
+</style>
+
+<body>
+<p class="welcome">OTP Verification</p>
+<p class="moment">Enter the OTP sent to your email.</p>
+<div class="otp-container">
+    <div class="otp-box">
+        <h2>Enter OTP</h2>
+        <% if (successMessage) { %>
+            <div id="successMessage" class="success-message">
+                <p><%= successMessage %></p>
+            </div>
+        <% } %>
+        
+        <% if (errorMessage) { %>
+            <div id="errorMessage" class="error-message">
+                <p><%= errorMessage %></p>
+            </div>
+        <% } %> 
+        <form id="otpForm">
+            <div class="input-box">
+                <label>OTP</label>
+                <input type="text" name="otp" id="otp" class="input" maxlength="6" placeholder="6-digit OTP">
+                <div id="otpError" class="error-messages" style="color: red;"></div> 
+            </div>
+            <button type="submit" class="btn" id="verify-btn">Verify OTP</button>
+            <p class="timer">You can resend OTP in <span id="timerValue">20</span> seconds.</p>
+            <p class="resend-otp">Didn't receive the OTP?  
+                <button type="button" id="resend-link" onclick="resendOTP(event)">Resend OTP</button>
+            </p>
+        </form>
+    </div>
+</div>
+<div id="custom-alert" class="custom-alert"></div>
+</body>
+</html>
+
+
+
+<script>
+let timerValue = 20;
+let timerInterval;
+
+// Start the timer countdown
+function startTimer() {
+    clearInterval(timerInterval); // Clear any previous timer
+
+    // Update the timer display immediately
+    document.getElementById("timerValue").textContent = timerValue;
+
+    // Start a new timer interval
+    timerInterval = setInterval(function() {
+        timerValue--;
+        document.getElementById("timerValue").textContent = timerValue;
+
+        if (timerValue === 0) {
+            clearInterval(timerInterval);
+            enableResendButton();
+        }
+    }, 1000);
+}
+
+// Enable the resend button and input fields
+function enableResendButton() {
+    document.getElementById("resend-link").disabled = false;
+    document.getElementById("otp").disabled = false;
+    document.getElementById("verify-btn").disabled = false;
+}
+
+// Disable the resend button, reset timer, and start countdown
+function disableResendButton() {
+    document.getElementById("resend-link").disabled = true;
+    document.getElementById("otp").disabled = false;
+    document.getElementById("verify-btn").disabled = false;
+    timerValue = 20;
+    startTimer(); // Start the countdown
+}
+
+// Resend OTP handler
+function resendOTP(event) {
+    event.preventDefault();
+    disableResendButton();
+    const email = "<%=email%>"
+    axios.post(`/user/forgotResendOtp?id=${email}`)
+        .then(function(response) {
+            const customAlert = document.getElementById('custom-alert');
+            if (response.data.success) {
+                customAlert.textContent = "OTP Resent Successfully!";
+                customAlert.style.backgroundColor = "#4CAF50";
+                disableResendButton();
+            } else {
+                customAlert.textContent = "Error occurred while resending OTP. Please try again.";
+                customAlert.style.backgroundColor = "#f44336";
+            }
+            customAlert.style.display = 'block';
+
+            setTimeout(function() {
+                customAlert.style.display = 'none';
+            }, 3000);
+        })
+        .catch(function(error) {
+            alert("An error occurred while resending OTP.");
+        });
+}
+
+// OTP Verification
+function verifyOTP(event) {
+    event.preventDefault();
+
+    const otp = document.getElementById('otp').value.trim();
+    document.getElementById('otpError').textContent = '';
+
+    if (otp === "") {
+        document.getElementById('otpError').textContent = "OTP is required.";
+        return;
+    }
+
+    if (otp.length !== 6 || isNaN(otp)) {
+        document.getElementById('otpError').textContent = "Please enter a valid 6-digit OTP.";
+        return;
+    }
+
+    axios.post('/user/forgotOTP', { otp: otp })
+        .then(function(response) {
+            if (response.data.success) {
+                window.location.href = response.data.redirectUrl;
+            } else {
+                document.getElementById('otpError').textContent = response.data.message;
+            }
+        })
+        .catch(function(error) {
+            const errorMessage = error.response ? error.response.data.message : "An error occurred during OTP verification.";
+            document.getElementById('otpError').textContent = errorMessage;
+            console.error("Error in OTP verification:", error);
+        });
+}
+
+// Hide success and error messages after delay
+function hideMessageAfterDelay() {
+    setTimeout(() => {
+        const successMessage = document.getElementById("successMessage");
+        const errorMessage = document.getElementById("errorMessage");
+
+        if (successMessage) {
+            successMessage.style.display = "none";
+        }
+        if (errorMessage) {
+            errorMessage.style.display = "none";
+        }
+    }, 4000);
+}
+
+// Combined window.onload function
+window.onload = function() {
+    disableResendButton();
+    startTimer();
+    hideMessageAfterDelay();
+};
+
+// Attach event listener for OTP form submission
+document.getElementById('otpForm').addEventListener('submit', verifyOTP);
+
+</script>
+
