@@ -561,7 +561,8 @@
                         <li style="color: green;">Available</li>
                     <% } %>
 
-                    <input style="width: 50px;" id="quantityInput" type="number" value="1" min="1">
+                    <input style="width: 50px;" id="quantityInput" onclick="return countfun()" type="number" value="1" max="<%=prodata.count%>" min="1">
+                    <div id="productError" style="color: red; margin-top: 5px;"></div>
                     <div id="otpSuccess" class="error-messages" style="color: rgb(28, 237, 17);"></div> 
                     <div id="otpError" class="error-messages" style="color: red;"></div> 
                     <!-- Wishlist and Add to Cart Buttons -->
@@ -886,7 +887,7 @@ document.getElementById('cartbtn').addEventListener('click', addToCart);
             idsuss.textContent=''
             setTimeout(() => successMessage.style.display = "none", 500); // Remove from view
         }
- 
+
         if (errmessage.textContent!=='') {
             errorMessage.style.transition = "opacity 0.5s ease"; // Optional fade effect
             errorMessage.style.opacity = "0"; // Hide message with fade
@@ -941,7 +942,24 @@ function showSideElements() {
     document.getElementById('divbutton').classList.remove('hidden');
 }
  </script>
- 
+ <script>
+    function countfun() {
+        const messageDiv = document.getElementById("productError");
+        const quantityInput = document.getElementById("quantityInput");
+        const value = quantityInput.value.trim();
+        const check = "<%= prodata.count %>";
+
+        if (parseInt(value) === parseInt(check)) {
+            messageDiv.textContent = `Only ${check} units available in stock`; 
+            messageDiv.style.transition = "opacity 0.5s ease";
+            messageDiv.style.opacity = "1";
+            setTimeout(() => messageDiv.style.display = "none", 3000);
+        } else {
+            messageDiv.textContent = '';
+            messageDiv.style.opacity = "0";
+        }
+    }
+</script>
          
      </body>
  </html>

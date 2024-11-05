@@ -78,7 +78,7 @@ router.delete("/user/cartRemove", cartController.removeProduct);
 router.post("/user/valueUpdate", cartController.valueUpdate)
 
 // checkout
-router.get("/user/checkout", checkoutController.loadCheckout)
+router.get("/user/checkout", userAuth.checkSession, checkoutController.loadCheckout)
 
 
 

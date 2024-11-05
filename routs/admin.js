@@ -6,6 +6,7 @@ const adminAuth =  require("../midilware/adminAuth")
 const adminController = require("../controller/admin/adminController")
 const customerController = require("../controller/admin/customerController")
 const productContoller = require("../controller/admin/productController")
+const orderController = require("../controller/admin/orderControlller")
 // const upload = require("../helper/multer")
 
 // login
@@ -51,7 +52,8 @@ router.post("/editcategory", customerController.editCategory)
 router.get("/listed", customerController.categoryListed)
 router.get("/unlisted", customerController.categoryunListed)
 
-
+// orders
+router.get("/order",adminAuth.checkSession, orderController.loadOrder)
 
 
 

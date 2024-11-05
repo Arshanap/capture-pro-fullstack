@@ -10,10 +10,10 @@ const loadProduct = async (req, res) => {
         
         req.session.errorMessage = "";
         const id = req.query.id;
-        const prodata = await Product.findById(id);
+        const prodata = await Product.findOne({_id:id,isBlocked: true});
         
         if (!prodata) {
-            return res.status(404).send("Product not found");
+            return res.redirect("/user/home")
         }
 
         const category = prodata.category;

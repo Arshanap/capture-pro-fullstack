@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <title>Evara Dashboard</title>
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta property="og:title" content="">
+        <meta property="og:type" content="">
+        <meta property="og:url" content="">
+        <meta property="og:image" content="">
+        <!-- Favicon -->
+        <link rel="shortcut icon" type="image/x-icon" href="/assets/imgs/theme/favicon.svg">
+        <link rel="stylesheet" href="/assets/imgs/theme/favicon.svg">
+        <!-- Template CSS -->
+        <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    </head>
+    
+    <body>
+        <div class="screen-overlay"></div>
+        <aside class="navbar-aside" id="offcanvas_aside">
+            <div class="aside-top">
+                <a href="" class="brand-wrap">
+                    <img src="/assets/imgs/captureLogo.png" class="logo" alt="Evara Dashboard" >
+                </a>
+                <div>
+                    <!-- <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button> -->
+                </div>
+            </div>
+            <nav>
+                <ul class="menu-aside">
+                    <li class="menu-item active">
+                        <a class="menu-link" href=""> <i class="icon material-icons md-home"></i>
+                            <span class="text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="menu-item ">
+                        <a class="menu-link" href="/admin/products"> <i class="icon material-icons md-shopping_bag"></i>
+                            <span class="text">Products</span>
+                        </a>
+                    
+                    </li>
+                    <li class="menu-item ">
+                        <a class="menu-link" href="/admin/order"> <i class="icon material-icons md-shopping_cart"></i>
+                            <span class="text">Order list</span>
+                        </a>
+      
+                    </li>
+                    <li class="menu-item ">
+                         
+                        <a href="/admin/users" class="menu-link" style="right: -10px; position: relative; color: #292f46;">   
+                            <i class="icon material-icons md-person"></i>  users</a>
+                    </li>
+                    <li class="menu-item ">
+                        <a class="menu-link" href=""> <i class="icon material-icons md-add_box"></i>
+                            <span class="text">Coupons</span>
+                        </a>
+                    </li>
+                    
+                    <li class="menu-item"></li>
+                        <a class="menu-link" href="/admin/category"> <i style="font-size: 117%; color: #adadad; right:0%" class="icon material-icons md-monetization_on "></i>
+                            <span class="text">category</span>
+                        </a>
+                    </li>
+                    <li class="menu-item ">
+                        <a class="menu-link" href=""> <i class="fas fa-bullhorn" style="font-size: 117%; color: #adadad; right:2%"></i>
+                            <span class="text" style="left:7%; position:  relative;">banners</span>
+                        </a>
+                     
+                    </li>
+                   
+                    <li class="menu-item">
+                        <a class="menu-link" href=""> <i class="icon material-icons md-comment"></i>
+                            <span class="text">Offers</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a class="menu-link" href=""> <i class="icon material-icons md-stars"></i>
+                            <span class="text">Payments</span> </a>
+                    </li>
+                  
+                </ul>
+                <hr>
+                <ul class="menu-aside">
+                    <li class="menu-item ">
+                        <a class="menu-link" href=""> <i class="icon material-icons md-settings"></i>
+                            <span class="text">Settings</span>
+                        </a>
+                        <!-- <div class="submenu">
+                            <a href="page-settings-1.html">Setting sample 1</a>
+                            <a href="page-settings-2.html">Setting sample 2</a>
+                        </div> -->
+                    </li>
+                    <li class="menu-item">
+                        <a  style="left: 5%; font-size: 10px;" class="menu-link" href="/admin/Logout"> <i class="fa-solid fa-right-from-bracket">  Logout </i> 
+                         
+                        </a >
+                    </li>
+                </ul>
+                <br>
+                <br>
+            </nav>
+        </aside>
+        <main class="main-wrap">
+            <header class="main-header navbar">
+                <div class="col-search">
+                    <!-- <form class="searchform">
+                        <div class="input-group">
+                            <input list="search_terms" type="text" class="form-control" placeholder="Search term">
+                            <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
+                        </div>
+                    </form> -->
+                </div>
+                <div class="col-nav">
+                    <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i class="material-icons md-apps"></i> </button>
+                    <ul class="nav">
+                        
+                </div>
+            </header>
+
+            <div class="container mt-5">
+                <h2 class="mb-4">Orders List</h2>
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">Order ID</th>
+                            <th scope="col">Product Name</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Order Date</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ORD12345</td>
+                            <td>Camera Model X</td>
+                            <td>1</td>
+                            <td>$500</td>
+                            <td><span class="badge bg-success">Delivered</span></td>
+                            <td>2024-10-20</td>
+                            <td>
+                                <!-- Action buttons -->
+                                <button class=" btn-danger btn-sm" style=" width: 80px;" onclick="cancelOrder('ORD12345')">Cancel</button>
+                                <button class="btn-primary btn-sm" style=" width: 80px;" data-bs-toggle="modal" data-bs-target="#statusModal" onclick="setOrderId('ORD12345')">Status</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>ORD12345</td>
+                            <td>Camera Model X</td>
+                            <td>1</td>
+                            <td>$500</td>
+                            <td><span class="badge bg-success">Delivered</span></td>
+                            <td>2024-10-20</td>
+                            <td>
+                                <!-- Action buttons -->
+                                <button class="btn-danger btn-sm" style=" width: 80px;" onclick="cancelOrder('ORD12345')">Cancel</button>
+                                <button class="btn-primary btn-sm" style=" width: 80px;" data-bs-toggle="modal" data-bs-target="#statusModal" onclick="setOrderId('ORD12345')">Status</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+    
+            <!-- Modal for Changing Order Status -->
+            <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="statusModalLabel">Change Order Status</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="statusForm">
+                                <input type="hidden" id="orderId" name="orderId">
+                                <div class="mb-3">
+                                    <label for="orderStatus" class="form-label">Order Status</label>
+                                    <select class="form-select" id="orderStatus" name="orderStatus">
+                                        <option value="Pending">Pending</option>
+                                        <option value="Shipped">Shipped</option>
+                                        <option value="Delivered">Delivered</option>
+                                        <option value="Cancelled">Cancelled</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="btn btn-primary" onclick="updateOrderStatus()">Update Status</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+
+
+    </main>
+    <!-- <script src="assets/js/vendors/jquery-3.6.0.min.js"></script> -->
+     <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
+    
+    <!-- <script src="assets/js/vendors/bootstrap.bundle.min.js"></script> -->
+     <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <!-- <script src="assets/js/vendors/select2.min.js"></script> -->
+     <script src="/assets/js/vendors/select2.min.js"></script>
+    <!-- <script src="assets/js/vendors/perfect-scrollbar.js"></script> -->
+     <script src="/assets/js/vendors/perfect-scrollbar.js"></script>
+    <script src="/assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <script src="/assets/js/vendors/chart.js"></script>
+    <!-- Main Script -->
+    <script src="/assets/js/main.js" type="text/javascript"></script>
+    <script src="/assets/js/custom-chart.js" type="text/javascript"></script>
+
+   
+</body>
+</html>
