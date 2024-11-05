@@ -22,7 +22,8 @@ const loadCart = async (req, res) => {
             productImage: item.productId.productImage || [],  
             quantity: item.quantity,
             price: item.price,
-            totalPrice: item.totalPrice
+            totalPrice: item.totalPrice,
+            count: item.productId.count
         })));
 
         const grandTotal = proData.reduce((total, item) => total + item.totalPrice, 0);
@@ -71,6 +72,7 @@ const addProduct = async (req, res) => {
                 quantity: value,
                 price: product.salePrice,
                 totalPrice: product.salePrice * value,
+                productCount: product.count,
             }
         });
 
@@ -144,29 +146,92 @@ const valueUpdate = async (req, res) => {
     }
 };
 
+// const removeProduct = async (req, res) => {
+//     try {
+//         const productId = req.query.id; 
+//         const userId = req.session.userId;
+
+//         const exist = await Cart.findOne({ 
+//             userId, 
+//             "items.productId": productId 
+//         });
+
+//         if (!exist) {
+//             return res.status(404).json({ message: "Cart not found or product not in cart" });
+//         }
+
+//         const result = await Cart.deleteOne({
+//             userId,
+//             "items.productId": productId
+//         });
+
+//         if (result.deletedCount === 0) {
+//             return res.status(404).json({ message: "No cart found for the user with the specified product" });
+//         }
+
+//         res.status(200).json({ message: "Product successfully removed from cart" });
+//     } catch (error) {
+//         console.error("Error deleting product from cart:", error);
+//         res.status(500).json({ message: "Internal server error" });
+//     }
+// };
+
 const removeProduct = async (req, res) => {
     try {
-        const productId = req.query.id; 
-        const userId = req.session.userId;
+        const productId = req.query.id;
+        const email = req.session.User;
+        const user = await User.findOne({email})
+        const userId = user._id;
 
-        const updatedCart = await Cart.findOneAndUpdate(
-            { userId }, 
-            { $pull: { items: { productId } } }, 
-            { new: true } 
-        );
+        const exist = await Cart.findOne({ 
+            userId, 
+            "items.productId": productId 
+        });
 
-        if (!updatedCart) {
+        if (!exist) {
             return res.status(404).json({ message: "Cart not found or product not in cart" });
         }
 
-        res.status(200).json({ message: "Product successfully removed from cart", cart: updatedCart });
+        const result = await Cart.deleteOne({ 
+            userId, 
+            "items.productId": productId 
+        });
+
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({ message: "No product found for the user with the specified product" });
+        }
+
+        res.status(200).json({ message: "Product successfully removed from cart" });
     } catch (error) {
         console.error("Error deleting product from cart:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
 
+deleteProductCart=async(req,res)=>{
+    try {
+        const {id:productId}=req.params
+        const userId=req.user.id
 
+        const cart=await Cart.findOne({userId})
+
+        if(!cart){
+            return res.status(statusCodes.BAD_REQUEST).json({success:false,error:'cart not found'})
+        }
+      
+
+        cart.items = cart.items.filter(item => item.productId.toString() !== productId);
+
+
+        cart.subTotal=cart.items.reduce((sum,items)=>sum+items.totalPrice,0)
+        cart.grandTotal=cart.subTotal
+
+        await cart.save();
+        res.redirect('/cart')
+    } catch (error) {
+        console.error(error)
+    }
+}
 
 
 

@@ -46,7 +46,6 @@ app.use(express.json())
 
 
 // view engine setting
-// app.set('views', path.join(__dirname), 'views')
 app.set("view engine", 'ejs')
 
 //static assets

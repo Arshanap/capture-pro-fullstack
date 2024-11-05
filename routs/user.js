@@ -8,6 +8,7 @@ const accountController = require("../controller/user/accountController")
 const orderController = require("../controller/user/orderController")
 const cartController = require("../controller/user/cartController")
 const passwordController = require("../controller/user/passwordController")
+const checkoutController= require("../controller/user/checkoutController")
 
 
 // login
@@ -72,9 +73,14 @@ router.get("/user/orders", userAuth.checkSession, orderController.loadOrder)
 // Cart
 router.get("/user/cart", userAuth.checkSession, cartController.loadCart)
 router.post("/user/addToCart", cartController.addProduct)
-router.get("/user/cartRemove", cartController.removeProduct)
+router.delete("/user/cartRemove", cartController.removeProduct);
 
 router.post("/user/valueUpdate", cartController.valueUpdate)
+
+// checkout
+router.get("/user/checkout", checkoutController.loadCheckout)
+
+
 
 
 module.exports = router

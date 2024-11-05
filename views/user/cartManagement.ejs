@@ -230,12 +230,12 @@
                             </td>
                             
                             <td>
-                                <input type="number" id="quantity-<%= proData[i]._id %>" value="<%= proData[i].quantity %>" min="1" class="form-control" style="width: 60px;" onchange="return updateQuantity('<%= proData[i]._id %>', this.value)">
+                                <input type="number" id="quantity-<%= proData[i]._id %>" value="<%= proData[i].quantity %>" min="1" max="<%= proData[i].count%>" class="form-control" style="width: 60px;" onchange="return updateQuantity('<%= proData[i]._id %>', this.value)">
                             </td>
                             <td>₹ <%= Number(proData[i].price).toFixed(2) %></td>
                             <td>₹ <%= Number(proData[i].totalPrice).toFixed(2) %></td>
                             <td>
-                                <a href="/user/cartRemove?id=<%=proData[i]._id%>" onclick="return removeCart(event, this.href)" class="btn btn-danger btn-sm">Remove</a>
+                                <a onclick="return removeFromCart('<%= proData[i]._id %>')" class="btn btn-danger btn-sm">Remove</a>
                             </td>
                         </tr>
                     <% } %>
@@ -348,14 +348,13 @@
     </div>
 
 </footer>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!-- <script>
     async function removeCart(event, url) {
-        event.preventDefault(); // Prevent the default link behavior
+        event.preventDefault(); 
         try {
-            // Display confirmation dialog
             const result = await Swal.fire({
                 title: "Are you sure?",
                 text: "You will remove this product from the cart!",
@@ -367,9 +366,7 @@
             });
 
             if (result.isConfirmed) {
-
-                window.location.href = url;
-
+                const response = await axios.delete(url); 
 
                 if (response.status === 200) {
                     Swal.fire({
@@ -379,7 +376,7 @@
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
-                        window.location.reload();
+                        window.location.reload(); // Reload the page after successful removal
                     });
                 } else {
                     Swal.fire({
@@ -394,13 +391,26 @@
             console.error("Error removing item from cart:", error);
             Swal.fire({
                 title: "Error!",
-                text: `An error occurred while removing the product.${error}`,
+                text: `An error occurred while removing the product: ${error.message}`,
                 icon: "error",
                 showConfirmButton: true
             });
         }
     }
+</script> -->
+
+<script>
+    async function removeFromCart(productId) {
+      try {
+        await fetch(`/user/cartRemove?id=${productId}`, { method: "DELETE" });
+        location.reload();
+      } catch (error) {
+        console.error(error);
+      }
+    }
 </script>
+
+
 
 
  

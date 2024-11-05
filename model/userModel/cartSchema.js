@@ -18,6 +18,10 @@ const cartSchema = new Schema({
             default: 1,
             require: true
         },
+        productCount: {
+            type: Number,
+            require: true
+        },
         price: {
             type: Number,
             required: true
