@@ -79,7 +79,8 @@ router.post("/user/valueUpdate", cartController.valueUpdate)
 
 // checkout
 router.get("/user/checkout", userAuth.checkSession, checkoutController.loadCheckout)
-
+router.post('/user/checkoutAddAddress', checkoutController.addAddress)
+router.get("/user/checkoutEditAddress", userAuth.checkSession, checkoutController.loadEditAddress)
 
 
 

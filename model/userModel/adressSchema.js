@@ -26,7 +26,7 @@ const adressSchema = new Schema({
         },
         state:{
             type:String,
-            required:true
+            required: true
         },
         pincode:{
             type:String,

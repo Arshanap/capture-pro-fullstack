@@ -374,7 +374,7 @@
 
             if (response.status === 200) {
                 console.log("Quantity updated successfully:", response.data.message);
-                // Optionally, you can refresh the page or update the UI here
+                window.location.href = response.data.redirectUrl;
             } else {
                 console.error("Failed to update quantity:", response.data.message);
             }
@@ -408,7 +408,7 @@
         const quantityInput = document.getElementById(`quantity-${productId}`);
         const value = quantityInput.value.trim();
 
-        if (parseInt(value) === parseInt(maxQuantity)) {
+        if (parseInt(value) === parseInt(maxQuantity)) { 
             messageDiv.textContent = `Only ${maxQuantity} units available in stock`; 
             messageDiv.style.transition = "opacity 0.5s ease";
             messageDiv.style.opacity = "1";
@@ -416,16 +416,24 @@
             setTimeout(() => {
                 messageDiv.style.opacity = "0";
                 messageDiv.style.display = "none";
-            }, 3000);
-        } else {
+            }, 6000);
+        } else if (parseInt(value) >= parseInt(maxQuantity)){
+            messageDiv.textContent = `Only ${maxQuantity} units available in stock`; 
+            messageDiv.style.transition = "opacity 0.5s ease";
+            messageDiv.style.opacity = "1";
+            messageDiv.style.display = "block"; 
+            setTimeout(() => {
+                messageDiv.style.opacity = "0";
+                messageDiv.style.display = "none";
+                document.getElementById(`quantity-${productId}`).value = maxQuantity;
+            }, 6000);
+        }else{
             messageDiv.textContent = '';
             messageDiv.style.opacity = "0";
             messageDiv.style.display = "none";
         }
     }
 </script>
-
-
 
 
  

@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="/assets1/css/slick.css">
     <link rel="stylesheet" href="/assets1/css/nice-select.css">
     <link rel="stylesheet" href="/assets1/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
 
@@ -34,7 +35,7 @@
         .breadcrumb {
             padding: 10px 15px;
             background-color: #f8f9fa;
-            width: 240px;
+            width: 180px;
             border-radius: 4px;
             display: flex;
             list-style: none;
@@ -297,7 +298,6 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="/user/home">Home</a></li>
-                            <li class="breadcrumb-item"><a href="/user/cart">cart</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Checkout</li>
                         </ol>
                     </nav>
@@ -308,14 +308,13 @@
     <!-- Header End -->
 </header>
 
-
 <div style="margin-bottom: 100px;" class="container-fluid">
     <div class="row">
-
         <!-- Main Content with Checkout Form -->
         <div class="container-content col-md-9" >
             <h2 class="text-center mb-4">Checkout</h2>
             <div class="row">
+                
                 <!-- Address Selection Table -->
                 <div class="col-md-6 mb-4">
                     <button class="btn btn-secondary mb-3" data-toggle="modal" data-target="#addAddressModal" type="button">Add New Address</button>
@@ -326,19 +325,33 @@
                         <thead>
                             <tr>
                                 <th>Address</th>
-                                <th>Action</th>
+                                <th>type</th>
+                                <th>Action</th>                                
                             </tr>
                         </thead>
                         <tbody id="addressTable">
-                            <tr>
-                                <td>123 Main St, New York, NY</td>
-                                <td><button class="btn btn-secondary" onclick="editAddress('123 Main St, New York, NY')">Edit</button></td>
-                            </tr>
-                            <tr>
-                                <td>456 Maple Ave, San Francisco, CA</td>
-                                <td><button class="btn btn-secondary" onclick="editAddress('456 Maple Ave, San Francisco, CA')">Edit</button></td>
-                            </tr>
+                            <% if (addressData.length > 0) { %>  
+                                <% addressData.forEach(address => { %>
+                                <tr>
+                                    <td><p class="card-text">
+                                            Building Name: <%= address.address.buildingName %><br>
+                                            Address: <%= address.address.address %>, <%= address.address.city %>, <%= address.address.state %>, <%= address.address.pincode %><br>
+                                            <strong>Phone:</strong> <%= address.address.phone %><br>
+                                        </p>
+                                    </td>
+                                    <td><%= address.address.addresstype %></td>
+                                    <td>
+                                        <input type="radio" name="selectedAddress" value="<%= address.address._id %>" id="address_<%= address.address._id %>">
+                                        <label for="address_<%= address.address._id %>">Select</label>
+                                    <a href="/user/checkoutEditAddress?addressId=<%= address._id %>"><button class="btn btn-secondary">Edit</button></a>
+                                </td>
+                                </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <p>No addresses found.</p>
+                            <% } %>
                         </tbody>
+                        
                     </table>
 
                     <!-- New/Edit Address Form -->
@@ -360,37 +373,46 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form id="addressForm">
+                                <form id="addressForm" onsubmit="return validateForm()">
                                     <div class="form-group">
                                         <label for="fullName">Full Name</label>
-                                        <input type="text" class="form-control" id="fullName" required>
+                                        <input type="text" class="form-control" id="fullName">
                                     </div>
                                     <div class="form-group">
                                         <label for="pinCode">Pin Code</label>
-                                        <input type="text" class="form-control" id="pinCode" required>
+                                        <input type="number" class="form-control" id="pinCode">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="Phone">Phone</label>
+                                        <input type="number" class="form-control" id="Phone">
                                     </div>
                                     <div class="form-group">
                                         <label for="city">City</label>
-                                        <input type="text" class="form-control" id="city" required>
+                                        <input type="text" class="form-control" id="city">
                                     </div>
                                     <div class="form-group">
                                         <label for="state">State</label>
-                                        <input type="text" class="form-control" id="state" required>
+                                        <input type="text" class="form-control" id="state">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="type">type</label>
+                                        <input type="text" class="form-control" id="type">
                                     </div>
                                     <div class="form-group">
                                         <label for="buildingName">Building Name</label>
-                                        <input type="text" class="form-control" id="buildingName" required>
+                                        <input type="text" class="form-control" id="buildingName">
                                     </div>
                                     <div class="form-group">
                                         <label for="fullAddress">Enter your full Address</label>
-                                        <textarea class="form-control" id="fullAddress" rows="3" required></textarea>
+                                        <textarea class="form-control" id="fullAddress" rows="3"></textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save Address</button>
                                     </div>
                                 </form>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary" form="addressForm">Save Address</button>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -407,8 +429,13 @@
                         </div>
                         
                         <div>
+                            <input type="radio" id="cashOnDelivery" name="paymentMethod" value="cashOnDelivery" onchange="togglePaymentInfo('cashOnDelivery')" checked>
+                            <label for="cashOnDelivery">Cash on Delivery</label>
+                        </div>
+
+                        <div>
                             <input type="radio" id="paypal" name="paymentMethod" value="paypal" onchange="togglePaymentInfo('paypal')">
-                            <label for="paypal">PayPal</label>
+                            <label for="paypal">paypal</label>
                         </div>
                         
                         <div>
@@ -434,6 +461,8 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
+                        <th>#</th>
+                        <th>product Image</th>
                         <th>Product</th>
                         <th>Quantity</th>
                         <th>Price</th>
@@ -441,18 +470,29 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <% if (proData.length > 0) { %>
+                        <% for (let i = 0; i < proData.length; i++) { %>
                     <tr>
-                        <td>Product 1</td>
-                        <td>1</td>
-                        <td>$50.00</td>
-                        <td>$50.00</td>
+                        <td><%=i+1%></td>
+                        <td>
+                            <% if (proData[i].productImage && proData[i].productImage.length > 0) { %>
+                                <img src="/uploads/re-image/<%= proData[i].productImage[0] %>" alt="Product Image" style="max-width: 100px;">
+                            <% } else { %>
+                                <img src="/path/to/default-image.jpg" alt="Default Image" style="max-width: 100px;">
+                            <% } %>
+                            <span class="ml-2"></span>                                
+                        </td>
+                        <td><%= proData[i].productName %></td>
+                        <td><%= proData[i].quantity %></td>
+                        <td>₹ <%= Number(proData[i].price).toFixed(2) %></td>
+                        <td>₹ <%= Number(proData[i].totalPrice).toFixed(2) %></td>
                     </tr>
-                    <tr>
-                        <td>Product 2</td>
-                        <td>1</td>
-                        <td>$30.00</td>
-                        <td>$30.00</td>
-                    </tr>
+                    <% } %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="5" class="text-center">Your cart is empty.</td>
+                        </tr>
+                    <% } %>
                 </tbody>
             </table>
 
@@ -462,19 +502,23 @@
                 <tbody>
                     <tr>
                         <td>Subtotal</td>
-                        <td>$80.00</td>
+                        <td>₹ <%= grandTotal.toFixed(2) %></td>
                     </tr>
                     <tr>
                         <td>Shipping</td>
-                        <td>$5.00</td>
+                        <td>₹ 00.00</td>
                     </tr>
                     <tr class="fw-bold">
                         <td>Total</td>
-                        <td>$85.00</td>
+                        <td>₹ <%= (grandTotal + 10).toFixed(2) %></td>
                     </tr>
                 </tbody>
             </table>
-            <button type="submit"  class="btn btn-primary w-100 py-2">Place Order</button>
+            <!-- <button type="submit"  class="btn btn-primary w-100 py-2">Place Order</button> -->
+            <form id="orderForm" action="/user/placeOrder" method="POST">
+                <input type="hidden" name="selectedAddress" id="selectedAddress">
+                <button type="submit" class="btn btn-primary w-100 py-2">Place Order</button>
+            </form>
         </div>
     </div>
 </div>
@@ -570,4 +614,155 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function validateForm() {
+    clearErrors();
+    let isValid = true;
+
+    const nameRegex = /^[a-zA-Z\s\-']{2,}$/;
+
+    const fullName = document.getElementById("fullName").value.trim();
+    if (!fullName) {
+        showError("fullName", "Full name is required.");
+        isValid = false;
+    } else if (!nameRegex.test(fullName)) {
+        showError("fullName", "Full name must contain only letters, spaces, hyphens, and apostrophes, and be at least 2 characters long.");
+        isValid = false;
+    }
+
+    // Validate Pin Code (Exactly 6 digits, no special characters allowed)
+    const pinCode = document.getElementById("pinCode").value;
+    if (!/^\d{6}$/.test(pinCode)) {
+        showError("pinCode", "Pin code must be exactly 6 digits.");
+        isValid = false;
+    }
+
+    // Validate Phone
+    const phone = document.getElementById("Phone").value.trim();
+    const phoneRegex = /^(?!.*(\d)\1\1\1)\d{10}$/;
+    if (!phone) {
+        showError("Phone", "Phone number is required.");
+        isValid = false;
+    } else if (!phoneRegex.test(phone)) {
+        showError("Phone", "Phone number must be 10 digits and cannot contain the same number more than 3 times consecutively.");
+        isValid = false;
+    }
+
+    // Validate City
+    const city = document.getElementById("city").value.trim();
+    if (!city) {
+        showError("city", "City is required.");
+        isValid = false;
+    } else if (!nameRegex.test(city)) {
+        showError("city", "City must contain only letters, spaces, hyphens, and apostrophes, and be at least 2 characters long.");
+        isValid = false;
+    }
+
+    // Validate State
+    const state = document.getElementById("state").value.trim();
+    if (!state) {
+        showError("state", "State is required.");
+        isValid = false;
+    } else if (!nameRegex.test(state)) {
+        showError("state", "State must contain only letters, spaces, hyphens, and apostrophes, and be at least 2 characters long.");
+        isValid = false;
+    }
+
+    const type = document.getElementById("type").value.trim();
+    const typeRegex = /^[a-zA-Z\s]{2,}$/; // Only letters and spaces, minimum of 2 characters
+    if (!type) {
+        showError("type", "Type is required.");
+        isValid = false;
+    } else if (!typeRegex.test(type)) {
+        showError("type", "Type must contain only letters and spaces, and be at least 2 characters long.");
+        isValid = false;
+    }
+
+    // Validate Building Name
+    const buildingName = document.getElementById("buildingName").value.trim();
+    const buildingNameRegex = /^[a-zA-Z0-9\s\-]{2,}$/;
+    if (!buildingName) {
+        showError("buildingName", "Building name is required.");
+        isValid = false;
+    } else if (!buildingNameRegex.test(buildingName)) {
+        showError("buildingName", "Building name must contain only letters, numbers, spaces, and hyphens.");
+        isValid = false;
+    }
+
+    // Validate Full Address
+    const fullAddress = document.getElementById("fullAddress").value.trim();
+    const addressRegex = /^[a-zA-Z0-9\s,.-]{5,}$/;
+    if (!fullAddress) {
+        showError("fullAddress", "Full address is required.");
+        isValid = false;
+    } else if (!addressRegex.test(fullAddress)) {
+        showError("fullAddress", "Full address must contain only letters, numbers, spaces, commas, and periods, and be at least 5 characters long.");
+        isValid = false;
+    }
+
+    if (isValid) {
+        const formData = {
+            fullName: fullName,
+            pinCode: pinCode,
+            type:type,
+            city: city,
+            state: state,
+            buildingName: buildingName,
+            phone: phone,
+            fullAddress: fullAddress,
+        };
+
+        axios.post('/user/checkoutAddAddress', formData)
+    .then(response => {
+        console.log("Response:", response); // Log the response to inspect its structure
+        if (response.data && response.data.success) {
+            alert("address adding successful")
+        } else {
+            alert("address adding no successful")
+        }
+    })
+    .catch(error => {
+        alert("Error adding address:", error);
+        
+    });
+
+
+
+    }
+
+    return isValid;
+}
+
+
+
+
+    function showError(inputId, message) {
+        const inputElement = document.getElementById(inputId);
+        const errorMessage = document.createElement("div");
+        errorMessage.className = "invalid-feedback";
+        errorMessage.innerText = message;
+        inputElement.parentNode.appendChild(errorMessage);
+        inputElement.classList.add("is-invalid");
+    }
+
+    function clearErrors() {
+        const errorElements = document.querySelectorAll('.invalid-feedback');
+        errorElements.forEach((element) => {
+            element.remove();
+        });
+
+        const inputElements = document.querySelectorAll('.form-control');
+        inputElements.forEach((input) => {
+            input.classList.remove("is-invalid");
+        });
+    }
+
+
+</script>
+
+
+
+
 </body>

@@ -28,7 +28,7 @@
      .breadcrumb {
     padding: 10px 15px;
     background-color: #f8f9fa;
-    width: 220px;
+    width: 240px;
     border-radius: 4px;
     display: flex;
     list-style: none;
@@ -422,7 +422,7 @@ strong.text-uppercase {
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="/user/home">Home</a></li>
-                            <li class="breadcrumb-item"><a href="/user/account">Account</a></li>
+                            <li class="breadcrumb-item"><a href="/user/checkout">Checkout</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Edit</li>
                         </ol>
                     </nav>
@@ -434,17 +434,7 @@ strong.text-uppercase {
    
 
     <div class="main-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="profile-card">
-                <img src="https://via.placeholder.com/80" alt="User Profile Picture">
-                <h5></h5>
-                <p><%=user.email%></p>
-            </div>
-            <a href="#" class="nav-link active">Address Management</a>
-            <strong class="text-uppercase">Orders</strong>
-            <a href="/user/orders" class="nav-link">My Orders</a>
-        </aside>
+        
     
         <!-- Main Content Area -->
         <section class="main-content">
@@ -460,69 +450,91 @@ strong.text-uppercase {
                                     <div class="tab-content" id="giftCardTabContent">
                                         <!-- Add New Address Tab -->
                                         <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
-                                            <form class="mt-4 needs-validation" method="post" action="/user/editAddress?id=<%=addresses._id%>" novalidate onsubmit="return validateForm()">
-                                                <!-- Full Name Field -->
-                                                <div class="form-group">
-                                                    <label for="fullName">Full Name</label>
-                                                    <input type="text" name="name" class="form-control" value="<%= addresses.address.name %>" id="fullName" placeholder="Enter your full name" required>
-                                                    <div class="invalid-feedback">Please enter your full name (at least 2 characters, letters only).</div>
-                                                </div>
-                                            
-                                                <!-- Pin Code Field -->
-                                                <div class="form-group">
-                                                    <label for="pinCode">Pin Code</label>
-                                                    <input type="number" name="pincode" class="form-control" value="<%= addresses.address.pincode %>" id="pinCode" placeholder="Pin Code" required>
-                                                    <div class="invalid-feedback">Please enter a valid 6-digit pin code.</div>
-                                                </div>
-                                            
-                                                <!-- City and State Fields -->
-                                                <div class="form-row">
-                                                    <div class="form-group col-md-6">
-                                                        <label for="city">City</label>
-                                                        <input type="text" class="form-control" value="<%= addresses.address.city %>" name="city" id="city" placeholder="Enter your city" required>
-                                                        <div class="invalid-feedback">Please enter your city (at least 2 characters).</div>
-                                                    </div>
-                                                    <div class="form-group col-md-6">
-                                                        <label for="state">State</label>
-                                                        <input type="text" class="form-control" name="state" value="<%= addresses.address.state %>" id="state" placeholder="Enter your state" required>
-                                                        <div class="invalid-feedback">Please enter your state (at least 2 characters).</div>
-                                                    </div>
-                                                </div>
-                                            
-                                                <!-- Address Type Field -->
-                                                <div class="form-group col-md-6">
-                                                    <label for="type">Type</label>
-                                                    <input type="text" class="form-control" name="type" value="<%= addresses.address.addresstype %>" id="type" placeholder="e.g., Home or Work" required>
-                                                    <div class="invalid-feedback">Please enter the address type (at least 3 characters).</div>
-                                                </div>
-                                            
-                                                <!-- Phone Field -->
-                                                <div class="form-group col-md-6">
-                                                    <label for="phone">Phone</label>
-                                                    <input type="tel" class="form-control" name="phone" value="<%= addresses.address.phone %>" id="phone" placeholder="Phone number" required>
-                                                    <div class="invalid-feedback">Please enter a valid 10-digit phone number.</div>
-                                                </div>
-                                            
-                                                <!-- Building Name Field -->
-                                                <div class="form-group">
-                                                    <label for="buildingName">Building Name</label>
-                                                    <input type="text" class="form-control" name="buildingName" value="<%= addresses.address.buildingName %>" id="buildingName" placeholder="Building Name" required>
-                                                    <div class="invalid-feedback">Please enter your building name (at least 2 characters).</div>
-                                                </div>
-                                            
-                                                <!-- Full Address Field -->
-                                                <div class="form-group">
-                                                    <label for="fullAddress">Enter your full Address</label>
-                                                    <textarea class="form-control" name="address" id="fullAddress" rows="2" maxlength="100" placeholder="Enter your full Address" required><%= addresses.address.address%></textarea>
-                                                    <div class="invalid-feedback">Please enter your full address (up to 100 characters).</div>
-                                                </div>
-                                            
-                                                <!-- Submit and Cancel Buttons -->
-                                                <div class="form-group">
-                                                    <button class="btn btn-primary" type="submit">Save Address</button>
-                                                    <a href="/user/account" class="btn btn-primary" style="background-color: #f44336; margin-top: 10px;">Cancel</a>
-                                                </div>
-                                            </form>                                      
+                                            <form class="mt-4 needs-validation" method="post" 
+      action="/user/checkoutEditAddress?addressId=<%= addresses._id %>" 
+      novalidate onsubmit="return validateForm()">
+
+    <!-- Full Name Field -->
+    <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input type="text" name="name" class="form-control" 
+               value="<%= addresses.address.name %>" 
+               id="fullName" placeholder="Enter your full name" required>
+        <div class="invalid-feedback">Please enter your full name (at least 2 characters, letters only).</div>
+    </div>
+
+    <!-- Pin Code Field -->
+    <div class="form-group">
+        <label for="pinCode">Pin Code</label>
+        <input type="number" name="pincode" class="form-control" 
+               value="<%= addresses.address.pincode %>" 
+               id="pinCode" placeholder="Pin Code" required>
+        <div class="invalid-feedback">Please enter a valid 6-digit pin code.</div>
+    </div>
+
+    <!-- City and State Fields -->
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="city">City</label>
+            <input type="text" class="form-control" name="city" 
+                   value="<%= addresses.address.city %>" 
+                   id="city" placeholder="Enter your city" required>
+            <div class="invalid-feedback">Please enter your city (at least 2 characters).</div>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="state">State</label>
+            <input type="text" class="form-control" name="state" 
+                   value="<%= addresses.address.state %>" 
+                   id="state" placeholder="Enter your state" required>
+            <div class="invalid-feedback">Please enter your state (at least 2 characters).</div>
+        </div>
+    </div>
+
+    <!-- Address Type Field -->
+    <div class="form-group">
+        <label for="type">Type</label>
+        <input type="text" class="form-control" name="type" 
+               value="<%= addresses.address.addresstype %>" 
+               id="type" placeholder="e.g., Home or Work" required>
+        <div class="invalid-feedback">Please enter the address type (at least 3 characters).</div>
+    </div>
+
+    <!-- Phone Field -->
+    <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="tel" class="form-control" name="phone" 
+               value="<%= addresses.address.phone %>" 
+               id="phone" placeholder="Phone number" required>
+        <div class="invalid-feedback">Please enter a valid 10-digit phone number.</div>
+    </div>
+
+    <!-- Building Name Field -->
+    <div class="form-group">
+        <label for="buildingName">Building Name</label>
+        <input type="text" class="form-control" name="buildingName" 
+               value="<%= addresses.address.buildingName %>" 
+               id="buildingName" placeholder="Building Name" required>
+        <div class="invalid-feedback">Please enter your building name (at least 2 characters).</div>
+    </div>
+
+    <!-- Full Address Field -->
+    <div class="form-group">
+        <label for="fullAddress">Enter your full Address</label>
+        <textarea class="form-control" name="address" 
+                  id="fullAddress" rows="2" maxlength="100" 
+                  placeholder="Enter your full Address" required>
+                  <%= addresses.address.address %>
+        </textarea>
+        <div class="invalid-feedback">Please enter your full address (up to 100 characters).</div>
+    </div>
+
+    <!-- Submit and Cancel Buttons -->
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">Save Address</button>
+        <a href="/user/account" class="btn btn-primary" style="background-color: #f44336; margin-top: 10px;">Cancel</a>
+    </div>
+</form>
+                                      
                                             
                                         </div>
                                         <!-- Address List Tab -->

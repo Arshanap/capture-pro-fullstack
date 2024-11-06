@@ -130,14 +130,14 @@ const valueUpdate = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Product not found in cart' });
         }
 
-        const item = cart.items[existingItemIndex];
-        item.quantity = quantity; 
-        item.totalPrice = quantity * item.price;
+        cart.items[existingItemIndex].quantity = quantity
+
+        cart.items[existingItemIndex].totalPrice = quantity * cart.items[existingItemIndex].price;
 
         const result = await cart.save();
         if (result) {
             // console.log("Quantity updated successfully");
-            return res.json({ success: true });
+            return res.json({ success: true, redirectUrl:"/user/cart"});
         } else {
             // console.log("Failed to update quantity");
             return res.json({ success: false, message: "Failed to update item" });
