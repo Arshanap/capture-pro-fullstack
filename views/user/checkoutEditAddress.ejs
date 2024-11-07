@@ -442,22 +442,23 @@ strong.text-uppercase {
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title">Edit Addresses</h5>
+                                    
                                     <ul class="nav nav-tabs" id="giftCardTab" role="tablist">
                                         <li class="nav-item">
-                                            <a class="nav-link active" id="personal-tab" data-toggle="tab" href="#personal" role="tab" aria-controls="personal" aria-selected="true">Edit Address</a>
+                                            <a class="nav-link active" id="personal-tab" data-toggle="tab" role="tab" aria-controls="personal" aria-selected="true">Edit Address</a>
                                         </li>
                                     </ul>
                                     <div class="tab-content" id="giftCardTabContent">
                                         <!-- Add New Address Tab -->
                                         <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
                                             <form class="mt-4 needs-validation" method="post" 
-      action="/user/checkoutEditAddress?addressId=<%= addresses._id %>" 
-      novalidate onsubmit="return validateForm()">
+                                        action="/user/checkoutEditAddress?id=<%= addresses._id %>" 
+                                        novalidate onsubmit="return validateForm()">
 
     <!-- Full Name Field -->
     <div class="form-group">
         <label for="fullName">Full Name</label>
-        <input type="text" name="name" class="form-control" 
+        <input type="text" name="fullName" class="form-control" 
                value="<%= addresses.address.name %>" 
                id="fullName" placeholder="Enter your full name" required>
         <div class="invalid-feedback">Please enter your full name (at least 2 characters, letters only).</div>
@@ -466,7 +467,7 @@ strong.text-uppercase {
     <!-- Pin Code Field -->
     <div class="form-group">
         <label for="pinCode">Pin Code</label>
-        <input type="number" name="pincode" class="form-control" 
+        <input type="number" name="pinCode" class="form-control" 
                value="<%= addresses.address.pincode %>" 
                id="pinCode" placeholder="Pin Code" required>
         <div class="invalid-feedback">Please enter a valid 6-digit pin code.</div>
@@ -520,7 +521,7 @@ strong.text-uppercase {
     <!-- Full Address Field -->
     <div class="form-group">
         <label for="fullAddress">Enter your full Address</label>
-        <textarea class="form-control" name="address" 
+        <textarea class="form-control" name="fullAddress" 
                   id="fullAddress" rows="2" maxlength="100" 
                   placeholder="Enter your full Address" required>
                   <%= addresses.address.address %>
@@ -531,7 +532,7 @@ strong.text-uppercase {
     <!-- Submit and Cancel Buttons -->
     <div class="form-group">
         <button class="btn btn-primary" type="submit">Save Address</button>
-        <a href="/user/account" class="btn btn-primary" style="background-color: #f44336; margin-top: 10px;">Cancel</a>
+        <a href="/user/checkout" class="btn btn-primary" style="background-color: #f44336; margin-top: 10px;">Cancel</a>
     </div>
 </form>
                                       

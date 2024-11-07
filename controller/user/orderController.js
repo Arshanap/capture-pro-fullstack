@@ -16,6 +16,25 @@ const loadOrder = async (req,res)=>{
 }
 
 
+async function getNextOrderId() {
+    const timestamp = Date.now();
+    const randomSuffix = Math.floor(Math.random() * 1000);
+    return `ORD-${timestamp}-${randomSuffix}`;
+}
+
+
+const placeOrder = async (req,res)=>{
+
+    try {
+        const orderId = await getNextOrderId();
+        console.log(orderId)
+
+        
+    } catch (error) {
+        console.log("error for place order",error)
+    }
+
+}
 
 
 
@@ -25,4 +44,4 @@ const loadOrder = async (req,res)=>{
 
 
 
-module.exports ={loadOrder}
+module.exports ={loadOrder, placeOrder}

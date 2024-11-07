@@ -25,6 +25,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
 
     <style>
+        .success-message {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    }
+    .error-message {
+        background-color: #f44336;
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    }
         /* Custom styles */
         body, h1, h2, h3, h4, h5, h6, p {
             margin: 0;
@@ -314,7 +330,17 @@
         <div class="container-content col-md-9" >
             <h2 class="text-center mb-4">Checkout</h2>
             <div class="row">
-                
+                <% if (successMessage) { %>
+                    <div id="successMessage" class="success-message">
+                        <p id="errormm"><%= successMessage %></p>
+                    </div>
+                <% } %>
+    
+                <% if (errorMessage) { %>
+                    <div id="errorMessage" class="error-message">
+                        <p><%= errorMessage %></p>
+                    </div>
+                <% } %>
                 <!-- Address Selection Table -->
                 <div class="col-md-6 mb-4">
                     <button class="btn btn-secondary mb-3" data-toggle="modal" data-target="#addAddressModal" type="button">Add New Address</button>
@@ -341,8 +367,7 @@
                                     </td>
                                     <td><%= address.address.addresstype %></td>
                                     <td>
-                                        <input type="radio" name="selectedAddress" value="<%= address.address._id %>" id="address_<%= address.address._id %>">
-                                        <label for="address_<%= address.address._id %>">Select</label>
+                                    <input type="radio" name="selectedAddress" value="<%= address.address._id %>" id="address_<%= address.address._id %>">                                        <label for="address_<%= address.address._id %>">Select</label>
                                     <a href="/user/checkoutEditAddress?addressId=<%= address._id %>"><button class="btn btn-secondary">Edit</button></a>
                                 </td>
                                 </tr>
@@ -515,10 +540,9 @@
                 </tbody>
             </table>
             <!-- <button type="submit"  class="btn btn-primary w-100 py-2">Place Order</button> -->
-            <form id="orderForm" action="/user/placeOrder" method="POST">
-                <input type="hidden" name="selectedAddress" id="selectedAddress">
-                <button type="submit" class="btn btn-primary w-100 py-2">Place Order</button>
-            </form>
+            
+                <button type="submit" onclick="return placeOrder(event)" class="btn btn-primary w-100 py-2">Place Order</button>
+            
         </div>
     </div>
 </div>
@@ -609,7 +633,96 @@
      </div>
     </div>
 </div>
+<script>
+function placeOrder(event){
+    event.preventDefault();
+    // alert("asdfghjk")
+    const paymentinfo = document.querySelector('input[name="paymentMethod"]:checked');
+const addressinfo = document.querySelector('input[name="selectedAddress"]:checked');
 
+if (!addressinfo || !paymentinfo) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Selection Error',
+        text: 'Please select both a payment method and an address.'
+    });
+    return;
+}
+
+    const payment =paymentinfo.value
+    const address = addressinfo.value;
+
+
+    Swal.fire({
+        title: 'Confirm Order',
+        text: "Do you want to place the order with Cash on Delivery?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, place it!',
+        cancelButtonText: 'No, cancel!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('/user/placeOrder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    address: address,
+					payment:payment
+                }) 
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Order Placed Successfully',
+                        text: data.message,
+                        confirmButtonText: 'View Order'
+                    }).then(() => {
+						if(data.cartEmpty){
+						Swal.fire({
+							icon:'info',
+							title:'Your cart is empty',
+							text:'successfully placed Order,your cart is empty ',
+							confirmButtonText:'Go To Cart'
+
+						}).then(()=>{
+							window.location.href='/cart'
+						})
+					}else{
+						window.location.href = `/success/orderSuccess/${data.orderId}`;
+					}
+                      
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Order Failed',
+                        text: data.error
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Order Error',
+                    text: 'There was an error placing your order. Please try again.'
+                });
+            });
+        }
+    });
+}
+
+
+
+
+
+
+
+</script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
@@ -762,6 +875,19 @@
 
 </script>
 
+<script>
+    setTimeout(function() {
+    const errorMsg = document.getElementById('errorMessage1');
+    const successMsg = document.getElementById('successMessage1');
+    const errorMsgAlt = document.getElementById('errorMessage');
+    const successMsgAlt = document.getElementById('successMessage');
+
+    if (errorMsg) errorMsg.style.display = 'none';
+    if (successMsg) successMsg.style.display = 'none';
+    if (errorMsgAlt) errorMsgAlt.style.display = 'none';
+    if (successMsgAlt) successMsgAlt.style.display = 'none';
+}, 3000);
+</script>
 
 
 

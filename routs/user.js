@@ -67,9 +67,6 @@ router.get("/user/editAddress",userAuth.checkSession, accountController.loadEdit
 router.post("/user/editAddress", accountController.editAddress)
 router.get("/user/deleteAddress", accountController.deleteAddress)
 
-// Orders
-router.get("/user/orders", userAuth.checkSession, orderController.loadOrder)
-
 // Cart
 router.get("/user/cart", userAuth.checkSession, cartController.loadCart)
 router.post("/user/addToCart", cartController.addProduct)
@@ -81,6 +78,11 @@ router.post("/user/valueUpdate", cartController.valueUpdate)
 router.get("/user/checkout", userAuth.checkSession, checkoutController.loadCheckout)
 router.post('/user/checkoutAddAddress', checkoutController.addAddress)
 router.get("/user/checkoutEditAddress", userAuth.checkSession, checkoutController.loadEditAddress)
+router.post("/user/checkoutEditAddress", checkoutController.editAddress)
+
+// Orders
+router.get("/user/orders", userAuth.checkSession, orderController.loadOrder)
+router.post("/user/placeOrder", orderController.placeOrder)
 
 
 

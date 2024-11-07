@@ -8,7 +8,10 @@ const loadCheckout = async (req,res)=>{
     try {
         
         const email = req.session.User;
-
+        const successMessage = req.session.successMessage || "";
+        const errorMessage = req.session.errorMessage || "";
+        req.session.successMessage = null;
+        req.session.errorMessage = null;
 
         const user = await User.findOne({email})
         const userId = user._id;
@@ -35,7 +38,7 @@ const loadCheckout = async (req,res)=>{
 
         const grandTotal = proData.reduce((total, item) => total + item.totalPrice, 0);
 
-        res.render("user/checkout", {proData, grandTotal, addressData:address});
+        res.render("user/checkout", {proData, grandTotal, addressData:address, successMessage, errorMessage});
     } catch (error) {
         console.log("error for load check out", error)
     }
@@ -71,9 +74,19 @@ const addAddress = async (req,res)=>{
                 state,
             }
         })
-     await address.save()
+     const result = await address.save()
 
-
+    //  if(result){
+    //     console.log("etthhhhiiiiii sette")
+    //     req.session.successMessage = "Address adding is successful";
+    //     req.session.errorMessage = "";
+    //     res.redirect("/user/checkout")
+    // }else{
+    //     console.log("paaali")
+    //     req.session.successMessage = "";
+    //     req.session.errorMessage = "Address adding is not successful";
+    //     res.redirect("/user/checkout")
+    // }
         
             return res.status(200).json({ success: true, message: "Address added successfully" });
             
@@ -86,6 +99,8 @@ const addAddress = async (req,res)=>{
 
 const loadEditAddress = async (req,res)=>{
     try {
+        const successMessage = req.session.successMessage || "";
+        const errorMessage = req.session.errorMessage || "";
         const addressId = req.query.addressId;
 
         const addresses = await Address.findById({_id:addressId})
@@ -98,7 +113,52 @@ const loadEditAddress = async (req,res)=>{
 }
 
 
+const editAddress = async (req,res)=>{
+    try {
+        const id = req.query.id;
+        const email = req.session.User;
+        const user = await User.findOne({email})
+    
+        // console.log(id)
+        const {fullName, pinCode, city, state, buildingName, fullAddress, type, phone} = req.body;
+
+        // console.log(fullName, pinCode, city, state, buildingName, fullAddress, type, phone)
+
+        const updatedAddress = {
+            userId: user._id,
+            address: {
+                addresstype: type,
+                name:fullName,
+                city,
+                buildingName,
+                state,
+                pincode:pinCode,
+                phone:phone, 
+                address:fullAddress,
+            }
+        };
+
+        const result = await Address.findByIdAndUpdate(id, { $set: updatedAddress });
+
+        if(result){
+            // console.log("etthhhhiiiiii sette")
+            req.session.successMessage = "Address editing is successful";
+            req.session.errorMessage = "";
+            res.redirect("/user/checkout")
+        }else{
+            // console.log("paaali")
+            req.session.successMessage = "";
+            req.session.errorMessage = "Address editing is not successful";
+            res.redirect("/user/checkout")
+        }
+        
+    } catch (error) {
+        console.log("error for edit address in checkout",error)
+    }
+}
 
 
 
-module.exports = {loadCheckout, addAddress, loadEditAddress}
+
+
+module.exports = {loadCheckout, addAddress, loadEditAddress, editAddress}
