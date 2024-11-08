@@ -83,6 +83,7 @@ router.post("/user/checkoutEditAddress", checkoutController.editAddress)
 // Orders
 router.get("/user/orders", userAuth.checkSession, orderController.loadOrder)
 router.post("/user/placeOrder", orderController.placeOrder)
+router.get("/user/orderSuccess", userAuth.checkSession, orderController.loadSuccess)
 
 
 

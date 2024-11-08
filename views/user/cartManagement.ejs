@@ -260,6 +260,7 @@
         </table>
     
         <!-- Cart Summary -->
+         <% if(proData.length > 0){%>
         <div class="card mt-4">
             <div class="card-body">
                 <h5 class="card-title">Cart Summary</h5>
@@ -270,6 +271,10 @@
     
                 <a href="/user/checkout" class="btn btn-primary btn-block">Proceed to Checkout</a>
                 <a href="/user/home" class="btn btn-success btn-block">Continue Shopping</a>
+                <%}else{%>
+                <p>Your cart is empty so pleace Continue Shopping</p>
+                <a href="/user/home" class="btn btn-success btn-block">Continue Shopping</a>
+                <%}%>
             </div>
         </div>
     </div>

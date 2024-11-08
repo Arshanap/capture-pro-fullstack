@@ -367,8 +367,9 @@
                                     </td>
                                     <td><%= address.address.addresstype %></td>
                                     <td>
-                                    <input type="radio" name="selectedAddress" value="<%= address.address._id %>" id="address_<%= address.address._id %>">                                        <label for="address_<%= address.address._id %>">Select</label>
-                                    <a href="/user/checkoutEditAddress?addressId=<%= address._id %>"><button class="btn btn-secondary">Edit</button></a>
+                                        <input type="radio" name="selectedAddress" value="<%= address._id %>" id="address_<%= address._id %>">
+                                        <label for="address_<%= address._id %>">Select</label>
+                                        <a href="/user/checkoutEditAddress?addressId=<%= address._id %>"><button class="btn btn-secondary">Edit</button></a>
                                 </td>
                                 </tr>
                                 <% }); %>
@@ -380,11 +381,7 @@
                     </table>
 
                     <!-- New/Edit Address Form -->
-                    <form id="addressForm" style="display:none;">
-                        <h5 class="mt-3" id="addressFormTitle">Add or Edit Address</h5>
-                        <button type="button" class="btn btn-primary" onclick="saveAddress()">Save Address</button>
-                        <button type="button" class="btn btn-danger" onclick="deleteAddress()">Delete Address</button>
-                    </form>
+                    
                 </div>
 
                 <!-- address add -->
@@ -669,7 +666,7 @@ if (!addressinfo || !paymentinfo) {
                 },
                 body: JSON.stringify({
                     address: address,
-					payment:payment
+					paymentMethod:payment
                 }) 
             })
             .then(response => response.json())
@@ -689,10 +686,10 @@ if (!addressinfo || !paymentinfo) {
 							confirmButtonText:'Go To Cart'
 
 						}).then(()=>{
-							window.location.href='/cart'
+							window.location.href='/user/cart'
 						})
 					}else{
-						window.location.href = `/success/orderSuccess/${data.orderId}`;
+						window.location.href = `/user/orderSuccess?id=${data.orderId}`;
 					}
                       
                     });

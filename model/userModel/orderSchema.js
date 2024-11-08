@@ -3,60 +3,67 @@ const {Schema} = mongoose
 const {v4:uuidv4} = require("uuid")
 
 const orderSchema = new Schema({
-    orderId:{
-        type:String,
-        default:()=>uuidv4(),
-        unique:true
+    orderId: {
+        type: String,
+        default: () => uuidv4(),
+        unique: true
     },
-    orderedItems:[{
-        product:{
-            type:Schema.Types.ObjectId,
-            ref:"product",
-            require:true
+    orderedItems: [{
+        product: {
+            type: Schema.Types.ObjectId,
+            ref: "Product",  
+            required: true  
         },
-        quantity:{
-            type:Number,
-            required:true
+        quantity: {
+            type: Number,
+            required: true
         },
-        price:{
-            type:Number,
-            default:0
+        price: {
+            type: Number,
+            default: 0
         }
     }],
-    totalPrice:{
-        type:Number,
-        required:true
-    },discount:{
-        type:Number,
-        default:0
+    totalPrice: {
+        type: Number,
+        required: true
     },
-    finalAmount:{
-        type:Number,
-        required:true
+    discount: {
+        type: Number,
+        default: 0
     },
-    address:{
-        type:Schema.Types.ObjectId,
-        ref:"User",
-        required:true
+    paymentMethod: { 
+        type: String,
+        required: true
     },
-    invoiceDate:{
-        type:Date
+    finalAmount: {
+        type: Number,
+        required: true
     },
-    status:{
-        type:String,
-        required:true,
-        enum:["pending","Processing","Shipped","Delivered","cancelled","Return Request","returnd"]
+    address: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Address", 
+        required: true
     },
-    createdOn:{
-        type:Date,
-        default:Date.now,
-        required:true
+    invoiceDate: {
+        type: Date,
+        default: Date.now
     },
-    couponApplied:{
-        type:Boolean,
-        default:false
+    status: {
+        type: String,
+        required: true,
+        enum: ["pending", "Processing", "Shipped", "Delivered", "Cancelled", "Return Request", "Returned"]  // Fixed typo ('returnd' to 'Returned')
+    },
+    createdOn: {
+        type: Date,
+        default: Date.now,
+        required: true
+    },
+    couponApplied: {
+        type: Boolean,
+        default: false
     }
-})
+}, { timestamps: true });
+
 
 
 const Order = mongoose.model("Order", orderSchema)
