@@ -84,7 +84,7 @@ router.post("/user/checkoutEditAddress", checkoutController.editAddress)
 router.get("/user/orders", userAuth.checkSession, orderController.loadOrder)
 router.post("/user/placeOrder", orderController.placeOrder)
 router.get("/user/orderSuccess", userAuth.checkSession, orderController.loadSuccess)
-
+router.post("/user/cancelOrder", orderController.cancelOrder)
 
 
 module.exports = router

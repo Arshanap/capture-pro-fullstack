@@ -385,12 +385,12 @@ strong.text-uppercase {
                             <div class="col-xl-5 col-lg-3 col-md-3 col-sm-3 fix-card">
                                 <ul class="header-right f-right d-none d-lg-block d-flex justify-content-between">
                                     <li class="d-none d-xl-block">
-                                        <div class="form-box f-right ">
+                                        <!-- <div class="form-box f-right ">
                                             <input type="text" name="Search" placeholder="Search products">
                                             <div class="search-icon">
-                                                <!-- <i class="fas fa-search special-tag"></i> -->
+                                                <i class="fas fa-search special-tag"></i>
                                             </div>
-                                        </div>
+                                        </div> -->
                                      </li>
                                     <li class=" d-none d-xl-block">
                                         <div class="favorit-items">
@@ -445,9 +445,10 @@ strong.text-uppercase {
                     </div>
                     <h3>Order Successful!</h3>
                     <p>Thank you for your purchase. Your order has been placed successfully.</p>
+                    <p>order id is:<%=orderId%></p>
                 </div>
                 <a href="/user/home" class="btn btn-success mt-3">Back to Home</a>
-                <a href="/user/order" class="btn btn-primary mt-3 ms-2">View Order Details</a>
+                <a href="/user/orders" class="btn btn-primary mt-3 ms-2">View Order Details</a>
             </div>
         </div>
     </div>

@@ -453,12 +453,12 @@
                             <div class="col-xl-5 col-lg-3 col-md-3 col-sm-3 fix-card">
                                 <ul class="header-right f-right d-none d-lg-block d-flex justify-content-between">
                                     <li class="d-none d-xl-block">
-                                        <div class="form-box f-right ">
+                                        <!-- <div class="form-box f-right ">
                                             <input type="text" name="Search" placeholder="Search products">
                                             <div class="search-icon">
-                                                <!-- <i class="fas fa-search special-tag"></i> -->
+                                                 <i class="fas fa-search special-tag"></i>
                                             </div>
-                                        </div>
+                                        </div> -->
                                      </li>
                                     <li class=" d-none d-xl-block">
                                         <div class="favorit-items">
@@ -568,7 +568,11 @@
                     <!-- Wishlist and Add to Cart Buttons -->
                     <div id="divbutton" class="d-flex align-items-center mt-3 divbutton">
                         <button  class="btn wishlist-btn"><i class="fas fa-heart"></i> Add to Wishlist</button>
-                        <button class="btn btn-primary" id="cartbtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                        <% if (prodata.count <= 0) { %>
+                            <button class="btn btn-primary" id="cartbtn" disabled><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                        <% } else { %>
+                            <button class="btn btn-primary" id="cartbtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                        <% } %>
                     </div>
             </div>
         </div>

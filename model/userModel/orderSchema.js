@@ -3,6 +3,11 @@ const {Schema} = mongoose
 const {v4:uuidv4} = require("uuid")
 
 const orderSchema = new Schema({
+    userId:{
+        type:Schema.Types.ObjectId,
+        ref:"User",
+        required:true,
+    },
     orderId: {
         type: String,
         default: () => uuidv4(),
@@ -21,6 +26,10 @@ const orderSchema = new Schema({
         price: {
             type: Number,
             default: 0
+        },
+        name: {
+            type:String,
+            required:true,
         }
     }],
     totalPrice: {
@@ -51,7 +60,8 @@ const orderSchema = new Schema({
     status: {
         type: String,
         required: true,
-        enum: ["pending", "Processing", "Shipped", "Delivered", "Cancelled", "Return Request", "Returned"]  // Fixed typo ('returnd' to 'Returned')
+        default: "Processing",
+        enum: ["pending", "Processing", "Shipped", "Delivered", "Cancelled"]
     },
     createdOn: {
         type: Date,

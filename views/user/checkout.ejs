@@ -275,12 +275,12 @@
                         <div class="col-xl-5 col-lg-3 col-md-3 col-sm-3 fix-card">
                             <ul class="header-right f-right d-none d-lg-block d-flex justify-content-between">
                                 <li class="d-none d-xl-block">
-                                    <div class="form-box f-right ">
+                                    <!-- <div class="form-box f-right ">
                                         <input type="text" name="Search" placeholder="Search products">
                                         <div class="search-icon">
-                                            <!-- <i class="fas fa-search special-tag"></i> -->
+                                            <i class="fas fa-search special-tag"></i>
                                         </div>
-                                    </div>
+                                    </div> -->
                                  </li>
                                 <li class=" d-none d-xl-block">
                                     <div class="favorit-items">
@@ -676,18 +676,17 @@ if (!addressinfo || !paymentinfo) {
                         icon: 'success',
                         title: 'Order Placed Successfully',
                         text: data.message,
-                        confirmButtonText: 'View Order'
+                        confirmButtonText: 'ok'
                     }).then(() => {
 						if(data.cartEmpty){
 						Swal.fire({
 							icon:'info',
 							title:'Your cart is empty',
 							text:'successfully placed Order,your cart is empty ',
-							confirmButtonText:'Go To Cart'
+							confirmButtonText:'ok'
 
 						}).then(()=>{
-							window.location.href='/user/cart'
-						})
+                            window.location.href = `/user/orderSuccess?id=${data.orderId}`;						})
 					}else{
 						window.location.href = `/user/orderSuccess?id=${data.orderId}`;
 					}

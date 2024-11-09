@@ -25,6 +25,12 @@
             <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
    </head>
    <style>
+    #searchbtn {
+    background: none;
+    border: none;
+    padding: 0; 
+    cursor: pointer; 
+}
    .logout-btn {
             background-color: #dc3545; /* Bootstrap's danger color */
             color: white;
@@ -228,12 +234,15 @@
                             <div class="col-xl-5 col-lg-3 col-md-3 col-sm-3 fix-card">
                                 <ul class="header-right f-right d-none d-lg-block d-flex justify-content-between">
                                     <li class="d-none d-xl-block">
-                                        <div class="form-box f-right ">
-                                            <input type="text" name="Search" placeholder="Search products">
-                                            <div class="search-icon">
-                                                <!-- <i class="fas fa-search special-tag"></i> -->
+                                        <form action="/user/home" method="get">
+                                            <div class="form-box f-right">
+                                                <input type="text" name="search" placeholder="Search">
+                                                <button type="submit" id="searchbtn" class="search-icon">
+                                                    <i class="fas fa-search special-tag"></i>
+                                                </button>
                                             </div>
-                                        </div>
+                                        </form>                                        
+                                        
                                      </li>
                                     <li class=" d-none d-xl-block">
                                         <div class="favorit-items">

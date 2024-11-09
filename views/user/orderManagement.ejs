@@ -20,8 +20,11 @@
 <link rel="stylesheet" href="/assets1/css/slick.css">
 <link rel="stylesheet" href="/assets1/css/nice-select.css">
 <link rel="stylesheet" href="/assets1/css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
 
 </head>
 <style>
@@ -385,12 +388,12 @@ strong.text-uppercase {
                             <div class="col-xl-5 col-lg-3 col-md-3 col-sm-3 fix-card">
                                 <ul class="header-right f-right d-none d-lg-block d-flex justify-content-between">
                                     <li class="d-none d-xl-block">
-                                        <div class="form-box f-right ">
+                                        <!-- <div class="form-box f-right ">
                                             <input type="text" name="Search" placeholder="Search products">
                                             <div class="search-icon">
-                                                <!-- <i class="fas fa-search special-tag"></i> -->
+                                                <i class="fas fa-search special-tag"></i>
                                             </div>
-                                        </div>
+                                        </div> -->
                                      </li>
                                     <li class=" d-none d-xl-block">
                                         <div class="favorit-items">
@@ -441,7 +444,7 @@ strong.text-uppercase {
             <div class="profile-card">
                 <img src="https://via.placeholder.com/80" alt="User Profile Picture">
                 <h5></h5>
-                <p><%=user.email%></p>
+                <p><%=user.name%></p>
             </div>
             <a href="/user/account" class="nav-link ">Address Management</a>
             <a href="/user/changePassword" class="nav-link">Change Password</a>
@@ -459,59 +462,92 @@ strong.text-uppercase {
                     
                     <!-- Order List -->
                     <div class="order-list">
-                        <!-- Order #1 -->
-                        <div class="card mb-3">
-                            <div class="card-header d-flex justify-content-between">
-                                <span><strong>Order #12345</strong></span>
-                                <span class="text-muted">Placed on: 2024-10-28</span>
-                            </div>
-                            <div class="card-body">
-                                <p><strong>Status:</strong> Shipped</p>
-                                <p><strong>Total:</strong> $120.00</p>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <img src="https://via.placeholder.com/100" alt="Product Image" class="img-fluid">
+                        <% if (orders.length === 0) { %>
+                            <p>No orders found.</p>
+                        <% } else { %>
+                            <% orders.forEach((orderItem) => { %>
+                                <% orderItem.orderedItems.forEach((item) => { %>
+                                <!-- Order Level Information (at the top of the card) -->
+                                <div class="card mb-3">
+                                    <div class="card-header d-flex justify-content-between">
+                                        <!-- Display Order ID and Placed Date -->
+                                        <span><strong>Order #<%= orderItem.orderId %></strong></span>
+                                        <span class="text-muted">
+                                            Placed on: 
+                                            <% if (orderItem.createdOn) { %>
+                                                <%= orderItem.createdOn.toDateString() %>
+                                            <% } else { %>
+                                                <%= "Date Not Available" %>
+                                            <% } %>
+                                        </span>
                                     </div>
-                                    <div class="col-md-8">
-                                        <h6>Camera Model X</h6>
-                                        <p>Quantity: 1</p>
-                                        <p>Price: $120.00</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-end">
-                                <button id="ccbtn" class="btn-primary btn-sm mr-2">View Details</button>
-                                <button id="cbtn" class="btn-danger btn-sm">Cancel Order</button>
-                            </div>
-                        </div>
-
-                        <!-- Order #2 -->
-                        <div class="card mb-3">
-                            <div class="card-header d-flex justify-content-between">
-                                <span><strong>Order #12346</strong></span>
-                                <span class="text-muted">Placed on: 2024-10-27</span>
-                            </div>
-                            <div class="card-body">
-                                <p><strong>Status:</strong> Delivered</p>
-                                <p><strong>Total:</strong> $80.00</p>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <img src="https://via.placeholder.com/100" alt="Product Image" class="img-fluid">
-                                    </div>
-                                    <div class="col-md-8">
-                                        <h6>Lens Model Y</h6>
-                                        <p>Quantity: 1</p>
-                                        <p>Price: $80.00</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-end">
-                                <button  id="ddbtn" class=" btn-primary btn-sm">View Details</button>
-                                <button id="dbtn" class=" btn-danger btn-sm">Cancel Order</button>
-                            </div>
-                        </div>
                         
-                        <!-- Add more orders as needed -->
+                                    <div class="card-body">
+                                        <!-- Order Status and Total Price -->
+                                        <p><strong>Status:</strong><%if(orderItem.status === "Cancelled"){%>
+                                            <span class="badge bg-danger"> <%= orderItem.status %></span>
+                                        <%}else{%>
+                                            <span class="badge bg-success"> <%= orderItem.status %></span>
+                                        <%}%></p>
+                                        <p><strong>Total:</strong>₹ <%= orderItem.totalPrice.toFixed(2) %></p>
+                        
+                                        <!-- Now iterate over each ordered item and display it in its own table -->
+                                        
+                                            <!-- Table for Each Ordered Product -->
+                                            <div class="mb-3">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Product Image</th>
+                                                            <th>Product Name</th>
+                                                            <th>Quantity</th>
+                                                            <th>Price</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <img 
+                                                                    src="/uploads/re-image/<%= item.product.productImage[0] %>" 
+                                                                    alt="<%= item.product.name %>" 
+                                                                    class="img-fluid" 
+                                                                    width="80">
+                                                            </td>
+                                                            <td><%= item.name %></td>
+                                                            <td><%= item.quantity %></td>
+                                                            <td>₹ <%= item.price.toFixed(2) %></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        
+                                    </div>
+                        
+                                    <div class="card-footer d-flex justify-content-end">
+                                        <!-- Action buttons for the order -->
+                                        <!-- <button id="ccbtn" class="btn-primary btn-sm mr-2">View Details</button> -->
+                                        <% if (orderItem.status == "Pending") { %>
+                                            <button class="btn-warning btn-sm" data-order-id="<%= orderItem._id %>">Cancel</button>
+                                        <% } else if (orderItem.status == "Processing") { %>
+                                            <button class="btn-warning btn-sm" data-order-id="<%= orderItem._id %>">Cancel</button>
+                                        <% } else if (orderItem.status == "Shipped") { %>
+                                            <button class="btn-warning btn-sm" data-order-id="<%= orderItem._id %>">Cancel</button>
+                                        <% } else if (orderItem.status == "Delivered") { %>
+                                            <button class="btn-success btn-sm">Return request</button>
+                                        <% } else if (orderItem.status == "Cancelled") { %>
+                                            <button class="btn-sm" disabled>Cancelled</button>
+                                        <% } else { %>
+                                            <button class="btn-sm"  disabled>Invalid Status</button>
+                                        <% } %>
+                                                                              
+                                        <input type="hidden" id="orderIdInput" name="orderId" value="">
+                                    </div>
+                                </div>
+                                <% }) %>
+                            <% }) %>
+                        <% } %>
+                                               
+                        
                     </div>
                 </div>
             </div>
@@ -618,6 +654,60 @@ strong.text-uppercase {
 });
 
     </script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const statusButtons = document.querySelectorAll("[data-order-id]");
+        statusButtons.forEach(button => {
+            button.addEventListener("click", function(event) {
+                const orderId = this.getAttribute("data-order-id");
+                document.getElementById("orderIdInput").value = orderId;
+                cancelfun(event, orderId); // Pass the orderId to the cancelfun
+            });
+        });
+    });
+
+    function cancelfun(event) {
+        event.preventDefault(); // Prevent default action (if any)
+        
+        const orderId = document.getElementById("orderIdInput").value;
+
+        if (!orderId) {
+        alert("Order ID not found!");
+        return;
+    }
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You cancel!",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, cancel it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Cancelled!",
+                    text: "This Order has been cancelled.",
+                    icon: "success",
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    axios.post("/user/cancelOrder", {
+                        Id: orderId,
+                    }).then(response => {
+                        console.log("Order cancelled successfully:", response);
+                        window.location.reload();
+                    }).catch(error => {
+                        console.error("Error cancelling the order:", error);
+                    });
+                });
+            }
+        });
+    }
+</script>
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>

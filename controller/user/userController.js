@@ -257,33 +257,84 @@ const resendOtp = async (req, res) => {
 };
 
 
+// const loadHome = async (req, res) => {
+//     try {
+//         const email = req.query.id;
+//         // console.log(email);
+
+//         const user = await User.findOne({ email });
+//         const category=await Category.find({isListed:true})
+//         if(!category){
+//             return res.status(400).json({success:false,message:'categoryum mirum onnm illa'})
+//         }
+//         const product = await Product.find({ isBlocked: true, category: { $in: category.map(cat => cat._id) } });
+//         const sess = req.session.user
+
+//         const filter = {isBlocked: true}
+//         if (req.query.search) {
+//             filter.productName = { $regex: new RegExp(".*" + req.query.search + ".*", "i") };
+//           }
+
+//         if (user && user.isBlocked) {
+//             req.session.user = null;
+//             req.session.User = null;
+//             req.session.errorMessage = "Your account has been blocked. Please contact support.";
+//             return res.redirect("/user/login"); 
+//         }
+
+//         return res.render("user/home", { user, product, sess });
+//     } catch (error) {
+//         console.log("Error rendering user home page:", error);
+//         res.status(500).send("Internal Server Error");
+//     }
+// };
+
 const loadHome = async (req, res) => {
     try {
         const email = req.query.id;
-        // console.log(email);
 
+        // Retrieve user and category details
         const user = await User.findOne({ email });
-        const category=await Category.find({isListed:true})
-        if(!category){
-            return res.status(400).json({success:false,message:'categoryum mirum onnm illa'})
+        const category = await Category.find({ isListed: true });
+        
+        // Check if categories are found
+        if (category.length === 0) {
+            return res.status(400).json({ success: false, message: 'No categories found' });
         }
-        // console.log(user);
-        const product = await Product.find({ isBlocked: true, category: { $in: category.map(cat => cat._id) } });
-        const sess = req.session.user
 
+        // Check if the user is blocked
         if (user && user.isBlocked) {
             req.session.user = null;
             req.session.User = null;
             req.session.errorMessage = "Your account has been blocked. Please contact support.";
-            return res.redirect("/user/login"); // Use return to prevent further execution
+            return res.redirect("/user/login");
         }
 
+        // Construct filter for products
+        const filter = {
+            isBlocked: true, 
+            category: { $in: category.map(cat => cat._id) }
+        };
+
+        // Handle search query
+        if (req.query.search) {
+            filter.productName = { $regex: new RegExp(".*" + req.query.search + ".*", "i") };
+        }
+
+        // Fetch products based on the filter
+        const product = await Product.find(filter);
+
+        // Render the home page
+        const sess = req.session.user;
         return res.render("user/home", { user, product, sess });
+
     } catch (error) {
         console.log("Error rendering user home page:", error);
         res.status(500).send("Internal Server Error");
     }
 };
+
+
 
 const loadlogout = (req,res)=>{
     req.session.user=null;

@@ -444,7 +444,7 @@
     const hasSpecialCharacters = (input) => /[!@#$%^&*(),.?":{}|<>]/g.test(input);
 
     // Product Name Validation
-    const productName = document.getElementById('pproductName').value;
+    const productName = document.getElementById('productName').value.trim();
     if (productName === '' || hasSpecialCharacters(productName)) {
         document.getElementById('productName-error').innerText = 'Product name is required and cannot contain special characters.';
         isValid = false;
@@ -462,7 +462,7 @@
     }
 
     // Regular Price Validation
-    const regularPrice = document.getElementById('pproductPrice').value;
+    const regularPrice = document.getElementById('regularPrice').value.trim();
     if (regularPrice === '' || parseFloat(regularPrice) <= 0) {
         document.getElementById('regularPrice-error').innerText = 'Regular price is required and must be greater than 0.';
         isValid = false;
@@ -471,7 +471,7 @@
     }
 
     // Sale Price Validation
-    const salePrice = document.getElementById('psalePrice').value;
+    const salePrice = document.getElementById('salePrice').value.trim();
     if (salePrice === '' || parseFloat(salePrice) <= 0) {
         document.getElementById('salePrice-error').innerText = 'Sale price is required and must be greater than 0.';
         isValid = false;
@@ -483,7 +483,7 @@
     }
 
     // Quantity Validation
-    const quantity = document.getElementById('editProductVariant').value;
+    const quantity = document.getElementById('count').value.trim();
     if (quantity === '' || isNaN(quantity) || parseInt(quantity) <= 0) {
         document.getElementById('quantity-error').innerText = 'Please enter a valid quantity greater than 0.';
         isValid = false;
@@ -492,7 +492,7 @@
     }
 
     // Full Description Validation
-    const productDescription = document.getElementById('productDescription').value;
+    const productDescription = document.getElementById('description').value.trim();
     if (productDescription === '' || hasSpecialCharacters(productDescription)) {
         document.getElementById('description-error').innerText = 'Description is required and cannot contain special characters.';
         isValid = false;
@@ -503,7 +503,7 @@
     // Image Validation
     const imageInputs = [document.getElementById('input1')]; // Add other inputs as needed
     for (let i = 0; i < imageInputs.length; i++) {
-        const file = imageInputs[i].files[0];
+        const file = imageInputs[i]?.files[0];
         if (file && !['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
             document.getElementById(`images${i + 1}-error`).innerText = 'Only PNG, JPEG, and JPG formats are allowed.';
             isValid = false;

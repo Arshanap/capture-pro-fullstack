@@ -18,7 +18,35 @@
         <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     </head>
-    
+   <style>
+    .success-message {
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #4CAF50;
+    background-color: #DFF2BF;
+    color: #4F8A10;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: center;
+}
+   .success-message {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    }
+    .error-message {
+        background-color: #f44336; 
+        color: white;
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-radius: 5px;
+    } 
+
+   </style> 
     <body>
         <div class="screen-overlay"></div>
         <aside class="navbar-aside" id="offcanvas_aside">
@@ -123,10 +151,13 @@
 
             <div class="container mt-5">
                 <h2 class="mb-4">Orders List</h2>
+                <div id="successMessage" class="alert" style="display: none;"></div>
+                <div id="errorMessage" class="alert" style="display: none;"></div>
                 <table class="table table-bordered table-striped table-hover">
                     <thead class="table-dark">
                         <tr>
                             <th scope="col">Order ID</th>
+                            <th>User</th>
                             <th scope="col">Product Name</th>
                             <th scope="col">Quantity</th>
                             <th scope="col">Price</th>
@@ -136,32 +167,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>ORD12345</td>
-                            <td>Camera Model X</td>
-                            <td>1</td>
-                            <td>$500</td>
-                            <td><span class="badge bg-success">Delivered</span></td>
-                            <td>2024-10-20</td>
-                            <td>
-                                <!-- Action buttons -->
-                                <button class=" btn-danger btn-sm" style=" width: 80px;" onclick="cancelOrder('ORD12345')">Cancel</button>
-                                <button class="btn-primary btn-sm" style=" width: 80px;" data-bs-toggle="modal" data-bs-target="#statusModal" onclick="setOrderId('ORD12345')">Status</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>ORD12345</td>
-                            <td>Camera Model X</td>
-                            <td>1</td>
-                            <td>$500</td>
-                            <td><span class="badge bg-success">Delivered</span></td>
-                            <td>2024-10-20</td>
-                            <td>
-                                <!-- Action buttons -->
-                                <button class="btn-danger btn-sm" style=" width: 80px;" onclick="cancelOrder('ORD12345')">Cancel</button>
-                                <button class="btn-primary btn-sm" style=" width: 80px;" data-bs-toggle="modal" data-bs-target="#statusModal" onclick="setOrderId('ORD12345')">Status</button>
-                            </td>
-                        </tr>
+                    <% orders.forEach((orderItem) => { %>
+                        <% orderItem.orderedItems.forEach((item) => { %>
+                            <tr>
+                                <td>#<%= orderItem.orderId %></td>
+                                <td><%= orderItem.userId.name %></td>
+                                <td><%= item.name %></td>
+                                <td><%= item.quantity %></td>
+                                <td>₹ <%= item.price.toFixed(2) %></td>
+                                <td><%if(orderItem.status === "Cancelled"){%>
+                                    <span class="badge bg-danger"><%= orderItem.status %></span>
+                                <%}else{%>
+                                    <span class="badge bg-success"><%= orderItem.status %></span>
+                                <%}%></td>
+                                <td><%= orderItem.createdOn.toDateString() %></td>
+                                <td>
+                                    <!-- Action buttons -->
+                                    <button class="btn-primary btn-sm" style="width: 80px;" data-order-id="<%= orderItem._id %>" data-bs-toggle="modal" data-bs-target="#statusModal">Status</button>
+
+                                    <%if(orderItem.status === "Cancelled"){%>
+                                        <button class="btn-sm" data-order-id1="<%= orderItem._id %>" style=" width: 80px;" disabled>Cancel</button>
+                                        <%}else{%>
+                                        <button class=" btn-danger btn-sm" data-order-id1="<%= orderItem._id %>" onclick="return cancelfun(event)" style=" width: 80px;">Cancel</button>
+                                    <%}%>
+                                    <input type="hidden" id="orderIdInput1" name="orderId1" value="">
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% }) %>
                     </tbody>
                 </table>
             </div>
@@ -175,19 +208,21 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="statusForm">
-                                <input type="hidden" id="orderId" name="orderId">
-                                <div class="mb-3">
-                                    <label for="orderStatus" class="form-label">Order Status</label>
-                                    <select class="form-select" id="orderStatus" name="orderStatus">
-                                        <option value="Pending">Pending</option>
-                                        <option value="Shipped">Shipped</option>
-                                        <option value="Delivered">Delivered</option>
-                                        <option value="Cancelled">Cancelled</option>
+                            
+                            <form id="changeStatusForm" onsubmit="return changeStatus(event)">
+                                <div class="form-group">
+                                    <label for="orderStatus">Order Status</label>
+                                    <select name="status" id="orderStatus" class="form-control">
+                                        <% statuses.forEach((status) => { %>
+                                            <option value="<%= status %>"><%= status.charAt(0).toUpperCase() + status.slice(1) %></option>
+                                        <% }) %>
                                     </select>
+                                    <input type="hidden" id="orderIdInput" name="orderId" value="">
                                 </div>
-                                <button type="button" class="btn btn-primary" onclick="updateOrderStatus()">Update Status</button>
+                                <button type="submit" class="btn btn-primary">Update Status</button>
                             </form>
+                                                                                  
+                            
                         </div>
                     </div>
                 </div>
@@ -197,6 +232,145 @@
 
 
     </main>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+    const statusButtons = document.querySelectorAll("[data-order-id]");
+    statusButtons.forEach(button => {
+        button.addEventListener("click", function(event) {
+            const orderId = this.getAttribute("data-order-id");
+            console.log("Clicked Order ID:", orderId); 
+            document.getElementById("orderIdInput").value = orderId;
+        });
+    });
+});
+
+async function changeStatus(event) {
+    event.preventDefault();
+
+    const statusElement = document.getElementById("orderStatus");
+    const statusValue = statusElement.value;
+    const orderId = document.getElementById("orderIdInput").value;
+
+    
+
+    try {
+        const response = await axios.post("/admin/changeOrderStatus", {
+            orderId: orderId,
+            status: statusValue
+        });
+
+        if (response.status === 200) {
+            showSuccessMessage("Status updated successfully!");
+
+            const modalElement = document.getElementById("statusModal");
+            const modalInstance = bootstrap.Modal.getInstance(modalElement); // Bootstrap 5 method
+            modalInstance.hide();
+            setTimeout(() => {
+                window.location.reload()
+            }, 2000);
+
+        } else {
+            showErrorMessage("Failed to update status. Status code: " + response.status);
+        }
+    } catch (error) {
+        showErrorMessage("Error updating status: " + error.message);
+    }
+}
+
+
+
+function showSuccessMessage(message) {
+    const successMessageContainer = document.getElementById("successMessage");
+    successMessageContainer.classList.add("alert-success"); // Bootstrap class for success
+    successMessageContainer.classList.remove("alert-danger"); // Remove error class if previously added
+    successMessageContainer.textContent = message;
+
+    // Show the message
+    successMessageContainer.style.display = "block";
+
+    // Hide the message after 3 seconds
+    setTimeout(() => {
+        successMessageContainer.style.display = "none";
+    }, 3000);
+}
+
+function showErrorMessage(message) {
+    const errorMessageContainer = document.getElementById("errorMessage");
+    errorMessageContainer.classList.add("alert-danger"); // Bootstrap class for error
+    errorMessageContainer.classList.remove("alert-success"); // Remove success class if previously added
+    errorMessageContainer.textContent = message;
+
+    // Show the message
+    errorMessageContainer.style.display = "block";
+
+    // Hide the message after 3 seconds
+    setTimeout(() => {
+        errorMessageContainer.style.display = "none";
+    }, 3000);
+}
+
+
+        </script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+        const statusButtons = document.querySelectorAll("[data-order-id1]");
+        statusButtons.forEach(button => {
+            button.addEventListener("click", function(event) {
+                const orderId = this.getAttribute("data-order-id1");
+                document.getElementById("orderIdInput1").value = orderId;
+                cancelfun(event, orderId); // Pass the orderId to the cancelfun
+            });
+        });
+    });
+
+
+function cancelfun(event) {
+        event.preventDefault(); // Prevent default action (if any)
+        
+        const orderId = document.getElementById("orderIdInput1").value;
+
+       
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Your cancel this user order!",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, cancel it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Cancelled!",
+                    text: "This Order has been cancelled.",
+                    icon: "success",
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    axios.post("/admin/cancelOrder", {
+                        Id: orderId,
+                    }).then(response => {
+                        console.log("Order cancelled successfully:", response);
+                        window.location.reload();
+                    }).catch(error => {
+                        console.error("Error cancelling the order:", error);
+                    });
+                });
+            }
+        });
+    }
+</script>
+        
+
+
+ 
+    
+    
+    
     <!-- <script src="assets/js/vendors/jquery-3.6.0.min.js"></script> -->
      <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
     

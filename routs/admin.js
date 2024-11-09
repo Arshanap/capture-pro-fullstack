@@ -54,6 +54,8 @@ router.get("/unlisted", customerController.categoryunListed)
 
 // orders
 router.get("/order",adminAuth.checkSession, orderController.loadOrder)
+router.post("/changeOrderStatus", orderController.updateStatus)
+router.post("/cancelOrder", orderController.cancelOrder)
 
 
 
