@@ -118,7 +118,7 @@
                                     <nav>                                                
                                         <ul id="navigation">                                                                                                                                     
                                             <li><a href="/user/home">Home</a></li>
-                                            <li><a href="">Catagori</a></li>
+                                            <li><a href="/user/shop">Shop</a></li>
                                             <li class=""><a href="#">Products</a>
                                                 <ul class="submenu">
                                                     <li><a href=""> camera</a></li>
@@ -270,10 +270,10 @@
                 <p class="d-flex justify-content-between font-weight-bold"><span>Total:</span><span>₹ <%= (grandTotal + 10).toFixed(2) %></span></p>
     
                 <a href="/user/checkout" class="btn btn-primary btn-block">Proceed to Checkout</a>
-                <a href="/user/home" class="btn btn-success btn-block">Continue Shopping</a>
+                <a href="/user/shop" class="btn btn-success btn-block">Continue Shopping</a>
                 <%}else{%>
                 <p>Your cart is empty so pleace Continue Shopping</p>
-                <a href="/user/home" class="btn btn-success btn-block">Continue Shopping</a>
+                <a href="/user/shop" class="btn btn-success btn-block">Continue Shopping</a>
                 <%}%>
             </div>
         </div>
@@ -398,13 +398,27 @@
 
 <script>
     async function removeFromCart(productId) {
-      try {
-        await fetch(`/user/cartRemove?id=${productId}`, { method: "DELETE" });
-        location.reload();
-      } catch (error) {
-        console.error(error);
-      }
+  try {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to remove this item from the cart?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, remove it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      await fetch(`/user/cartRemove?id=${productId}`, { method: "DELETE" });
+      location.reload();
     }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 </script>
 
 <script>

@@ -12,7 +12,7 @@
 		<!-- CSS here -->
             <link rel="stylesheet" href="/assets1/css/bootstrap.min.css">
             <link rel="stylesheet" href="/assets1/css/owl.carousel.min.css">
-            <link rel="stylesheet" href=/assets1/css/flaticon.css">
+            <link rel="stylesheet" href="/assets1/css/flaticon.css">
             <link rel="stylesheet" href="/assets1/css/slicknav.css">
             <link rel="stylesheet" href="/assets1/css/animate.min.css">
             <link rel="stylesheet" href="/assets1/css/magnific-popup.css">
@@ -25,6 +25,10 @@
             <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
    </head>
    <style>
+    .discount{
+        color: #ff003c;
+  text-decoration: line-through;
+    }
     #searchbtn {
     background: none;
     border: none;
@@ -199,8 +203,15 @@
                                 <div class="main-menu f-right d-none d-lg-block">
                                     <nav>                                                
                                         <ul id="navigation">                                                                                                                                     
-                                            <li><a href="">Home</a></li>
-                                            <li><a href="/user/shop">Shop</a></li>
+                                            <li><a href="/user/home">Home</a></li>
+                                            <li><a href=""> filter search</a>
+                                                <ul class="submenu">
+                                                    <li><a href="#" onclick="applyFilters('lowToHigh'); return false;">low to high</a></li>
+                                                    <li><a href="#" onclick="applyFilters('highToLow'); return false;">high to low</a></li>
+                                                    <li><a href="#" onclick="applyFilters('aToZ'); return false;">A - Z</a></li>
+                                                    <li><a href="#" onclick="applyFilters('zToA'); return false;">Z - A</a></li>
+                                                </ul>
+                                            </li>
                                             <li class=""><a href="#">Products</a>
                                                 <ul class="submenu">
                                                     <li><a href=""> camera</a></li>
@@ -234,15 +245,14 @@
                             <div class="col-xl-5 col-lg-3 col-md-3 col-sm-3 fix-card">
                                 <ul class="header-right f-right d-none d-lg-block d-flex justify-content-between">
                                     <li class="d-none d-xl-block">
-                                        <!-- <form action="/user/home" method="get">
+                                        <form action="/user/shop" method="get">
                                             <div class="form-box f-right">
                                                 <input type="text" name="search" placeholder="Search">
                                                 <button type="submit" id="searchbtn" class="search-icon">
                                                     <i class="fas fa-search special-tag"></i>
                                                 </button>
                                             </div>
-                                        </form> -->
-                                        
+                                        </form>
                                      </li>
                                     <li class=" d-none d-xl-block">
                                         <div class="favorit-items">
@@ -254,7 +264,7 @@
                                             <a href="/user/cart"><i class="fas fa-shopping-cart"></i></a>
                                         </div>
                                     </li>
-                                    <% if(sess === true){%>
+                                    
                                     <li class="d-none d-lg-block">  <a href="/user/account" class="btn header-btnw"><i class="fas fa-user"></i></a></li>
                                     <li class=" d-none d-xl-block">
                                         
@@ -266,11 +276,6 @@
                                             </a>
                                         
                                     </li>
-                                    <%}else{%>
-                                   <li class="d-none d-lg-block"> 
-                                    <a href="/user/login" class="btn header-btn">Sign in</a>
-                                    </li>
-                                    <% } %>
                                 </ul>
                             </div>
                             <!-- Mobile Menu -->
@@ -288,15 +293,15 @@
     <main>
 
         <!-- slider Area Start -->
-        <div class="slider-area ">
+        <!-- <div class="slider-area "> -->
             <!-- Mobile Menu -->
-            <div class="slider-active">
+            <!-- <div class="slider-active">
                 <div class="single-slider slider-height" data-background="assets/img/hero/h1_hero.jpg">
                     <div class="container">
                         <div class="row d-flex align-items-center justify-content-between">
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 d-none d-md-block">
                                 <div class="hero__img" data-animation="bounceIn" data-delay=".4s">
-                                    <img style="width: 550px;" src="/assets1/img/herogrilpng.png" alt="">
+                                    <img style="width: 550px;" src="/assets1/img/herogrilpng.png" alt=""> 
                                 </div>
                             </div>
                             <div class="col-xl-5 col-lg-5 col-md-5 col-sm-8">
@@ -304,7 +309,7 @@
                                     <span data-animation="fadeInRight" data-delay=".4s">70% Discount</span>
                                     <h1 data-animation="fadeInRight" data-delay=".6s">Launch <br> Collection</h1>
                                     <p data-animation="fadeInRight" data-delay=".8s">Best Camera Collection By 2024</p>
-                                    <!-- Hero-btn -->
+                                     Hero-btn
                                     <div class="hero__btn" data-animation="fadeInRight" data-delay="1s">
                                         <a href="" class="btn hero-btn">Shop Now</a>
                                     </div>
@@ -318,7 +323,7 @@
                         <div class="row d-flex align-items-center justify-content-between">
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 d-none d-md-block">
                                 <div class="hero__img" data-animation="bounceIn" data-delay=".4s">
-                                    <!-- <img src="/ssets1/img/hero/hero_man.png" alt=""> -->
+                                    <img src="/ssets1/img/hero/hero_man.png" alt=""> 
                                 </div>
                             </div>
                             <div class="col-xl-5 col-lg-5 col-md-5 col-sm-8">
@@ -326,7 +331,7 @@
                                     <span data-animation="fadeInRight" data-delay=".4s">60% Discount</span>
                                     <h1 data-animation="fadeInRight" data-delay=".6s">Winter <br> Collection</h1>
                                     <p data-animation="fadeInRight" data-delay=".8s">Best Cloth Collection By 2020!</p>
-                                    <!-- Hero-btn -->
+                                     Hero-btn 
                                     <div class="hero__btn" data-animation="fadeInRight" data-delay="1s">
                                         <a href="" class="btn hero-btn">Shop Now</a>
                                     </div>
@@ -335,13 +340,13 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div> -->
+        <!-- </div> -->
         <!-- slider Area End-->
         <!-- Category Area Start-->
-        <section class="category-area section-padding30">
+        <!-- <section class="category-area section-padding30">
             <div class="container-fluid">
-                <!-- Section Tittle -->
+                Section Tittle
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="section-tittle text-center mb-85">
@@ -355,9 +360,9 @@
                             <div class="category-img">
                                 <img src="/assets1/img/DSLR.png" alt="">
                                 <div class="category-caption">
-                                    <!-- <h2>DSLR</h2> -->
-                                    <!-- <span class="best"><a href="#">Best New Deals</a></span> -->
-                                    <!-- <span class="collection">New Collection</span> -->
+                                    <h2>DSLR</h2>
+                                    <span class="best"><a href="#">Best New Deals</a></span>
+                                    <span class="collection">New Collection</span>
                                 </div>
                             </div>
                         </div>
@@ -367,9 +372,9 @@
                             <div class="category-img text-center">
                                 <img src="/assets1/img/DSLR.png" alt="">
                                 <div class="category-caption">
-                                    <!-- <span class="collection">Discount!</span> -->
-                                    <!-- <h2>SONY RZ</h2> -->
-                                   <!-- <p>New Collection</p> -->
+                                    <span class="collection">Discount!</span>
+                                    <h2>SONY RZ</h2>
+                                   <p>New Collection</p>
                                 </div>
                             </div>
                         </div>
@@ -379,42 +384,42 @@
                             <div class="category-img">
                                 <img src="/assets1/img/DSLR.png" alt="">
                                 <div class="category-caption">
-                                    <!-- <h2>Man`s Cloth</h2> -->
-                                    <!-- <span class="best"><a href="#">Best New Deals</a></span> -->
-                                    <!-- <span class="collection">New Collection</span> -->
+                                    <h2>Man`s Cloth</h2>
+                                    <span class="best"><a href="#">Best New Deals</a></span>
+                                    <span class="collection">New Collection</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </section> -->
         <!-- Category Area End-->
         <!-- Latest Products Start -->
-        <section class="latest-product-area padding-bottom">
-            <div class="container">
-                <div class="row product-btn d-flex justify-content-end align-items-end">
+        <!-- <section class="latest-product-area padding-bottom"> -->
+            <!-- <div class="container"> -->
+                <!-- <div class="row product-btn d-flex justify-content-end align-items-end"> -->
                     <!-- Section Tittle -->
-                    <div class="col-xl-4 col-lg-5 col-md-5">
-                        <div class="section-tittle mb-30">
-                            <h2>Products</h2>
-                        </div>
-                    </div>
-                    <div class="col-xl-8 col-lg-7 col-md-7">
-                        <div class="properties__button f-right">
+                    <!-- <div class="col-xl-4 col-lg-5 col-md-5"> -->
+                        <!-- <div class="section-tittle mb-30"> -->
+                            <!-- <h2>Products</h2> -->
+                        <!-- </div> -->
+                    <!-- </div> -->
+                    <!-- <div class="col-xl-8 col-lg-7 col-md-7"> -->
+                        <!-- <div class="properties__button f-right"> -->
                             <!--Nav Button  -->
-                            <nav>                                                                                                
-                                <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">All</a>
+                            <!-- <nav>                                                                                                 -->
+                                <!-- <div class="nav nav-tabs" id="nav-tab" role="tablist"> -->
+                                    <!-- <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">All</a> -->
                                     <!-- <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">New</a> -->
                                     <!-- <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Featured</a> -->
                                     <!-- <a class="nav-item nav-link" id="nav-last-tab" data-toggle="tab" href="#nav-last" role="tab" aria-controls="nav-contact" aria-selected="false">Offer</a> -->
-                                </div>
-                            </nav>
+                                <!-- </div> -->
+                            <!-- </nav> -->
                             <!--End Nav Button  -->
-                        </div>
-                    </div>
-                </div>
+                        <!-- </div> -->
+                    <!-- </div> -->
+                <!-- </div> -->
                 <!-- Nav Card -->
                 <div class="tab-content" id="nav-tabContent">
                     <!-- card one -->
@@ -422,7 +427,7 @@
                         <div class="row">
                             <% if (product && product.length > 0) { %>
                                 <% for (let i = 0; i < product.length; i++) { %>
-                                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12"> 
+                                    <div style="top: 100px;" class="col-xl-4 col-lg-4 col-md-6 col-sm-12"> 
                                         <div class="single-product mb-60">
                                             <div class="product-img">
                                                 <% if (product[i].productImage && product[i].productImage.length > 0) { %>
@@ -442,7 +447,7 @@
                                                     <i class="far fa-star low-star"></i>
                                                     <i class="far fa-star low-star"></i>
                                                 </div>
-                                                <h4><a href="#"><%= product[i].productName %></a></h4>
+                                                <h4 ><a style="color: black;" href="#"><%= product[i].productName %></a></h4>
                                                 <div class="price">
                                                     <ul>
                                                         <li>₹<%= product[i].salePrice %></li>
@@ -1065,7 +1070,7 @@
         <!-- Gallery End-->
 
     </main>
-   <foote>
+   <footer>
 
        <!-- Footer Start-->
        <div class="footer-area footer-padding">
@@ -1188,6 +1193,20 @@
 		<!-- Jquery Plugins, main Jquery -->	
         <script src="/assets1/js/plugins.js"></script>
         <script src="/assets1/js/main.js"></script>
+
+
+        <script>
+function applyFilters(filterType) {
+  let query = '?';
+
+  if (filterType) query += `sort=${filterType}&`;
+
+  query = query.slice(-1) === '&' ? query.slice(0, -1) : query;
+
+  window.location.href = `/user/shop${query}`;
+}
+
+            </script>
         
     </body>
 </html>
