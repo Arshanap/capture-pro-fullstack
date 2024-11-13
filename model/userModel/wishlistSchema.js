@@ -2,23 +2,24 @@ const mongoose = require("mongoose")
 const {Schema} = mongoose
 
 const wishlistSchema = new Schema({
-    userid:{
-        type:Schema.Types.ObjectId,
-        ref:"User",
-        required:true
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
-    productItems:[{
-        productId:{
-            type:Schema.Types.ObjectId,
-            ref:"Product",
-            required:true
+    productItems: [{
+        productId: {
+            type: Schema.Types.ObjectId,
+            ref: "Product",
+            required: true
         },
-        addedOn:{
-            type:Date,
-            default:Date.now
+        addedOn: {
+            type: Date,
+            default: Date.now
         }
     }]
-})
+});
+
 
 const Wishlist = mongoose.model("Wishlist", wishlistSchema)
 

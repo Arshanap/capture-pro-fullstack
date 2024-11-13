@@ -96,7 +96,9 @@ router.get("/user/orderDetails", userAuth.checkSession, orderController.loadOrde
 router.get("/user/shop", userAuth.checkSession, productController.loadShop)
 
 // wishlist
+router.get("/user/wishlist", userAuth.checkSession, wishlistController.loadWishlist)
 router.post("/user/addWishlist", wishlistController.addWishlist)
+router.delete("/user/wishlistRemove", wishlistController.removeProduct)
 
 
 module.exports = router

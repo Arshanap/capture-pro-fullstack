@@ -25,10 +25,58 @@
 
 </head>
 <style>
+#logout-btn {
+            background-color: #dc3545; /* Bootstrap's danger color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px; /* Smaller padding */
+            font-size: 14px; /* Smaller font-size */
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+    .card {
+        /* width: 450px; */
+        /* left: 50px; */
+            border: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .card-body {
+            text-align: center;
+        }
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .card-text {
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .price {
+            font-size: 1rem;
+            color: #28a745;
+            font-weight: bold;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
      .breadcrumb {
     padding: 10px 15px;
     background-color: #f8f9fa;
-    width: 220px;
+    width: 180px;
     border-radius: 4px;
     display: flex;
     list-style: none;
@@ -293,7 +341,7 @@ strong.text-uppercase {
 
     <header>
         <!-- Header Start -->
-       <div id="header-div" class="header-area">
+       <div class="header-area">
             <div class="main-header ">
                 <!-- <div class="header-top top-bg d-none d-lg-block">
                    <div class="container-fluid">
@@ -403,7 +451,7 @@ strong.text-uppercase {
                                         
                                         <!-- Logout Button -->
                                         <a href="/user/logout">
-                                            <button  class="logout-btn">
+                                            <button  id="logout-btn">
                                                 <i class="fas fa-sign-out-alt"></i>out
                                             </button>
                                         </a>
@@ -417,129 +465,57 @@ strong.text-uppercase {
                                 <div class="mobile_menu d-block d-lg-none"></div>
                             </div>
                         </div>
-                        
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/user/home">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Wishlist</li>
+                            </ol>
+                        </nav>
                     </div>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/user/home">Home</a></li>
-                            <li class="breadcrumb-item"><a href="/user/account">Account</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Edit</li>
-                        </ol>
-                    </nav>
                </div>
+               
             </div>
        </div>
         <!-- Header End -->
     </header>
-   
+</head>
+<body>
+    <div class="container my-5">
+        <h2 class="text-center mb-4">My Wishlist</h2>
+        <div class="row">
 
-    <div class="main-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="profile-card">
-                <img src="https://via.placeholder.com/80" alt="User Profile Picture">
-                <h5></h5>
-                <p><%=user.name%></p>
-            </div>
-            <a href="#" class="nav-link active">Address Management</a>
-            <strong class="text-uppercase">Orders</strong>
-            <a href="/user/orders" class="nav-link">My Orders</a>
-        </aside>
-    
-        <!-- Main Content Area -->
-        <section class="main-content">
-                
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Edit Addresses</h5>
-                                    <ul class="nav nav-tabs" id="giftCardTab" role="tablist">
-                                        <li class="nav-item">
-                                            <a class="nav-link active" id="personal-tab" data-toggle="tab" href="#personal" role="tab" aria-controls="personal" aria-selected="true">Edit Address</a>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content" id="giftCardTabContent">
-                                        <!-- Add New Address Tab -->
-                                        <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
-                                            <form class="mt-4 needs-validation" method="post" action="/user/editAddress?id=<%=addresses._id%>" novalidate onsubmit="return validateForm()">
-                                                <!-- Full Name Field -->
-                                                <div class="form-group">
-                                                    <label for="fullName">Full Name</label>
-                                                    <input type="text" name="name" class="form-control" value="<%= addresses.address.name %>" id="fullName" placeholder="Enter your full name" required>
-                                                    <div class="invalid-feedback">Please enter your full name (at least 2 characters, letters only).</div>
-                                                </div>
-                                            
-                                                <!-- Pin Code Field -->
-                                                <div class="form-group">
-                                                    <label for="pinCode">Pin Code</label>
-                                                    <input type="number" name="pincode" class="form-control" value="<%= addresses.address.pincode %>" id="pinCode" placeholder="Pin Code" required>
-                                                    <div class="invalid-feedback">Please enter a valid 6-digit pin code.</div>
-                                                </div>
-                                            
-                                                <!-- City and State Fields -->
-                                                <div class="form-row">
-                                                    <div class="form-group col-md-6">
-                                                        <label for="city">City</label>
-                                                        <input type="text" class="form-control" value="<%= addresses.address.city %>" name="city" id="city" placeholder="Enter your city" required>
-                                                        <div class="invalid-feedback">Please enter your city (at least 2 characters).</div>
-                                                    </div>
-                                                    <div class="form-group col-md-6">
-                                                        <label for="state">State</label>
-                                                        <input type="text" class="form-control" name="state" value="<%= addresses.address.state %>" id="state" placeholder="Enter your state" required>
-                                                        <div class="invalid-feedback">Please enter your state (at least 2 characters).</div>
-                                                    </div>
-                                                </div>
-                                            
-                                                <!-- Address Type Field -->
-                                                <div class="form-group col-md-6">
-                                                    <label for="type">Type</label>
-                                                    <input type="text" class="form-control" name="type" value="<%= addresses.address.addresstype %>" id="type" placeholder="e.g., Home or Work" required>
-                                                    <div class="invalid-feedback">Please enter the address type (at least 3 characters).</div>
-                                                </div>
-                                            
-                                                <!-- Phone Field -->
-                                                <div class="form-group col-md-6">
-                                                    <label for="phone">Phone</label>
-                                                    <input type="tel" class="form-control" name="phone" value="<%= addresses.address.phone %>" id="phone" placeholder="Phone number" required>
-                                                    <div class="invalid-feedback">Please enter a valid 10-digit phone number.</div>
-                                                </div>
-                                            
-                                                <!-- Building Name Field -->
-                                                <div class="form-group">
-                                                    <label for="buildingName">Building Name</label>
-                                                    <input type="text" class="form-control" name="buildingName" value="<%= addresses.address.buildingName %>" id="buildingName" placeholder="Building Name" required>
-                                                    <div class="invalid-feedback">Please enter your building name (at least 2 characters).</div>
-                                                </div>
-                                            
-                                                <!-- Full Address Field -->
-                                                <div class="form-group">
-                                                    <label for="fullAddress">Enter your full Address</label>
-                                                    <textarea class="form-control" name="address" id="fullAddress" rows="2" maxlength="100" placeholder="Enter your full Address" required><%= addresses.address.address%></textarea>
-                                                    <div class="invalid-feedback">Please enter your full address (up to 100 characters).</div>
-                                                </div>
-                                            
-                                                <!-- Submit and Cancel Buttons -->
-                                                <div class="form-group">
-                                                    <button class="btn btn-primary" type="submit">Save Address</button>
-                                                    <a href="/user/account" class="btn btn-primary" style="background-color: #f44336; margin-top: 10px;">Cancel</a>
-                                                </div>
-                                            </form>                                      
-                                            
-                                        </div>
-                                        <!-- Address List Tab -->
-                                       
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
+            <% wishlist.forEach((item) =>{ %>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="/uploads/re-image/<%= item.productItems[0].productId.productImage[0] %>" style="width: 200px; margin-left: 130px;" class="card-img-top" alt="Product Image">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= item.productItems[0].productId.productName %></h5>
+                        <!-- <p class="card-text">Short description of the product.</p> -->
+                        <p class="price">$  <%= item.productItems[0].productId.salePrice %></p>
+                        <div class="btn-group">
+                            <% if (item.productItems && item.productItems.length > 0) { %>
+                                <a onclick="return addToCart('<%= item.productItems[0].productId._id %>', 1)">
+                                    <button class="btn btn-primary btn-sm">Add to Cart</button>
+                                </a>
+                            <% } else { %>
+                                <!-- Optionally, handle the case where productItems is empty -->
+                                <p>No product available</p>
+                            <% } %>
+                            
+                            <a onclick="return removeFromWishlist('<%= item._id %>')"><button class="btn btn-danger btn-sm" >
+                                Remove
+                            </button></a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
+            
+            <% }) %>
+            
+            <!-- Repeat the above block for more wishlist items -->
+        </div>
     </div>
-
     <footer>
-
 
         <!-- Footer Start-->
         <div class="footer-area footer-padding">
@@ -625,123 +601,83 @@ strong.text-uppercase {
         </div>
  
     </footer>
-    
+
+    <!-- Optional JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        // Set timeout to hide messages after 3 seconds (3000 milliseconds)
-        setTimeout(() => {
-            const successMessage = document.getElementById('success-message');
-            const errorMessage = document.getElementById('error-message');
-            const idsuss= document.getElementById("message");
-            const errmessage = document.getElementById("message-err")
-            
-            if (idsuss.textContent!=='') {
-                successMessage.style.transition = "opacity 0.5s ease"; // Optional fade effect
-                successMessage.style.opacity = "0"; // Hide message with fade
-                idsuss.textContent=''
-                setTimeout(() => successMessage.style.display = "none", 500); // Remove from view
+        function addToCart(productI, value1) {
+        // const value = document.getElementById("quantityInput").value.trim();
+    const productId = productI 
+    const value = value1
+    
+    axios.post("/user/addToCart", { value: value, id: productId })
+    .then(function(response) {
+        console.log("Response received:", response);
+        if (response.data.success) {
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Product has been saved",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                window.reload()
+            });
+        } else {
+            Swal.fire({
+                position: "top-end",
+                icon: "warning",
+                title: "This Product already exist",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    })
+    .catch(function(error) {
+        console.error("Error adding to cart:", error);
+        Swal.fire({
+            position: "top-end",
+            icon: "warning",
+            title: "An error occurred during OTP verification.",
+            showConfirmButton: false,
+            timer: 1500
+        });
+    });
+ }
+
+
+        async function removeFromWishlist(productId) {
+    try {
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "Do you really want to remove this item from the wishlist?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, remove it!",
+            cancelButtonText: "Cancel",
+        });
+
+        if (result.isConfirmed) {
+            const response = await fetch(`/user/wishlistRemove?id=${productId}`, { method: "DELETE" });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                console.error("Failed to remove item:", response.statusText);
+                Swal.fire("Error", "Failed to remove the item from wishlist", "error");
             }
-     
-            if (errmessage.textContent!=='') {
-                errorMessage.style.transition = "opacity 0.5s ease"; // Optional fade effect
-                errorMessage.style.opacity = "0"; // Hide message with fade
-                errmessage.textContent=''
-                setTimeout(() => errorMessage.style.display = "none", 500); // Remove from view
-            }
-        }, 3000); // 3000 milliseconds = 3 seconds
+        }
+    } catch (error) {
+        console.error("Error in removeFromWishlist:", error);
+        Swal.fire("Error", "Something went wrong", "error");
+    }
+}
+
     </script>
-
-<script>
-    function validateForm() {
-        clearErrors();
-        
-        let isValid = true;
-
-        // Full Name Validation
-        const fullName = document.getElementById("fullName").value.trim();
-        const nameRegex = /^[a-zA-Z\s\-']{2,}$/;
-        if (!fullName) {
-            showError("fullName", "Full name is required.");
-            isValid = false;
-        } else if (!nameRegex.test(fullName)) {
-            showError("fullName", "Full name must be at least 2 characters long and can only contain letters, spaces, hyphens, and apostrophes.");
-            isValid = false;
-        }
-
-        // Pin Code Validation
-        const pinCode = document.getElementById("pinCode").value;
-        if (!/^\d{6}$/.test(pinCode)) {
-            showError("pinCode", "Pin code must be exactly 6 digits.");
-            isValid = false;
-        }
-
-        // City Validation
-        const city = document.getElementById("city").value.trim();
-        if (!city) {
-            showError("city", "City is required.");
-            isValid = false;
-        } else if (!nameRegex.test(city)) {
-            showError("city", "City must be at least 2 characters long and can only contain letters, spaces, hyphens, and apostrophes.");
-            isValid = false;
-        }
-
-        // State Validation
-        const state = document.getElementById("state").value.trim();
-        if (!state) {
-            showError("state", "State is required.");
-            isValid = false;
-        } else if (!nameRegex.test(state)) {
-            showError("state", "State must be at least 2 characters long and can only contain letters, spaces, hyphens, and apostrophes.");
-            isValid = false;
-        }
-
-        // Address Type Validation
-        const addressType = document.getElementById("type").value.trim();
-        if (!addressType) {
-            showError("type", "Address type is required.");
-            isValid = false;
-        }
-
-        // Phone Validation
-        const phone = document.getElementById("phone").value.trim();
-        if (!/^\d{10}$/.test(phone)) {
-            showError("phone", "Phone number must be 10 digits.");
-            isValid = false;
-        }
-
-        // Building Name Validation
-        const buildingName = document.getElementById("buildingName").value.trim();
-        if (!buildingName) {
-            showError("buildingName", "Building name is required.");
-            isValid = false;
-        }
-
-        // Full Address Validation
-        const fullAddress = document.getElementById("fullAddress").value.trim();
-        if (!fullAddress) {
-            showError("fullAddress", "Full address is required.");
-            isValid = false;
-        }
-
-        return isValid;
-    }
-
-    function showError(inputId, message) {
-        const inputElement = document.getElementById(inputId);
-        const errorMessage = document.createElement("div");
-        errorMessage.className = "invalid-feedback";
-        errorMessage.innerText = message;
-        inputElement.parentNode.appendChild(errorMessage);
-        inputElement.classList.add("is-invalid");
-    }
-
-    function clearErrors() {
-        document.querySelectorAll('.invalid-feedback').forEach(element => element.remove());
-        document.querySelectorAll('.form-control').forEach(input => input.classList.remove("is-invalid"));
-    }
-</script>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
