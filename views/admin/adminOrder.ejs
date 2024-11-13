@@ -183,7 +183,11 @@
                                 <td><%= orderItem.createdOn.toDateString() %></td>
                                 <td>
                                     <!-- Action buttons -->
-                                    <button class="btn-primary btn-sm" style="width: 80px;" data-order-id="<%= orderItem._id %>" data-bs-toggle="modal" data-bs-target="#statusModal">Status</button>
+                                    <%if(orderItem.status === "Cancelled"){%>
+                                    <button class="btn-sm" style="width: 80px;" data-order-id="<%= orderItem._id %>" data-bs-toggle="modal" data-bs-target="#statusModal" disabled>Status</button>
+                                    <%}else{%>
+                                        <button class="btn-primary btn-sm" style="width: 80px;" data-order-id="<%= orderItem._id %>" data-bs-toggle="modal" data-bs-target="#statusModal">Status</button>
+                                    <%}%>
 
                                     <%if(orderItem.status === "Cancelled"){%>
                                         <button class="btn-sm" data-order-id1="<%= orderItem._id %>" style=" width: 80px;" disabled>Cancel</button>
@@ -198,6 +202,18 @@
                     </tbody>
                 </table>
             </div>
+            <div class="container m-3">
+                <nav aria-label="page navigation">
+                    <ul class="pagination justify-contet-center mb-20" style="margin-right: 200px;">
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>&search=<%= search %>"><%= i %></a>
+                            </li>
+                        <% } %>   
+                    </ul>
+                </nav>
+            </div>            
+            
     
             <!-- Modal for Changing Order Status -->
             <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">

@@ -166,6 +166,34 @@ const cancelOrder = async (req, res) => {
 };
 
 
+const loadOrderDetails = async (req, res) => {
+    try {
+      const id = req.query.id;
+    //   console.log("id", id);
+  
+      const email = req.session.User;
+      const user = await User.findOne({ email });
+  
+      const order = await Order.findOne({ userId: user._id, orderId: id })
+        .populate({
+          path: 'orderedItems.product',
+          model: 'Product'
+        })
+        .populate({
+          path: 'address',
+          model: 'Address' 
+        });
+  
+    //   console.log(order);
+  
+      res.render("user/orderDetails", { user, order });
+    } catch (error) {
+      console.log("Error loading order details:", error);
+    }
+  };
+  
+  
+  
 
 
 
@@ -173,4 +201,5 @@ const cancelOrder = async (req, res) => {
 
 
 
-module.exports ={loadOrder, placeOrder, loadSuccess, cancelOrder}
+
+module.exports ={loadOrder, placeOrder, loadSuccess, cancelOrder, loadOrderDetails}

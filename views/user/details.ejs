@@ -420,7 +420,7 @@ strong.text-uppercase {
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="/user/home">Home</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Address</li>
+                                <li class="breadcrumb-item active" aria-current="page">Details</li>
                             </ol>
                         </nav>
                     </div>
@@ -444,11 +444,12 @@ strong.text-uppercase {
     <div class="main-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <a href="/user/details"><div class="profile-card">
+            <div class="profile-card">
                 <img src="https://via.placeholder.com/80" alt="User Profile Picture">
                 <h5><%=user.name%></h5>
-            </div></a>
-            <a href="" class="nav-link active">Address Management</a>
+                <p></p>
+            </div>
+            <a href="/user/account" class="nav-link ">Address Management</a>
             <a href="/user/changePassword" class="nav-link">Change Password</a>
             <strong class="text-uppercase">Orders</strong>
             <a href="/user/orders" class="nav-link">My Orders</a>
@@ -459,132 +460,74 @@ strong.text-uppercase {
     
         <!-- Main Content Area -->
         <section class="main-content">
-                
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Addresses</h5>
-                                    <ul class="nav nav-tabs" id="giftCardTab" role="tablist">
-                                        <li class="nav-item">
-                                            <a class="nav-link active" id="corporate-tab" data-toggle="tab" href="#corporate" role="tab" aria-controls="corporate" aria-selected="true">Address List</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="personal-tab" data-toggle="tab" href="#personal" role="tab" aria-controls="personal" aria-selected="false">Add New Address</a>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content" id="giftCardTabContent">
-                                        <!-- Address List Tab -->
-                                        <div class="tab-pane fade show active" id="corporate" role="tabpanel" aria-labelledby="corporate-tab">
-                                            <% if (addresses.length > 0) { %>  
-                                                <div class="container mt-5">
-                                                    <h2 class="mb-4">My Addresses</h2>
-                                                    <div class="row">
-                                                        <% addresses.forEach(address => { %>
-                                                            <div class="col-md-6 col-lg-4 mb-4">
-                                                                <div class="card h-100">
-                                                                    <div class="card-body">
-                                                                        <h5 class="card-title"><%= address.address.addresstype %> Address</h5>
-                                                                        <p class="card-text">
-                                                                           name: <%= address.address.name %><br>
-                                                                           BuildingName: <%= address.address.buildingName %><br>
-                                                                           address: <%= address.address.address %>, <%= address.address.city %>, <%= address.address.state %>, <%= address.address.pincode %><br>
-                                                                            <strong>Phone:</strong> <%= address.address.phone %><br>
-                                                                        </p>
-                                                                    </div>
-                                                                    <div class="card-footer d-flex justify-content-between">
-                                                                        <a href="/user/editAddress?id=<%= address._id %>">
-                                                                            <button class="btn btn-primary btn-sm addbtn">Edit</button>
-                                                                        </a>
-                                                                        <a href="/user/deleteAddress?id=<%= address._id %>" onclick="return fundelete(event,this.href)">
-                                                                            <button class="btn btn-danger btn-sm addbtn">Delete</button>
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        <% }); %>
-                                                    </div>
-                                                </div>
-                                            <% } else { %>
-                                                <p>No addresses found.</p>
-                                            <% } %>
-                                        </div>
-                                    
-                                        <!-- Add New Address Tab -->
-                                        <div class="tab-pane fade" id="personal" role="tabpanel" aria-labelledby="personal-tab">
-                                            <form class="mt-4 needs-validation" method="post" action="/user/addAddress" novalidate onsubmit="return validateForm()">
-                                                <!-- Full Name Field -->
-                                                <div class="form-group">
-                                                    <label for="fullName">Full Name</label>
-                                                    <input type="text" name="name" class="form-control" id="fullName" placeholder="Enter your full name" required>
-                                                    <div class="invalid-feedback">
-                                                        Please enter your full name.
-                                                    </div>
-                                                </div>
-                                    
-                                                <!-- Pin Code Field -->
-                                                <div class="form-group">
-                                                    <label for="pinCode">Pin Code</label>
-                                                    <input type="number" name="pincode" class="form-control" id="pinCode" placeholder="Pin Code" required>
-                                                    <div class="invalid-feedback">
-                                                        Please enter a valid pin code.
-                                                    </div>
-                                                </div>
-                                    
-                                                <!-- City and State Fields -->
-                                                <div class="form-row">
-                                                    <div class="form-group col-md-6">
-                                                        <label for="city">City</label>
-                                                        <input type="text" class="form-control" name="city" id="city" placeholder="Enter your city" required>
-                                                        <div class="invalid-feedback">
-                                                            Please enter your city.
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group col-md-6">
-                                                        <label for="state">State</label>
-                                                        <input type="text" class="form-control" name="state" id="state" placeholder="Enter your state" required>
-                                                        <div class="invalid-feedback">
-                                                            Please enter your state.
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                    
-                                                <!-- Address Type Field -->
-                                                <div class="form-group">
-                                                    <label for="type">Type</label>
-                                                    <input type="text" class="form-control" name="type" id="type" placeholder="e.g., Home or Work" required>
-                                                    <div class="invalid-feedback">
-                                                        Please enter the address type.
-                                                    </div>
-                                                </div>
-                                    
-                                                <!-- Building Name Field -->
-                                                <div class="form-group">
-                                                    <label for="buildingName">Building Name</label>
-                                                    <input type="text" class="form-control" name="buildingName" id="buildingName" placeholder="Building Name" required>
-                                                    <div class="invalid-feedback">
-                                                        Please enter your building name.
-                                                    </div>
-                                                </div>
-                                    
-                                                <!-- Full Address Field -->
-                                                <div class="form-group">
-                                                    <label for="fullAddress">Enter your full Address</label>
-                                                    <textarea class="form-control" name="address" id="fullAddress" rows="2" maxlength="100" placeholder="Enter your full Address" required></textarea>
-                                                    <div class="invalid-feedback">
-                                                        Please enter your full address.
-                                                    </div>
-                                                </div>
-                                    
-                                                <button class="btn btn-primary" type="submit">Save Address</button>
-                                            </form>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">User Details</h5>
+                    <ul class="nav nav-tabs" id="userDetailsTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="view-tab" data-toggle="tab" href="#view" role="tab" aria-controls="view" aria-selected="true">View Details</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="edit-tab" data-toggle="tab" href="#edit" role="tab" aria-controls="edit" aria-selected="false">Edit Details</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="userDetailsTabContent">
+                        <!-- View Details Tab -->
+                        <div class="tab-pane fade show active" id="view" role="tabpanel" aria-labelledby="view-tab">
+                            <% if (user) { %>
+                                <div class="container mt-5">
+                                    <h2 class="mb-4">My Details</h2>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <p><strong>Full Name:</strong> <%= user.name %></p>
+                                            <p><strong>Email:</strong> <%= user.email %></p>
+                                            <p><strong>Phone:</strong> <%= user.phone %></p>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </section>
+                            <% } else { %>
+                                <p>No user details found.</p>
+                            <% } %>                                         
+                        </div>
+        
+                        <!-- Edit Details Tab -->
+                        <div class="tab-pane fade" id="edit" role="tabpanel" aria-labelledby="edit-tab">
+                            <form class="mt-4 needs-validation" method="post" action="/user/updateDetails" novalidate onsubmit="return validateForm()">
+                                <!-- Full Name Field -->
+                                <div class="form-group">
+                                    <label for="fullName">Full Name</label>
+                                    <input type="text" name="name" class="form-control" id="fullName" value="<%= user.name %>" required>
+                                    <div class="invalid-feedback">
+                                        Please enter your full name.
+                                    </div>
+                                </div>
+                            
+                                <!-- Email Field -->
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" name="email" class="form-control" id="email" value="<%= user.email %>" required>
+                                    <div class="invalid-feedback">
+                                        Please enter a valid email.
+                                    </div>
+                                </div>
+                            
+                                <!-- Phone Field -->
+                                <div class="form-group">
+                                    <label for="phone">Phone</label>
+                                    <input type="tel" name="phone" class="form-control" id="phone" value="<%= user.phone %>" required>
+                                    <div class="invalid-feedback">
+                                        Please enter your phone number.
+                                    </div>
+                                </div>
+                            
+                                <button class="btn btn-primary" type="submit">Update Details</button>
+                            </form>                            
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
+        
     </div>
 
     <footer>
@@ -744,94 +687,69 @@ strong.text-uppercase {
         }, 3000); // 3000 milliseconds = 3 seconds
     </script>
     <script>
-        function validateForm() {
-            // Clear previous error messages
-            clearErrors();
-        
-            let isValid = true;
-        
-            // Validate Full Name
-            const fullName = document.getElementById("fullName").value.trim();
-            const nameRegex = /^[a-zA-Z\s\-']{2,}$/; // Allows letters, spaces, hyphens, and apostrophes
-            if (!fullName) {
-                showError("fullName", "Full name is required.");
-                isValid = false;
-            } else if (!nameRegex.test(fullName)) {
-                showError("fullName", "Full name must be at least 2 characters long and can only contain letters, spaces, hyphens, and apostrophes.");
-                isValid = false;
-            }
-        
-            // Validate Pin Code
-            const pinCode = document.getElementById("pinCode").value;
-            if (!/^\d{6}$/.test(pinCode)) {
-                showError("pinCode", "Pin code must be exactly 6 digits.");
-                isValid = false;
-            }
-        
-            // Validate City
-            const city = document.getElementById("city").value.trim();
-            if (!city) {
-                showError("city", "City is required.");
-                isValid = false;
-            } else if (!nameRegex.test(city)) {
-                showError("city", "City must be at least 2 characters long and can only contain letters, spaces, hyphens, and apostrophes.");
-                isValid = false;
-            }
-        
-            // Validate State
-            const state = document.getElementById("state").value.trim();
-            if (!state) {
-                showError("state", "State is required.");
-                isValid = false;
-            } else if (!nameRegex.test(state)) {
-                showError("state", "State must be at least 2 characters long and can only contain letters, spaces, hyphens, and apostrophes.");
-                isValid = false;
-            }
-        
-            // Validate Address Type
-            const addressType = document.getElementById("type").value.trim();
-            if (!addressType) {
-                showError("type", "Address type is required.");
-                isValid = false;
-            }
-        
-            // Validate Building Name
-            const buildingName = document.getElementById("buildingName").value.trim();
-            if (!buildingName) {
-                showError("buildingName", "Building name is required.");
-                isValid = false;
-            }
-        
-            // Validate Full Address
-            const fullAddress = document.getElementById("fullAddress").value.trim();
-            if (!fullAddress) {
-                showError("fullAddress", "Full address is required.");
-                isValid = false;
-            }
-        
-            return isValid;
-        }
-        
-        function showError(inputId, message) {
-            const inputElement = document.getElementById(inputId);
-            const errorMessage = document.createElement("div");
-            errorMessage.className = "invalid-feedback";
-            errorMessage.innerText = message;
-            inputElement.parentNode.appendChild(errorMessage);
-            inputElement.classList.add("is-invalid");
-        }
-        
-        function clearErrors() {
-            const errorElements = document.querySelectorAll('.invalid-feedback');
-            errorElements.forEach((element) => {
-                element.remove();
-            });
-        
-            const inputElements = document.querySelectorAll('.form-control');
-            inputElements.forEach((input) => {
-                input.classList.remove("is-invalid");
-            });
-        }
+   function validateForm() {
+    // Clear previous error messages
+    clearErrors();
+
+    let isValid = true;
+
+    // Validate Full Name
+    const fullName = document.getElementById("fullName").value.trim();
+    const nameRegex = /^[a-zA-Z\s\-']{2,}$/; // Allows letters, spaces, hyphens, and apostrophes
+    if (!fullName) {
+        showError("fullName", "Full name is required.");
+        isValid = false;
+    } else if (!nameRegex.test(fullName)) {
+        showError("fullName", "Full name must be at least 2 characters long and can only contain letters, spaces, hyphens, and apostrophes.");
+        isValid = false;
+    }
+
+    // Validate Email
+    const email = document.getElementById("email").value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email format
+    if (!email) {
+        showError("email", "Email is required.");
+        isValid = false;
+    } else if (!emailRegex.test(email)) {
+        showError("email", "Please enter a valid email address.");
+        isValid = false;
+    }
+
+    // Validate Phone
+    const phone = document.getElementById("phone").value.trim();
+    const phoneRegex = /^[0-9]{10}$/; // Exactly 10 digits
+    if (!phone) {
+        showError("phone", "Phone number is required.");
+        isValid = false;
+    } else if (!phoneRegex.test(phone)) {
+        showError("phone", "Phone number must be exactly 10 digits.");
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function showError(inputId, message) {
+    const inputElement = document.getElementById(inputId);
+    const errorMessage = document.createElement("div");
+    errorMessage.className = "invalid-feedback";
+    errorMessage.innerText = message;
+    inputElement.parentNode.appendChild(errorMessage);
+    inputElement.classList.add("is-invalid");
+}
+
+function clearErrors() {
+    const errorElements = document.querySelectorAll('.invalid-feedback');
+    errorElements.forEach((element) => {
+        element.remove();
+    });
+
+    const inputElements = document.querySelectorAll('.form-control');
+    inputElements.forEach((input) => {
+        input.classList.remove("is-invalid");
+    });
+}
+
     </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

@@ -8,7 +8,8 @@ const accountController = require("../controller/user/accountController")
 const orderController = require("../controller/user/orderController")
 const cartController = require("../controller/user/cartController")
 const passwordController = require("../controller/user/passwordController")
-const checkoutController= require("../controller/user/checkoutController")
+const checkoutController = require("../controller/user/checkoutController")
+const wishlistController = require("../controller/user/wishlistController")
 
 
 // login
@@ -67,6 +68,10 @@ router.get("/user/editAddress",userAuth.checkSession, accountController.loadEdit
 router.post("/user/editAddress", accountController.editAddress)
 router.get("/user/deleteAddress", accountController.deleteAddress)
 
+// details 
+router.get("/user/details", userAuth.checkSession, accountController.loadDetails)
+router.post("/user/updateDetails", accountController.editDetails)
+
 // Cart
 router.get("/user/cart", userAuth.checkSession, cartController.loadCart)
 router.post("/user/addToCart", cartController.addProduct)
@@ -85,9 +90,13 @@ router.get("/user/orders", userAuth.checkSession, orderController.loadOrder)
 router.post("/user/placeOrder", orderController.placeOrder)
 router.get("/user/orderSuccess", userAuth.checkSession, orderController.loadSuccess)
 router.post("/user/cancelOrder", orderController.cancelOrder)
+router.get("/user/orderDetails", userAuth.checkSession, orderController.loadOrderDetails)
 
 // shop
 router.get("/user/shop", userAuth.checkSession, productController.loadShop)
+
+// wishlist
+router.post("/user/addWishlist", wishlistController.addWishlist)
 
 
 module.exports = router

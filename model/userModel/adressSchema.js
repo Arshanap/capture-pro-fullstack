@@ -50,6 +50,6 @@ const adressSchema = new Schema({
 
 
 
-const addressSchema = mongoose.model("Adress",adressSchema)
+const addressSchema = mongoose.model("Address",adressSchema)
 
 module.exports = addressSchema

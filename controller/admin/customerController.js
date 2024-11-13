@@ -6,7 +6,7 @@ const customerInfo = async (req, res) => {
     try {
         let search = req.query.search || "";  
         let page = parseInt(req.query.page) || 1; 
-        const limit = 20; 
+        const limit = 10; 
         
         const userData = await User.find({
             $or: [
@@ -50,7 +50,7 @@ const categoryInfo = async (req,res)=>{
 
         let search = req.query.search || "";  
         let page = parseInt(req.query.page) || 1; 
-        const limit = 20; 
+        const limit = 10; 
         
         const cateData = await Category.find({
             $or: [

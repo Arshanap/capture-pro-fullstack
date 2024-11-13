@@ -31,7 +31,7 @@
      .breadcrumb {
     padding: 10px 15px;
     background-color: #f8f9fa;
-    width: 260px;
+    width: 180px;
     border-radius: 4px;
     display: flex;
     list-style: none;
@@ -427,7 +427,6 @@ strong.text-uppercase {
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="/user/home">Home</a></li>
-                                <li class="breadcrumb-item"><a href="/user/account">Account</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">My Order</li>
                             </ol>
                         </nav>
@@ -441,11 +440,11 @@ strong.text-uppercase {
     <div class="main-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="profile-card">
+            <a href="/user/details"><div class="profile-card">
                 <img src="https://via.placeholder.com/80" alt="User Profile Picture">
                 <h5></h5>
                 <p><%=user.name%></p>
-            </div>
+            </div></a>
             <a href="/user/account" class="nav-link ">Address Management</a>
             <a href="/user/changePassword" class="nav-link">Change Password</a>
             <strong class="text-uppercase">Orders</strong>
@@ -525,7 +524,7 @@ strong.text-uppercase {
                         
                                     <div class="card-footer d-flex justify-content-end">
                                         <!-- Action buttons for the order -->
-                                        <!-- <button id="ccbtn" class="btn-primary btn-sm mr-2">View Details</button> -->
+                                        <a href="/user/orderDetails?id=<%=orderItem.orderId%>"><button id="ccbtn" class="btn-primary btn-sm mr-2">View Details</button></a>
                                         <% if (orderItem.status == "Pending") { %>
                                             <button class="btn-warning btn-sm" data-order-id="<%= orderItem._id %>">Cancel</button>
                                         <% } else if (orderItem.status == "Processing") { %>

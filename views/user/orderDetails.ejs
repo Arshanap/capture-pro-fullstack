@@ -20,15 +20,125 @@
 <link rel="stylesheet" href="/assets1/css/slick.css">
 <link rel="stylesheet" href="/assets1/css/nice-select.css">
 <link rel="stylesheet" href="/assets1/css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 
 </head>
 <style>
+    /* General Container Styling */
+.order-details-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Title Styling */
+.order-details-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Order Overview Styling */
+.order-overview,
+.address-info,
+.payment-info,
+.product-list,
+.order-summary {
+  margin-bottom: 20px;
+}
+
+.order-overview div,
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 16px;
+}
+
+.order-overview div strong,
+.summary-item strong {
+  font-weight: bold;
+}
+
+/* Address & Payment Info Styling */
+.address-info h2,
+.payment-info h2,
+.product-list h2,
+.order-summary h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.address-info p,
+.payment-info p {
+  margin: 5px 0;
+}
+
+/* Product List Styling */
+.product-list {
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+
+.product-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.product-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 15px;
+}
+
+.product-info {
+  font-size: 14px;
+}
+
+.product-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.product-quantity,
+.product-price {
+  color: #555;
+}
+
+/* Order Summary Styling */
+.order-summary {
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+
+.summary-item {
+  font-size: 16px;
+}
+
+.summary-item.total {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Box Styling */
+.order-details-container {
+  box-sizing: border-box;
+}
+
      .breadcrumb {
     padding: 10px 15px;
     background-color: #f8f9fa;
-    width: 180px;
+    width: 200px;
     border-radius: 4px;
     display: flex;
     list-style: none;
@@ -420,7 +530,7 @@ strong.text-uppercase {
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="/user/home">Home</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Address</li>
+                                <li class="breadcrumb-item active" aria-current="page">Order Details</li>
                             </ol>
                         </nav>
                     </div>
@@ -430,25 +540,16 @@ strong.text-uppercase {
        </div>
         <!-- Header End -->
     </header>
-    <% if (successMessage) { %>
-        <div id="success-message" class="success-message">
-            <p id="message"><%= successMessage %></p>
-        </div>
-    <% } %>
-    <% if (errorMessage) { %>
-        <div id="error1-message" class="error-message">
-            <p id="message-err"><%= errorMessage %></p>
-        </div>
-    <% } %>
-
+    
     <div class="main-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <a href="/user/details"><div class="profile-card">
+            <div class="profile-card">
                 <img src="https://via.placeholder.com/80" alt="User Profile Picture">
                 <h5><%=user.name%></h5>
-            </div></a>
-            <a href="" class="nav-link active">Address Management</a>
+                <p></p>
+            </div>
+            <a href="/user/account" class="nav-link ">Address Management</a>
             <a href="/user/changePassword" class="nav-link">Change Password</a>
             <strong class="text-uppercase">Orders</strong>
             <a href="/user/orders" class="nav-link">My Orders</a>
@@ -459,132 +560,87 @@ strong.text-uppercase {
     
         <!-- Main Content Area -->
         <section class="main-content">
+            <a href="/user/orders" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <div class="order-details-container">
+                <h1 class="order-details-title">Order Details</h1>
                 
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Addresses</h5>
-                                    <ul class="nav nav-tabs" id="giftCardTab" role="tablist">
-                                        <li class="nav-item">
-                                            <a class="nav-link active" id="corporate-tab" data-toggle="tab" href="#corporate" role="tab" aria-controls="corporate" aria-selected="true">Address List</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="personal-tab" data-toggle="tab" href="#personal" role="tab" aria-controls="personal" aria-selected="false">Add New Address</a>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content" id="giftCardTabContent">
-                                        <!-- Address List Tab -->
-                                        <div class="tab-pane fade show active" id="corporate" role="tabpanel" aria-labelledby="corporate-tab">
-                                            <% if (addresses.length > 0) { %>  
-                                                <div class="container mt-5">
-                                                    <h2 class="mb-4">My Addresses</h2>
-                                                    <div class="row">
-                                                        <% addresses.forEach(address => { %>
-                                                            <div class="col-md-6 col-lg-4 mb-4">
-                                                                <div class="card h-100">
-                                                                    <div class="card-body">
-                                                                        <h5 class="card-title"><%= address.address.addresstype %> Address</h5>
-                                                                        <p class="card-text">
-                                                                           name: <%= address.address.name %><br>
-                                                                           BuildingName: <%= address.address.buildingName %><br>
-                                                                           address: <%= address.address.address %>, <%= address.address.city %>, <%= address.address.state %>, <%= address.address.pincode %><br>
-                                                                            <strong>Phone:</strong> <%= address.address.phone %><br>
-                                                                        </p>
-                                                                    </div>
-                                                                    <div class="card-footer d-flex justify-content-between">
-                                                                        <a href="/user/editAddress?id=<%= address._id %>">
-                                                                            <button class="btn btn-primary btn-sm addbtn">Edit</button>
-                                                                        </a>
-                                                                        <a href="/user/deleteAddress?id=<%= address._id %>" onclick="return fundelete(event,this.href)">
-                                                                            <button class="btn btn-danger btn-sm addbtn">Delete</button>
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        <% }); %>
-                                                    </div>
-                                                </div>
-                                            <% } else { %>
-                                                <p>No addresses found.</p>
-                                            <% } %>
-                                        </div>
-                                    
-                                        <!-- Add New Address Tab -->
-                                        <div class="tab-pane fade" id="personal" role="tabpanel" aria-labelledby="personal-tab">
-                                            <form class="mt-4 needs-validation" method="post" action="/user/addAddress" novalidate onsubmit="return validateForm()">
-                                                <!-- Full Name Field -->
-                                                <div class="form-group">
-                                                    <label for="fullName">Full Name</label>
-                                                    <input type="text" name="name" class="form-control" id="fullName" placeholder="Enter your full name" required>
-                                                    <div class="invalid-feedback">
-                                                        Please enter your full name.
-                                                    </div>
-                                                </div>
-                                    
-                                                <!-- Pin Code Field -->
-                                                <div class="form-group">
-                                                    <label for="pinCode">Pin Code</label>
-                                                    <input type="number" name="pincode" class="form-control" id="pinCode" placeholder="Pin Code" required>
-                                                    <div class="invalid-feedback">
-                                                        Please enter a valid pin code.
-                                                    </div>
-                                                </div>
-                                    
-                                                <!-- City and State Fields -->
-                                                <div class="form-row">
-                                                    <div class="form-group col-md-6">
-                                                        <label for="city">City</label>
-                                                        <input type="text" class="form-control" name="city" id="city" placeholder="Enter your city" required>
-                                                        <div class="invalid-feedback">
-                                                            Please enter your city.
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group col-md-6">
-                                                        <label for="state">State</label>
-                                                        <input type="text" class="form-control" name="state" id="state" placeholder="Enter your state" required>
-                                                        <div class="invalid-feedback">
-                                                            Please enter your state.
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                    
-                                                <!-- Address Type Field -->
-                                                <div class="form-group">
-                                                    <label for="type">Type</label>
-                                                    <input type="text" class="form-control" name="type" id="type" placeholder="e.g., Home or Work" required>
-                                                    <div class="invalid-feedback">
-                                                        Please enter the address type.
-                                                    </div>
-                                                </div>
-                                    
-                                                <!-- Building Name Field -->
-                                                <div class="form-group">
-                                                    <label for="buildingName">Building Name</label>
-                                                    <input type="text" class="form-control" name="buildingName" id="buildingName" placeholder="Building Name" required>
-                                                    <div class="invalid-feedback">
-                                                        Please enter your building name.
-                                                    </div>
-                                                </div>
-                                    
-                                                <!-- Full Address Field -->
-                                                <div class="form-group">
-                                                    <label for="fullAddress">Enter your full Address</label>
-                                                    <textarea class="form-control" name="address" id="fullAddress" rows="2" maxlength="100" placeholder="Enter your full Address" required></textarea>
-                                                    <div class="invalid-feedback">
-                                                        Please enter your full address.
-                                                    </div>
-                                                </div>
-                                    
-                                                <button class="btn btn-primary" type="submit">Save Address</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
+                <!-- Order Overview -->
+                <div class="order-overview">
+                  <div class="order-id">
+                    <strong>Order ID:</strong> <%= order.orderId %>
+                  </div>
+                  <div class="order-date">
+                    <strong>Order Date:</strong> <%= order.createdOn.toDateString() %>
+                  </div>
+                  <div class="order-status">
+                    <strong>Status:</strong> <%if(order.status === "Cancelled"){%>
+                        <span class="badge bg-danger"> <%= order.status %></span>
+                    <%}else{%>
+                        <span class="badge bg-success"> <%= order.status %></span>
+                    <%}%>
+                  </div>
                 </div>
-            </div>
+              
+                <!-- Address Information -->
+                <!-- <div class="address-info">
+                    <h2>Shipping Address</h2>
+                    <% if (order.address) { %>
+                      <p><%= order.address.name %></p>
+                      <p><%= order.address.city %></p>
+                      <p><%= order.address.state %></p>
+                      <p><%= order.address.pincode %></p>
+                    <% } else { %>
+                      <p>No shipping address available.</p>
+                    <% } %>
+                </div> -->
+              
+                <!-- Payment Information -->
+                <div class="payment-info">
+                  <h2>Payment Method</h2>
+                  <p style="color: #4CAF50;"><%= order. paymentMethod %></p>
+                </div>
+              
+                <!-- Product Details -->
+                <div class="product-list">
+                  <h2>Products</h2>
+                  <% order.orderedItems.forEach((item) => {  %>
+                  <div class="product-item">
+                    <img src="/uploads/re-image/<%= item.product.productImage[0] %>" alt="Product Image" class="product-image">
+                    <div class="product-info">
+                      <p class="product-name"><%= item.name %></p>
+                      <p class="product-quantity"><strong>Quantity:</strong><%= item.quantity %></p>
+                      <p class="product-price"><strong>Price:</strong>₹ <%= item.price.toFixed(2) %></p>
+                    </div>
+                  </div>
+                  <%})%>
+                </div>
+              
+                <!-- Order Summary -->
+                <div class="order-summary">
+                  <h2>Order Summary</h2>
+                  <div class="summary-item">
+                    <span>Subtotal:</span>
+                    <span>₹  <%= order.totalPrice.toFixed(2) %></span>
+                  </div>
+                  <div class="summary-item">
+                    <span>Shipping:</span>
+                    <span>₹  00.00</span>
+                  </div>
+                  <div class="summary-item">
+                    <span>Tax:</span>
+                    <span>₹  00.00</span>
+                  </div>
+                  <div class="summary-item total">
+                    <strong>Total:</strong>
+                    <strong>₹  <%= order.totalPrice.toFixed(2) %></strong>
+                  </div>
+                </div>
+              </div>
+              
         </section>
+        
     </div>
 
     <footer>
@@ -674,165 +730,6 @@ strong.text-uppercase {
  
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        function fundelete(event,url){
-            event.preventDefault(); 
-
-    Swal.fire({
-        title: "Are you sure?",
-        text: "You delete this Address!",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Show success message and then redirect
-            Swal.fire({
-                title: "deleted!",
-                text: "This Address has been deleted.",
-                icon: "success",
-                timer: 1500, // Display success message for 1.5 seconds
-                showConfirmButton: false
-            }).then(() => {
-                // Redirect after success message is shown
-                window.location.href = url;
-            });
-        }
-    });
-        }
-        // JavaScript validation using Bootstrap's validation API
-        (function () {
-            'use strict';
-            window.addEventListener('load', function () {
-                // Get all forms with class 'needs-validation'
-                var forms = document.getElementsByClassName('needs-validation');
-                // Loop over them and prevent submission
-                Array.prototype.filter.call(forms, function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-            }, false);
-        })();
-    </script>
-    <script>
-        // Set timeout to hide messages after 3 seconds (3000 milliseconds)
-        setTimeout(() => {
-            const successMessage = document.getElementById('success-message');
-            const errorMessage = document.getElementById('error-message');
-            const idsuss= document.getElementById("message");
-            const errmessage = document.getElementById("message-err")
-            
-            if (idsuss.textContent!=='') {
-                successMessage.style.transition = "opacity 0.5s ease"; // Optional fade effect
-                successMessage.style.opacity = "0"; // Hide message with fade
-                idsuss.textContent=''
-                setTimeout(() => successMessage.style.display = "none", 500); // Remove from view
-            }
-     
-            if (errmessage.textContent!=='') {
-                errorMessage.style.transition = "opacity 0.5s ease"; // Optional fade effect
-                errorMessage.style.opacity = "0"; // Hide message with fade
-                errmessage.textContent=''
-                setTimeout(() => errorMessage.style.display = "none", 500); // Remove from view
-            }
-        }, 3000); // 3000 milliseconds = 3 seconds
-    </script>
-    <script>
-        function validateForm() {
-            // Clear previous error messages
-            clearErrors();
-        
-            let isValid = true;
-        
-            // Validate Full Name
-            const fullName = document.getElementById("fullName").value.trim();
-            const nameRegex = /^[a-zA-Z\s\-']{2,}$/; // Allows letters, spaces, hyphens, and apostrophes
-            if (!fullName) {
-                showError("fullName", "Full name is required.");
-                isValid = false;
-            } else if (!nameRegex.test(fullName)) {
-                showError("fullName", "Full name must be at least 2 characters long and can only contain letters, spaces, hyphens, and apostrophes.");
-                isValid = false;
-            }
-        
-            // Validate Pin Code
-            const pinCode = document.getElementById("pinCode").value;
-            if (!/^\d{6}$/.test(pinCode)) {
-                showError("pinCode", "Pin code must be exactly 6 digits.");
-                isValid = false;
-            }
-        
-            // Validate City
-            const city = document.getElementById("city").value.trim();
-            if (!city) {
-                showError("city", "City is required.");
-                isValid = false;
-            } else if (!nameRegex.test(city)) {
-                showError("city", "City must be at least 2 characters long and can only contain letters, spaces, hyphens, and apostrophes.");
-                isValid = false;
-            }
-        
-            // Validate State
-            const state = document.getElementById("state").value.trim();
-            if (!state) {
-                showError("state", "State is required.");
-                isValid = false;
-            } else if (!nameRegex.test(state)) {
-                showError("state", "State must be at least 2 characters long and can only contain letters, spaces, hyphens, and apostrophes.");
-                isValid = false;
-            }
-        
-            // Validate Address Type
-            const addressType = document.getElementById("type").value.trim();
-            if (!addressType) {
-                showError("type", "Address type is required.");
-                isValid = false;
-            }
-        
-            // Validate Building Name
-            const buildingName = document.getElementById("buildingName").value.trim();
-            if (!buildingName) {
-                showError("buildingName", "Building name is required.");
-                isValid = false;
-            }
-        
-            // Validate Full Address
-            const fullAddress = document.getElementById("fullAddress").value.trim();
-            if (!fullAddress) {
-                showError("fullAddress", "Full address is required.");
-                isValid = false;
-            }
-        
-            return isValid;
-        }
-        
-        function showError(inputId, message) {
-            const inputElement = document.getElementById(inputId);
-            const errorMessage = document.createElement("div");
-            errorMessage.className = "invalid-feedback";
-            errorMessage.innerText = message;
-            inputElement.parentNode.appendChild(errorMessage);
-            inputElement.classList.add("is-invalid");
-        }
-        
-        function clearErrors() {
-            const errorElements = document.querySelectorAll('.invalid-feedback');
-            errorElements.forEach((element) => {
-                element.remove();
-            });
-        
-            const inputElements = document.querySelectorAll('.form-control');
-            inputElements.forEach((input) => {
-                input.classList.remove("is-invalid");
-            });
-        }
-    </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>

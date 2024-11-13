@@ -54,7 +54,7 @@ const addProduct = async (req, res) => {
         const exist = await Cart.findOne({ userId: user._id, "items.productId": id });
         if (exist) {
             req.session.successMessage = "";
-            req.session.errorMessage = "This product already exists";
+            req.session.errorMessage = "";
             return res.json({
                 success: false,
                 message: req.session.errorMessage,
@@ -66,7 +66,7 @@ const addProduct = async (req, res) => {
         const product = await Product.findOne({ _id: id });
 
         const newcart = new Cart({
-            userId: user._id, // Use the user's ObjectId here
+            userId: user._id, 
             items: {
                 productId: product._id,
                 quantity: value,

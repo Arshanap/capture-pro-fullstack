@@ -12,7 +12,7 @@ const loadProducts = async (req, res) => {
     try {
         const search = req.query.search || '';
         const page = parseInt(req.query.page) || 1;
-        const limit = 20;
+        const limit = 8;
         const productId = req.params.productId; 
         const sess = req.session.user
         let product = null;

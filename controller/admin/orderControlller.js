@@ -3,26 +3,43 @@ const Order = require("../../model/userModel/orderSchema")
 
 const loadOrder = async (req, res) => {
     try {
-        // Fetch orders and populate product information
-        const orders = await Order.find().populate({
-            path: 'orderedItems.product',
-            model: 'Product'
-        })
-        .populate({
-            path: 'userId',
-            model: 'User'
-        });
-       
-        if (!orders || orders.length === 0) {
-            console.log("orders is empty");
-        }
-
-        // Access the enum values from the Order model's schema
+        const limit = 10;
+        let page = parseInt(req.query.page, 10) || 1; 
+        if (page < 1) page = 1; 
+    
+        const search = req.query.search || ""; 
+        const skip = (page - 1) * limit;
+    
+        const filter = search
+            ? { 'orderedItems.product.name': new RegExp(search, "i") } 
+            : {};
+    
+        const orders = await Order.find(filter)
+            .sort({ createdOn: -1 })
+            .skip(skip)
+            .limit(limit)
+            .populate({
+                path: 'orderedItems.product',
+                model: 'Product'
+            })
+            .populate({
+                path: 'userId',
+                model: 'User'
+            });
+    
+        const totalOrders = await Order.countDocuments(filter);
+        const totalPages = Math.ceil(totalOrders / limit);
+    
         const statuses = Order.schema.path('status').enumValues;
-        // console.log(statuses);
-
-        // Render the orders and statuses to the adminOrder view
-        res.render("admin/adminOrder", { orders, statuses});
+    
+        res.render("admin/adminOrder", {
+            orders,
+            statuses,
+            totalPages,
+            currentPage: page,
+            totalItems: totalOrders,
+            search 
+        });
     } catch (error) {
         console.log("error for load order admin sid", error);
     }

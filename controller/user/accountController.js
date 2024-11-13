@@ -17,6 +17,8 @@ const loadAccount = async  (req,res)=>{
 
         const successMessage = req.session.successMessage || "";
         const errorMessage = req.session.errorMessage || "";
+        req.session.successMessage = null;
+        req.session.errorMessage = null;
         const user = await User.findOne({email:useremail})
         const addresses = await Address.find({userId:user._id})
 
@@ -147,8 +149,64 @@ const deleteAddress = async (req,res)=>{
 }
 
 
+const loadDetails = async (req,res)=>{
+    try {
+        const successMessage = req.session.successMessage || "";
+        const errorMessage = req.session.errorMessage || "";
+        req.session.successMessage = null;
+        req.session.errorMessage = null;
+        const email = req.session.User;
+        const user = await User.findOne({email})
+
+        res.render("user/details",{user,successMessage,errorMessage})
+        
+    } catch (error) {
+        console.log("error for load details ",error)
+    }
+}
+
+const editDetails = async (req,res)=>{
+    try {
+        const userEmail = req.session.User;
+    
+        if (!userEmail) {
+            return res.redirect("/user/login");
+        }
+    
+        const { name, email, phone } = req.body;
+
+        req.session.User=null;
+        req.session.User=email
+    
+        const updatedUserDetails = {
+            name,
+            email,
+            phone
+        };
+    
+        const result = await User.findOneAndUpdate(
+            { email: userEmail }, 
+            { $set: updatedUserDetails }, 
+            { new: true }
+        );
+    
+        if (result) {
+            req.session.successMessage = "Details updated successfully";
+            req.session.errorMessage = "";
+            res.redirect("/user/details");
+        } else {
+            req.session.successMessage = "";
+            req.session.errorMessage = "Failed to update details";
+            res.redirect("/user/details");
+        }
+    } catch (error) {
+        console.log("error for edit details ",error)
+    }
+}
 
 
 
 
-module.exports = {loadAccount, addAddress, loadEdit, editAddress, deleteAddress}
+
+
+module.exports = {loadAccount, addAddress, loadEdit, editAddress, deleteAddress, loadDetails, editDetails}

@@ -567,7 +567,7 @@
                     <div id="otpError" class="error-messages" style="color: red;"></div> 
                     <!-- Wishlist and Add to Cart Buttons -->
                     <div id="divbutton" class="d-flex align-items-center mt-3 divbutton">
-                        <button  class="btn wishlist-btn"><i class="fas fa-heart"></i> Add to Wishlist</button>
+                        <button id="wishbtn" class="btn wishlist-btn"><i class="fas fa-heart"></i> Add to Wishlist</button>
                         <% if (prodata.count <= 0) { %>
                             <button class="btn btn-primary" id="cartbtn" disabled><i class="fas fa-shopping-cart"></i> Add to Cart</button>
                         <% } else { %>
@@ -836,6 +836,47 @@
 <!-- jQuery CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5/WDJ6GTf6hZ+fUpt0/RI5uURYYl1XBO0pz0Jhe" crossorigin="anonymous"></script>
+<script>
+    function addWishlist() {
+        const productId = '<%= prodata._id %>';  // Assuming prodata is set correctly
+
+        axios.post("/user/addWishlist", { id: productId })
+        .then(function(response) {
+            if (response.data.success) {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Product has been saved",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location.href = response.data.redirectUrl;
+                });
+            } else {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "warning",
+                    title: response.data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        })
+        .catch(function(error) {
+            console.error("Error adding to wishlist:", error);
+            Swal.fire({
+                position: "top-end",
+                icon: "warning",
+                title: "Error adding to wishlist.",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        });
+    }
+
+    document.getElementById('wishbtn').addEventListener('click', addWishlist);
+</script>
+
 <script>
  function addToCart() {
     const value = document.getElementById("quantityInput").value.trim();
