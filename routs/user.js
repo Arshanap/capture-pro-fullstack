@@ -10,6 +10,7 @@ const cartController = require("../controller/user/cartController")
 const passwordController = require("../controller/user/passwordController")
 const checkoutController = require("../controller/user/checkoutController")
 const wishlistController = require("../controller/user/wishlistController")
+const walletController = require("../controller/user/walletController")
 
 
 // login
@@ -99,6 +100,12 @@ router.get("/user/shop", userAuth.checkSession, productController.loadShop)
 router.get("/user/wishlist", userAuth.checkSession, wishlistController.loadWishlist)
 router.post("/user/addWishlist", wishlistController.addWishlist)
 router.delete("/user/wishlistRemove", wishlistController.removeProduct)
+
+// wallet 
+router.get("/user/wallet", userAuth.checkSession, walletController.loadWallet)
+
+
+
 
 
 module.exports = router
