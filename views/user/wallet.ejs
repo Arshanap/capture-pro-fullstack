@@ -25,6 +25,15 @@
 
 </head>
 <style>
+    footer {
+  margin-top: 250px; /* Add margin to the top of the footer */
+}
+
+    .table-responsive {
+  overflow-x: auto; /* Allows horizontal scrolling if needed */
+  overflow-y: hidden; /* Prevents vertical overflow */
+}
+
     /* Remove the spinner arrows in input type="number" */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
@@ -476,7 +485,7 @@ strong.text-uppercase {
             <div style="width: 500px;" class="card shadow-lg wallet-card">
               <div class="card-body text-center">
                 <h3 class="card-title mb-3">My Wallet</h3>
-                <p class="wallet-balance mb-4">$2,560.00</p>
+                <p class="wallet-balance mb-4">₹  <%= wallet.balance %></p>
                 <!-- Add Funds Button -->
                 <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addFundsModal">Add Mony</button>
               </div>
@@ -494,29 +503,24 @@ strong.text-uppercase {
                         <th scope="col">Transaction</th>
                         <th scope="col">Amount</th>
                         <th scope="col">Date</th>
+                        <th scope="col">status</th>
                       </tr>
                     </thead>
                     <tbody>
+                        <% wallet.transaction.forEach((item)=>{ %>
                       <tr class="transaction-item success">
                         <td>Payment Received</td>
-                        <td class="text-success">+ $500.00</td>
-                        <td><small class="text-muted">Nov 10, 2024</small></td>
+                        <% if(item.transactionType === 'credit'){ %>
+                        <td class="text-success">+₹  <%= item.amount %></td>
+                        <% }else{ %>
+                        <td class="text-danger">-₹  <%= item.amount %></td>
+                        <% } %>
+                        <td><small class="text-muted"><%= item.date.toDateString() %></small></td>
+                        <td>
+                            <p style="color: #4CAF50;"><%= item.status %></p>
+                        </td>
                       </tr>
-                      <tr class="transaction-item danger">
-                        <td>Subscription Payment</td>
-                        <td class="text-danger">- $30.00</td>
-                        <td><small class="text-muted">Nov 9, 2024</small></td>
-                      </tr>
-                      <tr class="transaction-item danger">
-                        <td>Shopping Purchase</td>
-                        <td class="text-danger">- $120.00</td>
-                        <td><small class="text-muted">Nov 8, 2024</small></td>
-                      </tr>
-                      <tr class="transaction-item success">
-                        <td>Funds Added</td>
-                        <td class="text-success">+ $200.00</td>
-                        <td><small class="text-muted">Nov 7, 2024</small></td>
-                      </tr>
+                      <% }) %>
                     </tbody>
                   </table>
                 </div>
@@ -533,17 +537,26 @@ strong.text-uppercase {
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                  <form>
-                    <div class="mb-3">
-                      <label for="amount" class="form-label">Amount</label>
-                      <input type="number" class="form-control" id="amount" placeholder="Enter amount to add" required>
-                    </div>
-                  </form>
+                    <form id="walletForm" novalidate>
+                        <div class="mb-3">
+                          <label for="amount" class="form-label">Amount</label>
+                          <input
+                            type="number"
+                            min="1"
+                            class="form-control"
+                            id="amount"
+                            placeholder="Enter amount to add"
+                            required
+                          >
+                          <div class="invalid-feedback">Please enter a valid amount greater than 0.</div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary">Add Funds</button> <!-- Changed type to "submit" -->
+                        </div>
+                      </form>
                 </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-primary">Add Funds</button>
-                </div>
+                
               </div>
             </div>
           </div>
@@ -636,6 +649,48 @@ strong.text-uppercase {
         </div>
  
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+        document.getElementById("walletForm").addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  const amountInput = document.getElementById("amount");
+
+  if (amountInput.value < 1 || amountInput.value === "") {
+    amountInput.classList.add("is-invalid");
+  } else {
+    amountInput.classList.remove("is-invalid");
+
+    const amount = amountInput.value;
+
+    axios
+      .post('/user/addFund', { amount: amount })
+      .then(function (response) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Funds Added',
+          text: 'Funds have been added successfully!',
+          confirmButtonColor: '#3085d6',
+        }).then(() => {
+          // Reload the page after the user clicks "OK" on the success alert
+          window.location.reload();
+        });
+      })
+      .catch(function (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to add funds. Please try again.',
+          confirmButtonColor: '#d33',
+        });
+      });
+  }
+});
+
+      </script>
+      
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>

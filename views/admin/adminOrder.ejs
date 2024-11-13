@@ -19,6 +19,18 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     </head>
    <style>
+    .btn-order-returned-gray {
+  background-color: #6c757d;  /* Gray color for a neutral state */
+  border-color: #6c757d;
+  color: white;
+}
+
+.btn-order-returned-gray:disabled {
+  background-color: #e2e3e5; /* Lighter gray for disabled */
+  border-color: #d6d8db;
+  color: #6c757d; /* Darker gray for disabled text */
+}
+
     .success-message {
     padding: 10px;
     margin: 10px 0;
@@ -185,12 +197,16 @@
                                     <!-- Action buttons -->
                                     <%if(orderItem.status === "Cancelled"){%>
                                     <button class="btn-sm" style="width: 80px;" data-order-id="<%= orderItem._id %>" data-bs-toggle="modal" data-bs-target="#statusModal" disabled>Status</button>
-                                    <%}else{%>
+                                    <%}else if(orderItem.status === "Returned"){%>
+                                        <button class="btn-sm" style="width: 80px;" data-order-id="<%= orderItem._id %>" data-bs-toggle="modal" data-bs-target="#statusModal" disabled>Status</button>
+                                    <% }else{ %>
                                         <button class="btn-primary btn-sm" style="width: 80px;" data-order-id="<%= orderItem._id %>" data-bs-toggle="modal" data-bs-target="#statusModal">Status</button>
                                     <%}%>
 
                                     <%if(orderItem.status === "Cancelled"){%>
                                         <button class="btn-sm" data-order-id1="<%= orderItem._id %>" style=" width: 80px;" disabled>Cancel</button>
+                                        <%}else if(orderItem.status === "Returned"){%>
+                                        <button class="btn-order-returned-gray btn-sm" disabled>Order Returned</button>
                                         <%}else{%>
                                         <button class=" btn-danger btn-sm" data-order-id1="<%= orderItem._id %>" onclick="return cancelfun(event)" style=" width: 80px;">Cancel</button>
                                     <%}%>

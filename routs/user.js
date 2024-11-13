@@ -92,6 +92,7 @@ router.post("/user/placeOrder", orderController.placeOrder)
 router.get("/user/orderSuccess", userAuth.checkSession, orderController.loadSuccess)
 router.post("/user/cancelOrder", orderController.cancelOrder)
 router.get("/user/orderDetails", userAuth.checkSession, orderController.loadOrderDetails)
+router.post("/user/returnOrder", orderController.returnOrder)
 
 // shop
 router.get("/user/shop", userAuth.checkSession, productController.loadShop)
@@ -103,7 +104,7 @@ router.delete("/user/wishlistRemove", wishlistController.removeProduct)
 
 // wallet 
 router.get("/user/wallet", userAuth.checkSession, walletController.loadWallet)
-
+router.post("/user/addFund", walletController.addFund)
 
 
 

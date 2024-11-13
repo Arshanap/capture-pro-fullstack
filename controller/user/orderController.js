@@ -3,6 +3,7 @@ const User = require("../../model/userModel/userSchema")
 const Order = require("../../model/userModel/orderSchema")
 const Product = require("../../model/userModel/productSchema")
 const Address = require("../../model/userModel/adressSchema")
+const Wallet = require("../../model/userModel/walletSchema")
 
 
 
@@ -43,7 +44,7 @@ const placeOrder = async (req, res) => {
         const email = req.session.User;
         const user = await User.findOne({ email });
         const userId = user._id;
-
+        // console.log(paymentMethod)
         if (!user) {
             return res.status(400).json({ success: false, error: 'User not found' });
         }
@@ -91,6 +92,23 @@ const placeOrder = async (req, res) => {
                     name:product.productName,
                 });
             }
+        }
+
+        if(paymentMethod && paymentMethod.toString() === "Wallet"){
+            // console.log("keri keri keri")
+            const wallet = await Wallet.findOne({userId})
+
+            if(!wallet)return res.status(400).json({ success: false, error: 'no wallet'})
+
+            wallet.balance -= totalAmount;
+            // console.log(totalAmount)
+
+            wallet.transaction.push({
+                transactionType: 'debit',
+                amount:totalAmount,
+                status: 'completed'
+              });
+              await wallet.save()
         }
 
         // Create the order
@@ -145,13 +163,39 @@ const loadSuccess = (req,res)=>{
 
 const cancelOrder = async (req, res) => {
     try {
-        // Extract orderId from the request body
         const { Id } = req.body;
-        
+
+        const order = await Order.findById(Id);
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        if (order.paymentMethod === "Wallet") {
+            const userId = order.userId;
+
+            const wallet = await Wallet.findOne({ userId });
+
+            if (!wallet) {
+                return res.status(400).json({ message: "Wallet not found for the user" });
+            }
+
+            wallet.balance += order.totalPrice; 
+
+            wallet.transaction.push({
+                transactionType: 'credit', 
+                amount: order.totalPrice,
+                status: 'completed',
+                orderId: order._id,
+            });
+
+            await wallet.save();
+        }
+
         const result = await Order.findOneAndUpdate(
-            { _id:Id }, 
+            { _id: Id },
             { status: "Cancelled" },
-            { new: true } 
+            { new: true }
         );
 
         if (result) {
@@ -164,6 +208,57 @@ const cancelOrder = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+const returnOrder = async (req,res)=>{
+    try {
+        const { Id } = req.body;
+        // console.log("id is:",Id)
+
+        const order = await Order.findById(Id);
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+        if (order.paymentMethod === "Wallet") {
+            const userId = order.userId;
+
+            const wallet = await Wallet.findOne({ userId });
+
+            if (!wallet) {
+                return res.status(400).json({ message: "Wallet not found for the user" });
+            }
+
+            wallet.balance += order.totalPrice; 
+
+            wallet.transaction.push({
+                transactionType: 'credit', 
+                amount: order.totalPrice,
+                status: 'completed',
+                orderId: order._id,
+            });
+
+            await wallet.save();
+        }
+
+        const result = await Order.findOneAndUpdate(
+            { _id: Id },
+            { status: "Returned" },
+            { new: true }
+        );
+
+        if (result) {
+            res.status(200).json({ message: "Order successfully returned", order: result });
+        } else {
+            res.status(404).json({ message: "Order not found" });
+        }
+        
+    } catch (error) {
+        console.log("error for return order ",error)
+    }
+}
+
+
+
 
 
 const loadOrderDetails = async (req, res) => {
@@ -202,4 +297,4 @@ const loadOrderDetails = async (req, res) => {
 
 
 
-module.exports ={loadOrder, placeOrder, loadSuccess, cancelOrder, loadOrderDetails}
+module.exports ={loadOrder, placeOrder, loadSuccess, cancelOrder, loadOrderDetails, returnOrder}

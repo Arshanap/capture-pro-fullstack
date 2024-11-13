@@ -28,6 +28,18 @@
 
 </head>
 <style>
+    .btn-order-returned-gray {
+  background-color: #6c757d;  /* Gray color for a neutral state */
+  border-color: #6c757d;
+  color: white;
+}
+
+.btn-order-returned-gray:disabled {
+  background-color: #e2e3e5; /* Lighter gray for disabled */
+  border-color: #d6d8db;
+  color: #6c757d; /* Darker gray for disabled text */
+}
+
      .breadcrumb {
     padding: 10px 15px;
     background-color: #f8f9fa;
@@ -536,13 +548,15 @@ strong.text-uppercase {
                                         <% } else if (orderItem.status == "Shipped") { %>
                                             <button class="btn-warning btn-sm" data-order-id="<%= orderItem._id %>">Cancel</button>
                                         <% } else if (orderItem.status == "Delivered") { %>
-                                            <button class="btn-success btn-sm">Return request</button>
+                                            <button class="btn-success btn-sm" data-order-id1="<%= orderItem._id %>">Return request</button>
                                         <% } else if (orderItem.status == "Cancelled") { %>
-                                            <button class="btn-sm" disabled>Cancelled</button>
-                                        <% } else { %>
+                                        <button class="btn-sm" disabled>Cancelled</button>
+                                        <% } else if (orderItem.status == "Returned"){ %>
+                                            <button class="btn-order-returned-gray btn-sm" disabled>Order Returned</button>
+                                            <% } else { %>
                                             <button class="btn-sm"  disabled>Invalid Status</button>
                                         <% } %>
-                                                                              
+                                        <input type="hidden" id="orderIdInput1" name="orderId1" value="">                               
                                         <input type="hidden" id="orderIdInput" name="orderId" value="">
                                     </div>
                                 </div>
@@ -704,6 +718,57 @@ strong.text-uppercase {
                         window.location.reload();
                     }).catch(error => {
                         console.error("Error cancelling the order:", error);
+                    });
+                });
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const statusButtons = document.querySelectorAll("[data-order-id1]");
+        statusButtons.forEach(button => {
+            button.addEventListener("click", function(event) {
+                const orderId = this.getAttribute("data-order-id1");
+                document.getElementById("orderIdInput1").value = orderId;
+                cancelfun(event, orderId); // Pass the orderId to the cancelfun
+            });
+        });
+    });
+
+
+    function cancelfun(event) {
+            event.preventDefault(); // Prevent default action (if any)
+            
+            const orderId = document.getElementById("orderIdInput1").value;
+
+            if (!orderId) {
+            alert("Order ID not found!");
+            return;
+        }
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You return!",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, return it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "returned!",
+                    text: "This Order has been returned.",
+                    icon: "success",
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    axios.post("/user/returnOrder", {
+                        Id: orderId,
+                    }).then(response => {
+                        console.log("Order returned successfully:", response);
+                        window.location.reload();
+                    }).catch(error => {
+                        console.error("Error returning the order:", error);
                     });
                 });
             }

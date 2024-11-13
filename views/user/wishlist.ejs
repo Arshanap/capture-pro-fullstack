@@ -493,14 +493,21 @@ strong.text-uppercase {
                         <!-- <p class="card-text">Short description of the product.</p> -->
                         <p class="price">$  <%= item.productItems[0].productId.salePrice %></p>
                         <div class="btn-group">
-                            <% if (item.productItems && item.productItems.length > 0) { %>
-                                <a onclick="return addToCart('<%= item.productItems[0].productId._id %>', 1)">
-                                    <button class="btn btn-primary btn-sm">Add to Cart</button>
-                                </a>
+                            <% if (Array.isArray(item.productItems) && item.productItems.length > 0) { %>
+                                <% const product = item.productItems[0].productId; %>
+                                <% if (product && product.count > 0) { %>
+                                    <a onclick="return addToCart('<%= product._id %>', 1)">
+                                        <button class="btn btn-primary btn-sm">Add to Cart</button>
+                                    </a>
+                                <% } else { %>
+                                    <a>
+                                        <button class="btn btn-primary btn-sm" disabled>Add to Cart</button>
+                                    </a>
+                                <% } %>
                             <% } else { %>
-                                <!-- Optionally, handle the case where productItems is empty -->
                                 <p>No product available</p>
                             <% } %>
+                            
                             
                             <a onclick="return removeFromWishlist('<%= item._id %>')"><button class="btn btn-danger btn-sm" >
                                 Remove
