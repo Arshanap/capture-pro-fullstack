@@ -134,7 +134,7 @@
         <thead class="table-dark">
           <tr>
             <th scope="col">Coupon Code</th>
-            <th scope="col">Discount</th>
+            <th scope="col">Discount Type</th>
             <th scope="col">D Amount</th>
             <th scope="col">M P Amount</th>
             <th scope="col">MX Amount</th>
@@ -162,7 +162,7 @@
             <% } %>
             </td>
             <td>
-              <!-- <button class="btn btn-sm btn-info">Edit</button> -->
+              <a href="/admin/editCoupon?id=<%=item._id%>"><button class="btn btn-sm btn-info">Edit</button></a>
               <button onclick="return removeCoupon('<%= item._id %>')" class="btn btn-sm btn-danger">Delete</button>
             </td>
           </tr>

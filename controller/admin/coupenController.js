@@ -63,10 +63,80 @@ const addCoupen = async (req, res) => {
       return res.status(500).json({ message: "An error occurred while deleting the coupon. Please try again." });
     }
   };
+
+
+  const loadEditCoupon = async (req,res)=>{
+    try {
+        const id = req.query.id;
+
+        const coupon = await Coupen.findById(id)
+        if (coupon.expirationDate) {
+            coupon.expirationDate = coupon.expirationDate.toISOString().split('T')[0];
+          }
+
+        res.render("admin/editCoupon",{coupon})
+        
+    } catch (error) {
+        console.log("error for load edit coupon",error)
+    }
+  }
+
+
+
+
+
+  
+  const editCoupon = async (req, res) => {
+    try {
+      const id = req.query.id;
+      const {
+        code,
+        discountType,
+        discountAmount,
+        minPurchaseAmount,
+        expirationDate,
+        maxDiscount,
+        usageLimit,
+        isActive,
+      } = req.body;
+      console.log(code,
+        discountType,
+        discountAmount,
+        minPurchaseAmount,
+        expirationDate,
+        maxDiscount,
+        usageLimit,
+        isActive,)
+  
+      const result = await Coupen.findByIdAndUpdate(
+        id,
+        {
+          code,
+          discountType,
+          discountAmount,
+          minPurchaseAmount,
+          expirationDate,
+          maxDiscount,
+          usageLimit,
+          isActive,
+        },
+        { new: true, runValidators: true } 
+      );
+  
+      if (result) {
+        return res.status(200).json({ message: "Coupon has been updated successfully." });
+      } else {
+        return res.status(404).json({ message: "Coupon not found." });
+      }
+    } catch (error) {
+      console.error("Error updating coupon on admin side:", error);
+      return res.status(500).json({ message: "An error occurred while updating the coupon. Please try again." });
+    }
+  };
   
 
 
 
 
 
-module.exports = {loadCoupen, addCoupen, deleteCoupon}
+module.exports = {loadCoupen, addCoupen, deleteCoupon, editCoupon, loadEditCoupon}

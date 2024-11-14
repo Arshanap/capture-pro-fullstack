@@ -62,6 +62,8 @@ router.post("/cancelOrder", orderController.cancelOrder)
 router.get("/coupen",adminAuth.checkSession, coupenController.loadCoupen)
 router.post("/addCoupen", coupenController.addCoupen)
 router.delete("/deleteCoupon", coupenController.deleteCoupon)
+router.get("/editCoupon", adminAuth.checkSession, coupenController.loadEditCoupon)
+router.post("/editCoupon", coupenController.editCoupon)
 
 
 
