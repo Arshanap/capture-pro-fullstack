@@ -491,7 +491,7 @@ strong.text-uppercase {
                     <div class="card-body">
                         <h5 class="card-title"><%= item.productItems[0].productId.productName %></h5>
                         <!-- <p class="card-text">Short description of the product.</p> -->
-                        <p class="price">$  <%= item.productItems[0].productId.salePrice %></p>
+                        <p class="price">₹  <%= item.productItems[0].productId.salePrice %></p>
                         <div class="btn-group">
                             <% if (Array.isArray(item.productItems) && item.productItems.length > 0) { %>
                                 <% const product = item.productItems[0].productId; %>

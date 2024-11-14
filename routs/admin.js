@@ -7,6 +7,7 @@ const adminController = require("../controller/admin/adminController")
 const customerController = require("../controller/admin/customerController")
 const productContoller = require("../controller/admin/productController")
 const orderController = require("../controller/admin/orderControlller")
+const coupenController = require("../controller/admin/coupenController")
 // const upload = require("../helper/multer")
 
 // login
@@ -56,6 +57,11 @@ router.get("/unlisted", customerController.categoryunListed)
 router.get("/order",adminAuth.checkSession, orderController.loadOrder)
 router.post("/changeOrderStatus", orderController.updateStatus)
 router.post("/cancelOrder", orderController.cancelOrder)
+
+// coupen
+router.get("/coupen",adminAuth.checkSession, coupenController.loadCoupen)
+router.post("/addCoupen", coupenController.addCoupen)
+router.delete("/deleteCoupon", coupenController.deleteCoupon)
 
 
 

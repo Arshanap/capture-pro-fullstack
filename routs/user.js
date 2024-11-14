@@ -11,6 +11,7 @@ const passwordController = require("../controller/user/passwordController")
 const checkoutController = require("../controller/user/checkoutController")
 const wishlistController = require("../controller/user/wishlistController")
 const walletController = require("../controller/user/walletController")
+// const coupenController = require("../controller/user/")
 
 
 // login
@@ -106,6 +107,8 @@ router.delete("/user/wishlistRemove", wishlistController.removeProduct)
 router.get("/user/wallet", userAuth.checkSession, walletController.loadWallet)
 router.post("/user/addFund", walletController.addFund)
 
+// coupen
+// router.get("/user/coupen", userAuth.checkSession, )
 
 
 
