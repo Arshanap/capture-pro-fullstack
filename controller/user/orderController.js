@@ -228,6 +228,15 @@ const cancelOrder = async (req, res) => {
             await wallet.save();
         }
 
+        for (const item of order.items) {
+            const product = await Product.findById(item.product);
+            if (product) {
+                product.count += item.quantity; 
+                await product.save();
+            }
+        }
+
+
         const result = await Order.findOneAndUpdate(
             { _id: Id },
             { status: "Cancelled" },
