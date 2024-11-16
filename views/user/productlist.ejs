@@ -881,7 +881,7 @@
  function addToCart() {
     const value = document.getElementById("quantityInput").value.trim();
     const productId = '<%= prodata._id %>';
-    
+
     axios.post("/user/addToCart", { value: value, id: productId })
     .then(function(response) {
         console.log("Response received:", response);
@@ -889,17 +889,18 @@
             Swal.fire({
                 position: "top-end",
                 icon: "success",
-                title: "Product has been saved",
+                title: "Product has been added to your cart",
                 showConfirmButton: false,
                 timer: 1500
             }).then(() => {
                 window.location.href = response.data.redirectUrl;
             });
         } else {
+            // Display SweetAlert when product already exists in the cart
             Swal.fire({
                 position: "top-end",
                 icon: "warning",
-                title: "This Product already exist",
+                title: response.data.message, // This will display "This product is already in the cart."
                 showConfirmButton: false,
                 timer: 1500
             });
@@ -910,14 +911,15 @@
         Swal.fire({
             position: "top-end",
             icon: "warning",
-            title: "An error occurred during OTP verification.",
+            title: " product is exist!",
             showConfirmButton: false,
             timer: 1500
         });
     });
- }
+}
 
 document.getElementById('cartbtn').addEventListener('click', addToCart);
+
 </script>
 <script>
  setTimeout(() => {

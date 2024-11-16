@@ -11,6 +11,10 @@ const passwordController = require("../controller/user/passwordController")
 const checkoutController = require("../controller/user/checkoutController")
 const wishlistController = require("../controller/user/wishlistController")
 const walletController = require("../controller/user/walletController")
+const bodyParser = require('body-parser');
+const Razorpay = require('razorpay');
+require('dotenv').config();
+
 // const coupenController = require("../controller/user/")
 
 
@@ -86,6 +90,8 @@ router.get("/user/checkout", userAuth.checkSession, checkoutController.loadCheck
 router.post('/user/checkoutAddAddress', checkoutController.addAddress)
 router.get("/user/checkoutEditAddress", userAuth.checkSession, checkoutController.loadEditAddress)
 router.post("/user/checkoutEditAddress", checkoutController.editAddress)
+router.post('/user/applyCoupon', checkoutController.applyCoupon)
+router.post("/user/removeCoupon", checkoutController.removeCoupon)
 
 // Orders
 router.get("/user/orders", userAuth.checkSession, orderController.loadOrder)
@@ -110,6 +116,35 @@ router.post("/user/addFund", walletController.addFund)
 // coupen
 // router.get("/user/coupen", userAuth.checkSession, )
 
+const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID, // Use environment variables for security
+    key_secret: process.env.RAZORPAY_KEY_SECRET
+});
+
+// Razorpay Order Route
+router.post('/user/razorPay', async (req, res) => {
+    try {
+
+        console.log("ethi ethi ethi ethi")
+        // console.log("RAZORPAY_KEY_ID:", process.env.RAZORPAY_KEY_ID);
+// console.log("RAZORPAY_KEY_SECRET:", process.env.RAZORPAY_KEY_SECRET);
+
+        const amount = 111 * 100;
+        const options = {
+            amount: amount,
+            currency: 'INR',
+            receipt: 'order_rcptid_11'
+        };
+
+        // Create an order
+        const order = await razorpay.orders.create(options);
+        res.json({ success: true, order });
+    } catch (error) {
+        console.error('Error creating Razorpay order:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+  
 
 
 module.exports = router

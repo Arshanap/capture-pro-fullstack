@@ -217,6 +217,22 @@
                                                     <button style="margin-right: 10px;" id="newbtn" class="btn btn-sm btn-success">List</button>
                                                 </a>
                                             <% } %>
+                                            <!-- Offer Button with Product ID -->
+                                            <% if(prodata[i].productOffer <= 0){ %>
+                                                <a href="#" onclick="openOfferModal('<%= prodata[i]._id %>')">
+                                                    <button type="button" style="width: 60px;" class=" btn-primary" data-bs-toggle="modal" data-bs-target="#productOfferModal">
+                                                        Offer
+                                                    </button>
+                                                </a>                                     
+                                            <% }else{ %>
+                                                <a href="#" onclick="openRemoveOfferModal('<%= prodata[i]._id %>')">
+                                                    <button type="button" style="width: 60px;" class=" btn-danger" data-bs-toggle="modal" data-bs-target="#removeOfferModal">
+                                                        Remove
+                                                    </button>
+                                                </a>                                                
+                                            <% } %>
+
+
                                         </td>
                                         
                                 </tr>
@@ -352,7 +368,40 @@
                         </div>
                     </div>
                 </div>
-            
+                <div class="modal fade" id="productOfferModal" tabindex="-1" aria-labelledby="productOfferModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="productOfferModalLabel">Add Product Offer</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="productOfferForm">
+                                    <div class="mb-3">
+                                        <label for="offer" class="form-label">Offer Percentage</label>
+                                        <input type="text" class="form-control" id="offer" />
+                                    </div>
+                                    <button type="submit" class="btn btn-success">Add Offer</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="removeOfferModal" tabindex="-1" aria-labelledby="removeOfferModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="removeOfferModalLabel">Remove Product Offer</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure you want to remove the offer from this product?</p>
+                                <button id="confirmRemoveOffer" class="btn btn-danger">Yes, Remove Offer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                   
                 <!-- edit -->
                 <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
@@ -702,6 +751,136 @@ function viewImage1(event) {
 
 </script>
 
+<script>
+    let removeProductId; // Variable to store the product ID for removing the offer
+
+    function openRemoveOfferModal(id) {
+        removeProductId = id; // Store the product ID when the modal is opened
+    }
+
+    document.getElementById('confirmRemoveOffer').addEventListener('click', function() {
+        // Confirmation dialog
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You want to remove the offer from the product!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Remove Offer!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Send request to the server to remove the offer
+                axios.post(`/admin/removeProductOffer?id=${removeProductId}`)
+                    .then(response => {
+                        if (response.data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Offer Removed',
+                                text: 'The product offer has been removed successfully!'
+                            });
+
+                            // Close the modal and reload the page
+                            const modalElement = document.getElementById('removeOfferModal');
+                            const modal = bootstrap.Modal.getInstance(modalElement);
+                            modal.hide();
+
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 2000);
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.data.message || 'Something went wrong. Please try again.'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.response?.data?.message || 'Failed to remove the offer. Please try again.'
+                        });
+                    });
+            }
+        });
+    });
+</script>
+
+<script>
+    let productId; // Variable to store the product ID
+
+    function openOfferModal(id) {
+        productId = id; // Store the product ID when the modal is opened
+        // Clear the input field
+        document.getElementById('offer').value = '';
+    }
+
+    document.getElementById('productOfferForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // Get the offer input value and trim whitespace
+        const offerP = document.getElementById('offer').value.trim();
+
+        // Validate the input
+        if (!offerP || isNaN(offerP) || Number(offerP) <= 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Input',
+                text: 'Please enter a valid number greater than 0 for the offer percentage.'
+            });
+            return;
+        }
+
+        // Confirmation dialog
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You want to add this offer to the product!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Add the offer!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Send data to the server
+                axios.post(`/admin/addProductOffer?id=${productId}`, { offerP })
+                    .then(response => {
+                        if (response.data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Offer Added',
+                                text: 'Your product offer has been added successfully!'
+                            });
+
+                            // Close the modal and reload the page
+                            const modalElement = document.getElementById('productOfferModal');
+                            const modal = bootstrap.Modal.getInstance(modalElement);
+                            modal.hide();
+
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 2000);
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.data.message || 'Something went wrong. Please try again.'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.response?.data?.message || 'Failed to add the offer. Please try again.'
+                        });
+                    });
+            }
+        });
+    });
+    </script>
      
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- <script src="assets/js/vendors/jquery-3.6.0.min.js"></script> -->

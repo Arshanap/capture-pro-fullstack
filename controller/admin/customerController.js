@@ -1,5 +1,6 @@
 const User = require("../../model/userModel/userSchema")
 const Category = require("../../model/userModel/categorySchema")
+const Product = require("../../model/userModel/productSchema")
 
 
 const customerInfo = async (req, res) => {
@@ -220,10 +221,109 @@ const categoryunListed = async (req,res) =>{
     }
 }
 
+const addCategoryOffer = async (req, res) => {
+    try {
+        const { offerP } = req.body;  // Get offer percentage from the request body
+        const { id } = req.query;  // Get categoryId from the query string
+
+        // console.log("Received offerP:", offerP, "for categoryId:", id);
+
+        // Validate the offer percentage
+        if (!offerP || isNaN(offerP) || Number(offerP) <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid offer percentage. It must be a number greater than 0."
+            });
+        }
+
+        // Find the category by ID
+        const category = await Category.findById(id);
+        if (!category) {
+            return res.status(404).json({
+                success: false,
+                message: "Category not found."
+            });
+        }
+
+        category.categoryOffer = Number(offerP);  // Update the offer percentage in the category
+        await category.save();
+
+        const products = await Product.find({ category: id });
+        for (const product of products) {
+            const discountAmount = (product.regularPrice * Number(offerP)) / 100;
+            product.salePrice = product.salePrice - discountAmount;
+            await product.save();
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Category offer added and product prices updated successfully.",
+            category
+        });
+    } catch (error) {
+        console.error("Error while adding category offer:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while adding the category offer. Please try again later."
+        });
+    }
+};
+
+const removeCategoryOffer = async (req, res) => {
+    try {
+        const { id } = req.query; // Get categoryId from the query string
+
+        // console.log("Received request to remove offer for categoryId:", id);
+
+        // Find the category by ID
+        const category = await Category.findById(id);
+        if (!category) {
+            return res.status(404).json({
+                success: false,
+                message: "Category not found."
+            });
+        }
+
+        // Check if the category already has an offer
+        if (category.categoryOffer === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "No offer found for this category."
+            });
+        }
+        const offer = category.categoryOffer;
+        // Remove the category offer by setting categoryOffer to 0
+        category.categoryOffer = 0;
+        
+
+        // Update the products in the category by resetting the salePrice and clearing categoryOffer
+        const products = await Product.find({ category: id });
+        for (const product of products) {
+            const discountAmount = (product.regularPrice * offer) / 100;
+            product.salePrice += discountAmount  
+            await product.save();
+        }
+        await category.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Category offer removed successfully.",
+            category
+        });
+    } catch (error) {
+        console.error("Error while removing category offer:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while removing the category offer. Please try again later."
+        });
+    }
+};
+
+
 
 
 
 
 module.exports ={customerInfo, customerBlocked, customerunBlocked, addCategory,
-     getCategoryById, categoryInfo, categoryunListed, categoryListed, editCategory
+     getCategoryById, categoryInfo, categoryunListed, categoryListed, editCategory, addCategoryOffer, removeCategoryOffer
     }

@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
         .success-message {
@@ -341,10 +342,12 @@
                         <p><%= errorMessage %></p>
                     </div>
                 <% } %>
+
+
                 <!-- Address Selection Table -->
                 <div class="col-md-6 mb-4">
                     <button class="btn btn-secondary mb-3" data-toggle="modal" data-target="#addAddressModal" type="button">Add New Address</button>
-
+    
                     <h4>Shipping Address</h4>
                     <br>
                     <table style="width: 700px;" class="table table-bordered mb-3">
@@ -379,8 +382,10 @@
                         </tbody>
                         
                     </table>
-
+    
                     <!-- New/Edit Address Form -->
+    
+                    
                     
                 </div>
 
@@ -445,10 +450,7 @@
                     <h4>Payment Method</h4><br>
                     <div class="mb-3">
                         <label>Select Payment Method:</label>
-                        <div>
-                            <input type="radio" id="creditCard" name="paymentMethod" value="creditCard" onchange="togglePaymentInfo('creditCard')">
-                            <label for="creditCard">Credit Card</label>
-                        </div>
+                        
 
                         <div>
                             <input type="radio" id="Wallet" name="paymentMethod" value="Wallet" onchange="togglePaymentInfo('Wallet')">
@@ -461,14 +463,11 @@
                         </div>
 
                         <div>
-                            <input type="radio" id="paypal" name="paymentMethod" value="paypal" onchange="togglePaymentInfo('paypal')">
-                            <label for="paypal">paypal</label>
+                            <input type="radio" id="Razorpay" name="paymentMethod" value="Razorpay" onchange="togglePaymentInfo('Razorpay')">
+                            <label for="paypal">Razorpay</label>
                         </div>
                         
-                        <div>
-                            <input type="radio" id="bankTransfer" name="paymentMethod" value="bankTransfer" onchange="togglePaymentInfo('bankTransfer')">
-                            <label for="bankTransfer">Bank Transfer</label>
-                        </div>
+                    
                     </div>
 
                     <!-- Payment Information Form -->
@@ -482,6 +481,8 @@
                     </div>
                 </div>
             </div>
+
+            
 
             <!-- Cart Products List Table -->
             <h4 class="mb-4">Products</h4>
@@ -523,21 +524,77 @@
                 </tbody>
             </table>
 
+
+            <div class="col-md-6 mb-4">
+                <h4>Apply Coupon</h4>
+                <div class="mb-3">
+                <form id="couponForm">
+                    <input type="text" id="couponCode" class="form-control" placeholder="Enter coupon code">
+                    <button class="btn btn-primary mt-2">Apply Coupon</button>
+                              
+                    <button style="left: 30px; top: 7px; " onclick="return removeCoupon(event)" id="removeCouponButton" class="btn btn-danger" >Remove Coupon</button>
+                </form>
+                    <div class="text-danger mt-2" id="couponError"></div>
+                    <div class="text-success mt-2" id="couponSuccess"></div>
+                </div>
+
+                <!-- Button to trigger the modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#couponsModal">
+    View Available Coupons
+</button>
+
+                <!-- Modal Structure -->
+<div class="modal fade" id="couponsModal" tabindex="-1" aria-labelledby="couponsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="couponsModalLabel">Available Coupons</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group mb-4">
+                    <% if (coupons && coupons.length > 0) { %>
+                        <% coupons.forEach(coupon => { %>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong><%= coupon.code %></strong> - <%= coupon.description %> 
+                                    (Expires on: <%= new Date(coupon.expirationDate).toLocaleDateString() %>)
+                                </div>
+                                <button class="btn btn-outline-primary btn-sm copy-btn" data-code="<%= coupon.code %>">
+                                    <i class="fas fa-copy"></i> 
+                                </button>
+                            </li>
+                        <% }); %>
+                    <% } else { %>
+                        <li class="list-group-item">No available coupons.</li>
+                    <% } %>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div>
+
             <!-- Order Summary Table -->
             <h4 class="mb-4">Order Summary</h4>
             <table  class="table table-bordered">
                 <tbody>
                     <tr>
                         <td>Subtotal</td>
-                        <td>₹ <%= grandTotal.toFixed(2) %></td>
+                        <td>₹ <%= total %></td>
                     </tr>
                     <tr>
                         <td>Shipping</td>
                         <td>₹ 00.00</td>
                     </tr>
+                    
                     <tr class="fw-bold">
                         <td>Total</td>
-                        <td>₹ <%= (grandTotal + 10).toFixed(2) %></td>
+                        <td>₹ <%= grandTotal %></td>
                     </tr>
                 </tbody>
             </table>
@@ -635,96 +692,265 @@
      </div>
     </div>
 </div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 <script>
-function placeOrder(event){
+function placeOrder(event) {
     event.preventDefault();
-    // alert("asdfghjk")
+
     const paymentinfo = document.querySelector('input[name="paymentMethod"]:checked');
-const addressinfo = document.querySelector('input[name="selectedAddress"]:checked');
+    const addressinfo = document.querySelector('input[name="selectedAddress"]:checked');
+    const couponInput = document.querySelector('#couponCode'); // Get the coupon code input (use appropriate selector)
+    const couponCode = couponInput ? couponInput.value.trim() : ''; // Retrieve the coupon code, if present
 
-if (!addressinfo || !paymentinfo) {
-    Swal.fire({
-        icon: 'error',
-        title: 'Selection Error',
-        text: 'Please select both a payment method and an address.'
-    });
-    return;
-}
+    // Check if both payment method and address are selected
+    if (!addressinfo || !paymentinfo) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Selection Error',
+            text: 'Please select both a payment method and an address.'
+        });
+        return;
+    }
 
-    const payment =paymentinfo.value
+    const payment = paymentinfo.value;
     const address = addressinfo.value;
 
-
-    Swal.fire({
-        title: 'Confirm Order',
-        text: "Do you want to place the order with Cash on Delivery?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, place it!',
-        cancelButtonText: 'No, cancel!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('/user/placeOrder', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    address: address,
-					paymentMethod:payment
-                }) 
+    if (payment !== "Razorpay") {
+        // Handle Cash on Delivery
+        Swal.fire({
+            title: 'Confirm Order',
+            text: "Do you want to place the order with Cash on Delivery?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, place it!',
+            cancelButtonText: 'No, cancel!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('/user/placeOrder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        address: address, 
+                        paymentMethod: payment, 
+                        couponCode: couponCode // Include the coupon code in the request
+                    })
+                })
+                .then(response => response.json())
+                .then(data => handleOrderResponse(data))
+                .catch(handleOrderError);
+            }
+        });
+    } else {
+        // Handle Razorpay Payment
+        fetch('/user/razorPay', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                address: address, 
+                paymentMethod: payment, 
+                couponCode: couponCode // Include the coupon code in the request
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Order Placed Successfully',
-                        text: data.message,
-                        confirmButtonText: 'ok'
-                    }).then(() => {
-						if(data.cartEmpty){
-						Swal.fire({
-							icon:'info',
-							title:'Your cart is empty',
-							text:'successfully placed Order,your cart is empty ',
-							confirmButtonText:'ok'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const options = {
+                    key: 'rzp_test_tslUqczYpWWFjR', // Your Razorpay Key ID
+                    amount: data.order.amount,
+                    currency: data.order.currency,
+                    name: 'Your Company Name',
+                    description: 'Order Payment',
+                    order_id: data.order.id, // Razorpay Order ID
+                    handler: function (response) {
+                        alert('Payment successful! Payment ID: ' + response.razorpay_payment_id);
+                        window.location.href = `/user/orderSuccess?id=${data.orderId}`;
+                    },
+                    prefill: {
+                        name: 'User Name',
+                        email: 'user@example.com',
+                        contact: '1234567890',
+                    },
+                    theme: { color: '#3399cc' },
+                };
 
-						}).then(()=>{
-                            window.location.href = `/user/orderSuccess?id=${data.orderId}`;						})
-					}else{
-						window.location.href = `/user/orderSuccess?id=${data.orderId}`;
-					}
-                      
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Order Failed',
-                        text: data.error
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+                const rzp1 = new Razorpay(options);
+                rzp1.open();
+            } else {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Order Error',
-                    text: 'There was an error placing your order. Please try again.'
+                    title: 'Order Failed',
+                    text: data.error
                 });
+            }
+        })
+        .catch(handleOrderError);
+    }
+
+    function handleOrderResponse(data) {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Order Placed Successfully',
+                text: data.message,
+                confirmButtonText: 'ok'
+            }).then(() => {
+                if (data.cartEmpty) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Your cart is empty',
+                        text: 'Successfully placed order, your cart is now empty.',
+                        confirmButtonText: 'ok'
+                    }).then(() => {
+                        window.location.href = `/user/orderSuccess?id=${data.orderId}`;
+                    });
+                } else {
+                    window.location.href = `/user/orderSuccess?id=${data.orderId}`;
+                }
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Order Failed',
+                text: data.error
             });
         }
-    });
+    }
+
+    function handleOrderError(error) {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Order Error',
+            text: 'There was an error placing your order. Please try again.'
+        });
+    }
 }
-
-
-
-
 
 
 
 </script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const copyButtons = document.querySelectorAll('.copy-btn');
+
+        copyButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const couponCode = button.getAttribute('data-code');
+
+                navigator.clipboard.writeText(couponCode).then(() => {
+                    Swal.fire({
+                        title: 'Copied!',
+                        text: `Coupon code "${couponCode}" has been copied to the clipboard!`,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                }).catch(err => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to copy the coupon code. Please try again.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    console.error('Failed to copy coupon code: ', err);
+                });
+            });
+        });
+    });
+</script>
+
+<script>
+document.getElementById('couponForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const couponCode = document.getElementById('couponCode').value.trim();
+
+    // Basic validation to check if the input is empty
+    if (!couponCode) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Input',
+            text: 'Please enter a coupon code before applying.'
+        });
+        return;
+    }
+
+    // Send the coupon code to the server using Axios
+    axios.post('/user/applyCoupon', { couponCode })
+        .then(response => {
+            if (response.data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Coupon Applied',
+                    text: response.data.message
+                });
+                
+                // Reload the page after a short delay
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000); // 2000 milliseconds = 2 seconds
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Coupon',
+                text: error.response?.data.message
+            });
+        });
+});
+
+
+
+</script>
+
+<script>
+
+function removeCoupon(event) {
+    event.preventDefault();
+
+    // Show a confirmation SweetAlert
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to remove the coupon?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, remove it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // If confirmed, send the request to the server using Axios
+            axios.post('/user/removeCoupon', { couponCode })
+                .then(response => {
+                    if (response.data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Coupon Removed',
+                            text: response.data.message
+                        });
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.response?.data.message
+                    });
+                });
+        }
+    });
+}
+
+    
+    
+    </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

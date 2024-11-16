@@ -44,6 +44,8 @@ router.get("/unlistProduct",productContoller.unlistProduct)
 router.post('/productedit', upload.array('image', 4), productContoller.editProduct2)
 router.get('/getProductData', productContoller.editProduct);
 router.get("/productedit",adminAuth.checkSession, productContoller.editProduct)
+router.post("/addProductOffer", productContoller.addProductOffer)
+router.post("/removeProductOffer", productContoller.removeProductOffer);
 
 // category
 router.get("/category",adminAuth.checkSession, customerController.categoryInfo)
@@ -52,6 +54,8 @@ router.get("/getCategoryById", adminAuth.checkSession, customerController.getCat
 router.post("/editcategory", customerController.editCategory)
 router.get("/listed", customerController.categoryListed)
 router.get("/unlisted", customerController.categoryunListed)
+router.post("/addCategoryOffer", customerController.addCategoryOffer);
+router.delete('/removeCategoryOffer', customerController.removeCategoryOffer);
 
 // orders
 router.get("/order",adminAuth.checkSession, orderController.loadOrder)

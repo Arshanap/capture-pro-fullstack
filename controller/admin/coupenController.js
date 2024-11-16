@@ -28,17 +28,14 @@ const addCoupen = async (req, res) => {
         usageLimit,
         isActive,
       });
+
+      console.log('arshankuttide coupon',coupen)
   
       await coupen.save();
   
-      res.status(201).json({ message: 'Coupon added successfully!' });
+      return res.status(200).json({ success:true,message: 'Coupon added successfully!' });
     } catch (error) {
-      if (error.code === 11000) {
-        res.status(400).json({ message: 'Coupon code already exists. Please use a different code.' });
-      } else {
-        console.error("Error adding coupon on the admin side:", error);
-        res.status(500).json({ message: 'An error occurred while adding the coupon. Please try again.' });
-      }
+      return res.status(400).json({success:false,error:'something occured'})
     }
   };
   
@@ -99,14 +96,14 @@ const addCoupen = async (req, res) => {
         usageLimit,
         isActive,
       } = req.body;
-      console.log(code,
-        discountType,
-        discountAmount,
-        minPurchaseAmount,
-        expirationDate,
-        maxDiscount,
-        usageLimit,
-        isActive,)
+    //   console.log(code,
+    //     discountType,
+    //     discountAmount,
+    //     minPurchaseAmount,
+    //     expirationDate,
+    //     maxDiscount,
+    //     usageLimit,
+        // isActive,)
   
       const result = await Coupen.findByIdAndUpdate(
         id,

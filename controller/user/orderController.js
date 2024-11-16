@@ -4,6 +4,7 @@ const Order = require("../../model/userModel/orderSchema")
 const Product = require("../../model/userModel/productSchema")
 const Address = require("../../model/userModel/adressSchema")
 const Wallet = require("../../model/userModel/walletSchema")
+const Coupon = require("../../model/userModel/couponSchema")
 
 
 
@@ -40,23 +41,20 @@ async function getNextOrderId() {
 
 const placeOrder = async (req, res) => {
     try {
-        const { address, paymentMethod } = req.body;
+        const { address, paymentMethod, couponCode } = req.body; // Include couponCode in the request body
         const email = req.session.User;
         const user = await User.findOne({ email });
         const userId = user._id;
-        // console.log(paymentMethod)
+        console.log("code:",couponCode)
         if (!user) {
             return res.status(400).json({ success: false, error: 'User not found' });
         }
 
-        
-        // console.log(address)
         const selectedAddress = await Address.findById(address);
         if (!selectedAddress) {
             return res.status(400).json({ success: false, error: 'Invalid address' });
         }
 
-        // Rest of your code remains unchanged
         const cartDocuments = await Cart.find({ userId }).populate({
             path: 'items.productId',
             model: 'Product'
@@ -70,7 +68,6 @@ const placeOrder = async (req, res) => {
         let totalQuantity = 0;
         const items = [];
 
-        // Aggregate the items from all cart documents
         for (const cart of cartDocuments) {
             for (const item of cart.items) {
                 const { productId, quantity, price } = item;
@@ -89,60 +86,99 @@ const placeOrder = async (req, res) => {
                     product: product._id,
                     quantity,
                     price,
-                    name:product.productName,
+                    name: product.productName,
                 });
             }
         }
 
-        if(paymentMethod && paymentMethod.toString() === "Wallet"){
-            // console.log("keri keri keri")
-            const wallet = await Wallet.findOne({userId})
+        let discountAmount = 0;
 
-            if(!wallet)return res.status(400).json({ success: false, error: 'no wallet'})
+if (couponCode) {
+    // Find the coupon and ensure it's active
+    const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
+    if (!coupon) {
+        return res.status(400).json({ success: false, error: 'Invalid or inactive coupon code.' });
+    }
 
-            wallet.balance -= totalAmount;
-            // console.log(totalAmount)
+    // Check if the coupon has expired
+    const currentDate = new Date();
+    if (currentDate > coupon.expirationDate) {
+        return res.status(400).json({ success: false, error: 'Coupon code has expired.' });
+    }
 
-            wallet.transaction.push({
-                transactionType: 'debit',
-                amount:totalAmount,
-                status: 'completed'
-              });
-              await wallet.save()
-        }
-
-        // Create the order
-        const newOrder = new Order({
-            userId,
-            orderId: await getNextOrderId(),
-            orderedItems: items,
-            totalPrice: totalAmount,
-            discount: 0,
-            finalAmount: totalAmount,
-            paymentMethod,
-            address: selectedAddress._id,
-            invoiceDate: new Date(),
-            createdOn: new Date(),
-            couponApplied: false
+    // Check if the total amount meets the minimum purchase requirement
+    if (totalAmount < coupon.minPurchaseAmount) {
+        return res.status(400).json({ 
+            success: false, 
+            error: `Minimum purchase amount of ${coupon.minPurchaseAmount} is required.` 
         });
+    }
 
-        await newOrder.save();
+    // Since we only have a fixed discount method, apply the fixed discount
+    discountAmount = coupon.discountAmount;
+    if (discountAmount > totalAmount) {
+        discountAmount = totalAmount; // Ensure the discount doesn't exceed the total amount
+    }
 
-        for (const item of items) {
-            const product = await Product.findById(item.product);
-            product.count -= item.quantity;
-            await product.save();
-        }
+    totalAmount -= discountAmount; // Apply the discount
+}
 
-        await Cart.deleteMany({ userId });
+// Deduct from wallet if using wallet balance
+if (paymentMethod && paymentMethod.toString() === "Wallet") {
+    const wallet = await Wallet.findOne({ userId });
+    if (!wallet) {
+        return res.status(400).json({ success: false, error: 'No wallet found.' });
+    }
 
-        res.json({ success: true, message: 'Order placed successfully', orderId: newOrder._id });
+    if (wallet.balance < totalAmount) {
+        return res.status(400).json({ success: false, error: 'Insufficient wallet balance.' });
+    }
+
+    // Deduct the final amount from the wallet
+    wallet.balance -= totalAmount;
+    wallet.transaction.push({
+        transactionType: 'debit',
+        amount: totalAmount,
+        status: 'completed'
+    });
+    await wallet.save();
+}
+
+// Create the new order
+const newOrder = new Order({
+    userId,
+    orderId: await getNextOrderId(),
+    orderedItems: items,
+    totalPrice: totalAmount, // Original price before discount
+    discount: discountAmount,
+    finalAmount: totalAmount, // Final amount after discount
+    paymentMethod,
+    address: selectedAddress._id,
+    invoiceDate: new Date(),
+    createdOn: new Date(),
+    couponApplied: !!couponCode
+});
+
+await newOrder.save();
+
+// Reduce product stock
+for (const item of items) {
+    const product = await Product.findById(item.product);
+    product.count -= item.quantity;
+    await product.save();
+}
+
+// Clear the user's cart
+await Cart.deleteMany({ userId });
+
+res.json({ success: true, message: 'Order placed successfully', orderId: newOrder._id });
 
     } catch (error) {
         console.error("Error placing order:", error);
         res.status(500).json({ success: false, error: 'Internal server error' });
     }
 };
+
 
 
 
@@ -286,7 +322,6 @@ const loadOrderDetails = async (req, res) => {
       console.log("Error loading order details:", error);
     }
   };
-  
   
   
 

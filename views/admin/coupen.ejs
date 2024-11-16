@@ -394,9 +394,9 @@
         };
   
         axios.post('/admin/addCoupen', formData)
-        axios.post('/admin/addCoupen', formData)
         .then(response => {
-            // Use SweetAlert for a success message without the "OK" button
+             if(response.data.success){
+                // Use SweetAlert for a success message without the "OK" button
             Swal.fire({
             title: 'Success!',
             text: response.data.message,
@@ -407,6 +407,15 @@
             // Reload the page after the alert closes
             window.location.reload();
             });
+             }else{
+                Swal.fire({
+                    icon:'error',
+                    title:'arshankuttti',
+                    text:'arshankutti  miren',
+                    confirmButtonText:'OK'
+                })
+             }
+            
         })
         .catch(error => {
             // Use SweetAlert for an error message

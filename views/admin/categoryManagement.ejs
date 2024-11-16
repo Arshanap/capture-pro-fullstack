@@ -153,10 +153,10 @@
 
             <section class="content-main">
                 <div class="container mt-5">
-                    <form action="/admin/category" method="get" class="mb-4">
+                    <!-- <form action="/admin/category" method="get" class="mb-4">
                         <input type="text" name="search" placeholder="Search by name or email" value="<%= search || '' %>" />
                         <button type="submit" class="btn btn-primary">Search</button>
-                    </form> 
+                    </form>  -->
                     <% if (errorMessage) { %>
                         <div id="error-message" class="error-message">
                             <p id="message-err"><%= errorMessage %></p>
@@ -210,12 +210,50 @@
                                             <button style="margin-right: 25px;" id="newbtn1" class="btn btn-sm btn-danger">unlist</button>
                                         </a>
                                     <% } %>
+                                    <% if(data[i].categoryOffer <= 0){ %>
+                                        <a href="#" onclick="openCategoryOfferModal('<%= data[i]._id %>')">
+                                            <button type="button" style="width: 60px;" class="btn-primary" data-bs-toggle="modal" data-bs-target="#categoryOfferModal">
+                                                Offer
+                                            </button>
+                                        </a>
+                                    <% }else{ %>
+                                        <a href="#" onclick="openRemoveCategoryOfferModal('<%= data[i]._id %>')">
+                                            <button type="button" style="width: 60px;" class="btn-danger" data-bs-toggle="modal" data-bs-target="#openCategoryOfferModal">
+                                                Remove
+                                            </button>
+                                        </a>
+                                    <% } %>
                                 </td>
                             </tr>
                             <%}%>
                         </tbody>
                     </table>
                 </div>
+
+
+                <div class="modal fade" id="categoryOfferModal" tabindex="-1" aria-labelledby="categoryOfferModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="categoryOfferModalLabel">Add Category Offer</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Form for Adding Category Offer -->
+                                <form id="categoryOfferForm">
+                                    <div class="mb-3">
+                                        <label for="categoryOffer" class="form-label">Offer Percentage</label>
+                                        <input type="text" class="form-control" id="categoryOffer" />
+                                    </div>
+                                    <button type="submit" class="btn btn-success">Add Offer</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
                 <div class="container m-3">
                     <nav aria-label="page navigation">
                         <ul class="pagination justify-contet-center mb-20" style="margin-right: 200px;">
@@ -227,6 +265,29 @@
                         </ul>
                     </nav>
                 </div>
+
+
+                <!-- Modal -->
+                <div class="modal fade" id="openCategoryOfferModal" tabindex="-1" aria-labelledby="categoryOfferModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="categoryOfferModalLabel">Remove Category Offer</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to remove the offer from this category?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-danger" id="removeOfferButton">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+  
+
+
             
                 <!-- Add Category Modal -->
                 <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
@@ -286,6 +347,142 @@
                 
             </section>
         </main>
+
+        <script>
+           let categoryOfferId; // Variable to store the category ID
+
+// Function to open the modal and store the category ID
+function openRemoveCategoryOfferModal(id) {
+    categoryOfferId = id; // Store the category ID when the modal is opened
+}
+
+// Handle the offer removal when the "Remove" button is clicked
+document.getElementById('removeOfferButton').addEventListener('click', function() {
+    // Confirmation dialog before sending the removal request
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You want to remove the offer from this category!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, Remove the offer!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Send the removal request to the server using Axios
+            axios.delete(`/admin/removeCategoryOffer?id=${categoryOfferId}`)
+                .then(response => {
+                    if (response.data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Offer Removed',
+                            text: 'The category offer has been removed successfully!'
+                        });
+
+                        // Close the modal on success
+                        const modalElement = document.getElementById('openCategoryOfferModal');
+                        const modal = bootstrap.Modal.getInstance(modalElement);
+                        modal.hide();
+
+                        // Reload the page after 2 seconds
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.data.message || 'Something went wrong. Please try again.'
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.response?.data?.message || 'Failed to remove the offer. Please try again.'
+                    });
+                });
+        }
+    });
+});
+
+        
+        </script>
+
+        <script>
+            let categoryId; // Variable to store the category ID
+        
+            function openCategoryOfferModal(id) {
+                categoryId = id; // Store the category ID when the modal is opened
+            }
+        
+            // Handle the form submission
+            document.getElementById('categoryOfferForm').addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+        
+                // Get the offer input value and trim whitespace
+                const offerP = document.getElementById('categoryOffer').value.trim();
+        
+                // Validation: Check if the input is a number greater than 0
+                if (!offerP || isNaN(offerP) || Number(offerP) <= 0) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Input',
+                        text: 'Please enter a valid number greater than 0 for the offer percentage.'
+                    });
+                    return;
+                }
+        
+                // Confirmation dialog before sending the request
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You want to add this offer to the category!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, Add the offer!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Send the data to the server using Axios
+                        axios.post(`/admin/addCategoryOffer?id=${categoryId}`, { offerP })
+                            .then(response => {
+                                if (response.data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Offer Added',
+                                        text: 'Your category offer has been added successfully!'
+                                    });
+        
+                                    // Close the modal on success
+                                    const modalElement = document.getElementById('categoryOfferModal');
+                                    const modal = bootstrap.Modal.getInstance(modalElement);
+                                    modal.hide();
+        
+                                    // Reload the page after 2 seconds
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 2000);
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: response.data.message || 'Something went wrong. Please try again.'
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: error.response?.data?.message || 'Failed to add the offer. Please try again.'
+                                });
+                            });
+                    }
+                });
+            });
+        </script>
 
         <script>
     document.getElementById('addCategoryForm').addEventListener('submit', async function(event) {

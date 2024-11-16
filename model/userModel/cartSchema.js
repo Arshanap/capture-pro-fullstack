@@ -1,5 +1,5 @@
-const mongoose = require("mongoose")
-const {Schema} = mongoose
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 const cartSchema = new Schema({
     userId: {
@@ -16,11 +16,11 @@ const cartSchema = new Schema({
         quantity: {
             type: Number,
             default: 1,
-            require: true
+            required: true 
         },
         productCount: {
             type: Number,
-            require: true
+            required: true
         },
         price: {
             type: Number,
@@ -38,10 +38,33 @@ const cartSchema = new Schema({
             type: String,
             default: "none"
         }
-    }]
+    }],
+    total: {
+        type: Number,
+        default: 0
+    },
+    grandTotal: {
+        type: Number,
+        required:true
+    },
+    couponCode: {
+        type: String,
+        default: null
+    },
+    discountAmount: {
+        type: Number,
+        default: 0
+    }
 });
 
-const Cart = mongoose.model("Cart",cartSchema)
+cartSchema.pre("save", function(next) {
+    this.total = this.items.reduce((acc, item) => acc + item.totalPrice, 0);
 
+    this.grandTotal = this.total - this.discountAmount;
 
-module.exports = Cart
+    next();
+});
+
+const Cart = mongoose.model("Cart", cartSchema);
+
+module.exports = Cart;

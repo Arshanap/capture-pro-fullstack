@@ -302,6 +302,135 @@ const deleteSingleImage = async (req,res)=>{
 }
 
 
+const addProductOffer = async (req, res) => {
+    try {
+        const { offerP } = req.body;
+        const { id } = req.query;  // Get productId from the query string
+
+        // Validate the offer percentage
+        if (!offerP || isNaN(offerP) || Number(offerP) <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid offer percentage. It must be a number greater than 0."
+            });
+        }
+
+        // Find the product by ID
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found."
+            });
+        }
+
+        // Calculate the discount amount and new sale price
+        const discountAmount = (product.regularPrice * Number(offerP)) / 100;
+        const newSalePrice = product.salePrice - discountAmount;
+
+        // Update product details
+        product.productOffer = Number(offerP);
+        product.salePrice = newSalePrice;
+        await product.save().then(()=> console.log("successfully"))
+
+        res.status(200).json({
+            success: true,
+            message: "Product offer added successfully.",
+            product
+        });
+    } catch (error) {
+        console.error("Error while adding product offer:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while adding the product offer. Please try again later."
+        });
+    }
+};
+
+
+const removeProductOffer = async (req, res) => {
+    try {
+        const { id } = req.query; // Get productId from the query string
+
+        // Find the product by ID
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found."
+            });
+        }
+
+        // const originalDiscountAmount = (product.regularPrice * product.productOffer) / 100;
+        
+        // const reducedOfferPercentage = product.productOffer - 20;
+
+        // const finalOfferPercentage = reducedOfferPercentage < 0 ? 0 : reducedOfferPercentage;
+
+        // const newDiscountAmount = (product.regularPrice * finalOfferPercentage) / 100;
+
+        // product.salePrice = product.regularPrice - newDiscountAmount;
+
+        // product.productOffer = finalOfferPercentage;
+
+        // await product.save();
+
+        const discountAmount = (product.regularPrice * product.productOffer) / 100;
+        // const newSalePrice = product.regularPrice  discountAmount;
+
+        // Update product details
+        product.productOffer = 0;
+        product.salePrice += discountAmount
+        await product.save().then(()=> console.log("successfully"))
+
+
+        res.status(200).json({
+            success: true,
+            message: "Product offer updated successfully.",
+            product
+        });
+    } catch (error) {
+        console.error("Error while updating product offer:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while updating the product offer. Please try again later."
+        });
+    }
+};
+
+
+
+// const removeProductOffer = async (req, res) => {
+//     try {
+//         const { id } = req.query; // Get productId from the query string
+
+//         // Find the product by ID
+//         const product = await Product.findById(id);
+//         if (!product) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "Product not found."
+//             });
+//         }
+
+//         // Remove the offer and reset the sale price
+//         product.productOffer = 0; // Reset the offer percentage
+//         product.salePrice = product.regularPrice; // Reset the sale price to the regular price
+//         await product.save();
+
+//         res.status(200).json({
+//             success: true,
+//             message: "Product offer removed successfully.",
+//             product
+//         });
+//     } catch (error) {
+//         console.error("Error while removing product offer:", error);
+//         res.status(500).json({
+//             success: false,
+//             message: "An error occurred while removing the product offer. Please try again later."
+//         });
+//     }
+// };
 
 
 
@@ -309,5 +438,9 @@ const deleteSingleImage = async (req,res)=>{
 
 
 
-module.exports = { addProduct, loadProducts, unlistProduct, listProduct, getProductById, editProduct, editProduct2, deleteSingleImage};
+
+
+module.exports = { addProduct, loadProducts, unlistProduct, listProduct,
+     getProductById, editProduct, editProduct2, deleteSingleImage,
+    addProductOffer, removeProductOffer };
 
