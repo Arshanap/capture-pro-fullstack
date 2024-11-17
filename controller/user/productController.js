@@ -35,58 +35,124 @@ const loadProduct = async (req, res) => {
     }
 };
 
-const loadShop = async (req,res)=>{
-    try {
-        const email = req.query.id;
-        const user = await User.findOne({ email });
-        const category = await Category.find({ isListed: true });
+// const loadShop = async (req,res)=>{
+//     try {
+//         const email = req.query.id;
+//         const user = await User.findOne({ email });
+//         const category = await Category.find({ isListed: true });
     
-        if (category.length === 0) {
-          return res.status(400).json({ success: false, message: "No categories found" });
-        }
+//         if (category.length === 0) {
+//           return res.status(400).json({ success: false, message: "No categories found" });
+//         }
     
-        if (user && user.isBlocked) {
-          req.session.user = null;
-          req.session.User = null;
-          req.session.errorMessage = "Your account has been blocked. Please contact support.";
-          return res.redirect("/user/login");
-        }
+//         if (user && user.isBlocked) {
+//           req.session.user = null;
+//           req.session.User = null;
+//           req.session.errorMessage = "Your account has been blocked. Please contact support.";
+//           return res.redirect("/user/login");
+//         }
     
-        const filter = {
-          isBlocked: true,
-          category: { $in: category.map(cat => cat._id) },
-        };
+//         const filter = {
+//           isBlocked: true,
+//           category: { $in: category.map(cat => cat._id) },
+//         };
     
-        if (req.query.search) {
-          filter.productName = { $regex: new RegExp(".*" + req.query.search + ".*", "i") };
-        }
+//         if (req.query.search) {
+//           filter.productName = { $regex: new RegExp(".*" + req.query.search + ".*", "i") };
+//         }
     
-        let product = await Product.find(filter);
+//         let product = await Product.find(filter);
     
-        const sortOptions = req.query.sort;
-        switch (sortOptions) {
-          case "lowToHigh":
-            product.sort((a, b) => a.salePrice - b.salePrice);
-            break;
-          case "highToLow":
-            product.sort((a, b) => b.salePrice - a.salePrice);
-            break;
-          case "aToZ":
-            product.sort((a, b) => a.productName.localeCompare(b.productName));
-            break;
-          case "zToA":
-            product.sort((a, b) => b.productName.localeCompare(a.productName));
-            break;
+//         const sortOptions = req.query.sort;
+//         switch (sortOptions) {
+//           case "lowToHigh":
+//             product.sort((a, b) => a.salePrice - b.salePrice);
+//             break;
+//           case "highToLow":
+//             product.sort((a, b) => b.salePrice - a.salePrice);
+//             break;
+//           case "aToZ":
+//             product.sort((a, b) => a.productName.localeCompare(b.productName));
+//             break;
+//           case "zToA":
+//             product.sort((a, b) => b.productName.localeCompare(a.productName));
+//             break;
           
-        }
-    
-        const sess = req.session.user;
-        return res.render("user/shop", { user, product, sess });
-      } catch (error) {
-        console.log("error for load shop",error)
-    }
-}
+          
+//         }
+        
 
+    
+//         const sess = req.session.user;
+//         return res.render("user/shop", { user, product, sess });
+//       } catch (error) {
+//         console.log("error for load shop",error)
+//     }
+// }
+
+
+const loadShop = async (req, res) => {
+    try {
+      const email = req.query.id;
+      const user = await User.findOne({ email });
+      const category = await Category.find({ isListed: true });
+  
+      if (category.length === 0) {
+        return res.status(400).json({ success: false, message: "No categories found" });
+      }
+  
+      if (user && user.isBlocked) {
+        req.session.user = null;
+        req.session.User = null;
+        req.session.errorMessage = "Your account has been blocked. Please contact support.";
+        return res.redirect("/user/login");
+      }
+  
+      // Initialize the filter object
+      const filter = {
+        isBlocked: true,
+        category: { $in: category.map(cat => cat._id) }, // Start with all listed categories
+      };
+  
+      // Add search functionality if query exists
+      if (req.query.search) {
+        filter.productName = { $regex: new RegExp(".*" + req.query.search + ".*", "i") };
+      }
+  
+      // Add category filter based on the 'categoryType' query parameter
+      if (req.query.categoryType) {
+        filter.category = { $in: category.filter(cat => cat.name === req.query.categoryType).map(cat => cat._id) };
+      }
+  
+      // Fetch products with populated category names
+      let product = await Product.find(filter).populate('category', 'name');
+  
+      // Apply sorting if 'sort' query is present
+      const sortOptions = req.query.sort;
+      switch (sortOptions) {
+        case "lowToHigh":
+          product.sort((a, b) => a.salePrice - b.salePrice);
+          break;
+        case "highToLow":
+          product.sort((a, b) => b.salePrice - a.salePrice);
+          break;
+        case "aToZ":
+          product.sort((a, b) => a.productName.localeCompare(b.productName));
+          break;
+        case "zToA":
+          product.sort((a, b) => b.productName.localeCompare(a.productName));
+          break;
+        default:
+          break;
+      }
+  
+      const sess = req.session.user;
+      return res.render("user/shop", { user, product, sess });
+    } catch (error) {
+      console.log("Error loading shop:", error);
+    }
+  };
+  
 
 
 

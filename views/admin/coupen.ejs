@@ -73,8 +73,8 @@
                     </li>
                    
                     <li class="menu-item">
-                        <a class="menu-link" href=""> <i class="icon material-icons md-comment"></i>
-                            <span class="text">Offers</span>
+                        <a class="menu-link" href="/admin/salesReport"> <i class="icon material-icons md-comment"></i>
+                            <span class="text">Sales report</span>
                         </a>
                     </li>
                     <li class="menu-item">
@@ -298,10 +298,10 @@
 
   </script>
 
-  <script>
+<script>
     document.getElementById('couponForm').addEventListener('submit', function (e) {
       e.preventDefault(); // Prevent form submission
-  
+
       let isValid = true;
       const errors = {
         couponCode: '',
@@ -313,37 +313,42 @@
         usageLimit: '',
         isActive: '',
       };
-  
+
+      // Clear previous error messages
       Object.keys(errors).forEach((field) => {
         document.getElementById(`${field}Error`).textContent = '';
       });
-  
+
+      // Validation logic
       const couponCode = document.getElementById('couponCode').value.trim();
+      const couponCodePattern = /^[a-zA-Z0-9]{5,20}$/;
       if (!couponCode) {
         errors.couponCode = 'Coupon Code is required.';
         isValid = false;
-      }
-  
-      const discountType = document.getElementById('discountType').value;
-      if (!discountType) {
-        errors.discountType = 'Discount Type is required.';
+      } else if (!couponCodePattern.test(couponCode)) {
+        errors.couponCode = 'Coupon Code must be 5-20 alphanumeric characters.';
         isValid = false;
       }
-  
+
+      const discountType = document.getElementById('discountType').value;
+    //   const validDiscountTypes = ['Percentage', 'Fixed'];
+    //   if (!discountType || !validDiscountTypes.includes(discountType)) {
+    //     errors.discountType = 'Discount Type is required and must be valid.';
+    //     isValid = false;
+    //   }
+
       const discountAmount = parseFloat(document.getElementById('discountAmount').value);
       if (isNaN(discountAmount) || discountAmount <= 0) {
         errors.discountAmount = 'Discount Amount must be a positive number.';
         isValid = false;
       }
-  
-      // Validate Minimum Purchase Amount
+
       const minPurchaseAmount = parseFloat(document.getElementById('minPurchaseAmount').value);
       if (isNaN(minPurchaseAmount) || minPurchaseAmount <= 0) {
         errors.minPurchaseAmount = 'Minimum Purchase Amount must be a positive number.';
         isValid = false;
       }
-  
-      // Validate Expiration Date
+
       const expirationDate = document.getElementById('expirationDate').value;
       if (!expirationDate) {
         errors.expirationDate = 'Expiration Date is required.';
@@ -352,83 +357,77 @@
         errors.expirationDate = 'Expiration Date must be in the future.';
         isValid = false;
       }
-  
-      // Validate Maximum Discount (Optional)
+
       const maxDiscount = document.getElementById('maxDiscount').value;
       if (maxDiscount && parseFloat(maxDiscount) < 0) {
         errors.maxDiscount = 'Maximum Discount cannot be negative.';
         isValid = false;
       }
-  
-      // Validate Usage Limit (Optional)
+
       const usageLimit = document.getElementById('usageLimit').value;
-      if (usageLimit && parseInt(usageLimit) < 0) {
-        errors.usageLimit = 'Usage Limit cannot be negative.';
+      if (usageLimit && (isNaN(usageLimit) || parseInt(usageLimit) < 0)) {
+        errors.usageLimit = 'Usage Limit must be a non-negative integer.';
         isValid = false;
       }
-  
-      // Validate Is Active
+
       const isActive = document.getElementById('isActive').value;
-      if (!isActive) {
-        errors.isActive = 'Is Active selection is required.';
-        isValid = false;
-      }
-  
-      // Show error messages if validation fails
+    //   if (!isActive || (isActive !== 'Yes' && isActive !== 'No')) {
+    //     errors.isActive = 'Is Active selection is required and must be Yes or No.';
+    //     isValid = false;
+    //   }
+
+      // Show error messages
       if (!isValid) {
         Object.keys(errors).forEach((field) => {
           if (errors[field]) {
             document.getElementById(`${field}Error`).textContent = errors[field];
           }
         });
-      } else {
-        const formData = {
-          couponCode,
-          discountType,
-          discountAmount,
-          minPurchaseAmount,
-          expirationDate,
-          maxDiscount: maxDiscount || null,
-          usageLimit: usageLimit || null,
-          isActive
-        };
-  
-        axios.post('/admin/addCoupen', formData)
+        return;
+      }
+
+      // If validation passes, proceed with form submission
+      const formData = {
+        couponCode,
+        discountType,
+        discountAmount,
+        minPurchaseAmount,
+        expirationDate,
+        maxDiscount: maxDiscount || null,
+        usageLimit: usageLimit || null,
+        isActive
+      };
+
+      axios.post('/admin/addCoupen', formData)
         .then(response => {
-             if(response.data.success){
-                // Use SweetAlert for a success message without the "OK" button
+          if (response.data.success) {
             Swal.fire({
-            title: 'Success!',
-            text: response.data.message,
-            icon: 'success',
-            showConfirmButton: false, // Hide the "OK" button
-            timer: 2000 // Automatically close the alert after 2 seconds
+              title: 'Success!',
+              text: response.data.message,
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 2000
             }).then(() => {
-            // Reload the page after the alert closes
-            window.location.reload();
+              window.location.reload();
             });
-             }else{
-                Swal.fire({
-                    icon:'error',
-                    title:'arshankuttti',
-                    text:'arshankutti  miren',
-                    confirmButtonText:'OK'
-                })
-             }
-            
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to add coupon. Please try again.',
+              confirmButtonText: 'OK'
+            });
+          }
         })
         .catch(error => {
-            // Use SweetAlert for an error message
-            Swal.fire({
+          Swal.fire({
             title: 'Error!',
             text: error.response?.data?.message || 'Failed to add coupon. Please try again.',
             icon: 'error',
             confirmButtonText: 'OK'
-            });
+          });
         });
-    }
-  });
-      
+    });
   </script>
 
   <!-- Bootstrap JS Bundle with Popper -->

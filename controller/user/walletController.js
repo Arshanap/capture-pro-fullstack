@@ -4,18 +4,32 @@ const Wallet = require("../../model/userModel/walletSchema")
 
 
 
-const loadWallet = async (req,res)=>{
+const loadWallet = async (req, res) => {
     try {
         const email = req.session.User;
-        const user = await User.findOne({email})
+        const user = await User.findOne({ email });
 
-        const wallet = await Wallet.findOne({userId:user._id})
+        if (!user) {
+            return res.render("user/wallet", { wallet: null, message: "User not found." });
+        }
 
-        res.render("user/wallet",{wallet})
+        const wallet = await Wallet.findOne({ userId: user._id });
+
+        if (!wallet) {
+            // If wallet is not found, handle it gracefully
+            return res.render("user/wallet", {
+                wallet: { balance: 0, transaction: [] }, // Default values
+                message: "Wallet not found. Please add funds to your wallet."
+            });
+        }
+
+        res.render("user/wallet", { wallet });
     } catch (error) {
-        console.log("error for load wallet",error)
+        console.log("Error loading wallet", error);
+        res.render("user/wallet", { wallet: null, message: "An error occurred while loading the wallet." });
     }
-}
+};
+
 
 // Express.js Controller
 const addFund = async (req, res) => {

@@ -41,15 +41,15 @@ async function getNextOrderId() {
 
 const placeOrder = async (req, res) => {
     try {
-        const { address, paymentMethod, couponCode } = req.body; // Include couponCode in the request body
+        const { address, paymentMethod, couponCode } = req.body;
         const email = req.session.User;
         const user = await User.findOne({ email });
-        const userId = user._id;
-        console.log("code:",couponCode)
+
         if (!user) {
             return res.status(400).json({ success: false, error: 'User not found' });
         }
 
+        const userId = user._id;
         const selectedAddress = await Address.findById(address);
         if (!selectedAddress) {
             return res.status(400).json({ success: false, error: 'Invalid address' });
@@ -66,18 +66,27 @@ const placeOrder = async (req, res) => {
 
         let totalAmount = 0;
         let totalQuantity = 0;
+        let totalProductOffer = 0;
         const items = [];
 
+        // Loop through each item in the cart
         for (const cart of cartDocuments) {
             for (const item of cart.items) {
                 const { productId, quantity, price } = item;
-                const product = productId; // populated product details
+                const product = productId;
 
                 if (product.count < quantity) {
                     return res.status(400).json({
                         success: false,
                         error: `${product.productName} has insufficient stock. Only ${product.count} left.`
                     });
+                }
+
+                // Calculate the product offer discount if applicable
+                let offer = 0;
+                if (typeof product.salePrice === 'number' && typeof product.regularPrice === 'number') {
+                    offer = product.regularPrice - product.salePrice;
+                    totalProductOffer += offer * quantity;
                 }
 
                 totalAmount += price * quantity;
@@ -91,93 +100,96 @@ const placeOrder = async (req, res) => {
             }
         }
 
+        // Apply coupon code discount
         let discountAmount = 0;
+        if (couponCode) {
+            const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
+            if (!coupon) {
+                return res.status(400).json({ success: false, error: 'Invalid or inactive coupon code.' });
+            }
 
-if (couponCode) {
-    // Find the coupon and ensure it's active
-    const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
-    if (!coupon) {
-        return res.status(400).json({ success: false, error: 'Invalid or inactive coupon code.' });
-    }
+            const currentDate = new Date();
+            if (currentDate > coupon.expirationDate) {
+                return res.status(400).json({ success: false, error: 'Coupon code has expired.' });
+            }
 
-    // Check if the coupon has expired
-    const currentDate = new Date();
-    if (currentDate > coupon.expirationDate) {
-        return res.status(400).json({ success: false, error: 'Coupon code has expired.' });
-    }
+            if (totalAmount < coupon.minPurchaseAmount) {
+                return res.status(400).json({
+                    success: false,
+                    error: `Minimum purchase amount of ${coupon.minPurchaseAmount} is required.`
+                });
+            }
 
-    // Check if the total amount meets the minimum purchase requirement
-    if (totalAmount < coupon.minPurchaseAmount) {
-        return res.status(400).json({ 
-            success: false, 
-            error: `Minimum purchase amount of ${coupon.minPurchaseAmount} is required.` 
+            discountAmount = coupon.discountAmount;
+            if (discountAmount > totalAmount) {
+                discountAmount = totalAmount;
+            }
+
+            // Deduct the discount amount from totalAmount
+            totalAmount -= discountAmount;
+        }
+
+        // Update the cart's grandTotal with the discount amount
+        
+        const cart = await Cart.findOne({ userId });
+        // Deduct from wallet if using wallet balance
+        if (paymentMethod && paymentMethod.toString() === "Wallet") {
+            const wallet = await Wallet.findOne({ userId });
+            if (!wallet) {
+                return res.status(400).json({ success: false, error: 'No wallet found.' });
+            }
+
+            if (wallet.balance < totalAmount) {
+                return res.status(400).json({ success: false, error: 'Insufficient wallet balance.' });
+            }
+
+            wallet.balance -= cart.grandTotal;
+            wallet.transaction.push({
+                transactionType: 'debit',
+                amount: cart.grandTotal,
+                status: 'completed'
+            });
+            await wallet.save();
+        }
+        
+        // Create the new order
+        const newOrder = new Order({
+            userId,
+            orderId: await getNextOrderId(),
+            orderedItems: items,
+            totalPrice: cart.grandTotal,
+            discount: discountAmount,
+            finalAmount: totalAmount, // Final amount after applying the discount
+            paymentMethod,
+            address: selectedAddress._id,
+            invoiceDate: new Date(),
+            createdOn: new Date(),
+            couponApplied: !!couponCode,
+            productOffer: totalProductOffer
         });
-    }
 
-    // Since we only have a fixed discount method, apply the fixed discount
-    discountAmount = coupon.discountAmount;
-    if (discountAmount > totalAmount) {
-        discountAmount = totalAmount; // Ensure the discount doesn't exceed the total amount
-    }
+        await newOrder.save();
 
-    totalAmount -= discountAmount; // Apply the discount
-}
+        // Reduce product stock
+        for (const item of items) {
+            const product = await Product.findById(item.product);
+            product.count -= item.quantity;
+            await product.save();
+        }
 
-// Deduct from wallet if using wallet balance
-if (paymentMethod && paymentMethod.toString() === "Wallet") {
-    const wallet = await Wallet.findOne({ userId });
-    if (!wallet) {
-        return res.status(400).json({ success: false, error: 'No wallet found.' });
-    }
+        // Clear the user's cart
+        await Cart.deleteMany({ userId });
 
-    if (wallet.balance < totalAmount) {
-        return res.status(400).json({ success: false, error: 'Insufficient wallet balance.' });
-    }
-
-    // Deduct the final amount from the wallet
-    wallet.balance -= totalAmount;
-    wallet.transaction.push({
-        transactionType: 'debit',
-        amount: totalAmount,
-        status: 'completed'
-    });
-    await wallet.save();
-}
-
-// Create the new order
-const newOrder = new Order({
-    userId,
-    orderId: await getNextOrderId(),
-    orderedItems: items,
-    totalPrice: totalAmount, // Original price before discount
-    discount: discountAmount,
-    finalAmount: totalAmount, // Final amount after discount
-    paymentMethod,
-    address: selectedAddress._id,
-    invoiceDate: new Date(),
-    createdOn: new Date(),
-    couponApplied: !!couponCode
-});
-
-await newOrder.save();
-
-// Reduce product stock
-for (const item of items) {
-    const product = await Product.findById(item.product);
-    product.count -= item.quantity;
-    await product.save();
-}
-
-// Clear the user's cart
-await Cart.deleteMany({ userId });
-
-res.json({ success: true, message: 'Order placed successfully', orderId: newOrder._id });
+        res.json({ success: true, message: 'Order placed successfully', orderId: newOrder._id });
 
     } catch (error) {
         console.error("Error placing order:", error);
         res.status(500).json({ success: false, error: 'Internal server error' });
     }
 };
+
+
+
 
 
 
@@ -200,7 +212,6 @@ const loadSuccess = (req,res)=>{
 const cancelOrder = async (req, res) => {
     try {
         const { Id } = req.body;
-
         const order = await Order.findById(Id);
 
         if (!order) {
@@ -209,33 +220,36 @@ const cancelOrder = async (req, res) => {
 
         if (order.paymentMethod === "Wallet") {
             const userId = order.userId;
-
             const wallet = await Wallet.findOne({ userId });
 
             if (!wallet) {
                 return res.status(400).json({ message: "Wallet not found for the user" });
             }
 
-            wallet.balance += order.totalPrice; 
+            wallet.balance += order.totalPrice;
 
             wallet.transaction.push({
-                transactionType: 'credit', 
+                transactionType: "credit",
                 amount: order.totalPrice,
-                status: 'completed',
+                status: "completed",
                 orderId: order._id,
             });
 
             await wallet.save();
         }
 
-        for (const item of order.items) {
-            const product = await Product.findById(item.product);
-            if (product) {
-                product.count += item.quantity; 
-                await product.save();
+        // Check if `orderedItems` exists and is an array
+        if (Array.isArray(order.orderedItems)) {
+            for (const item of order.orderedItems) {
+                const product = await Product.findById(item.product);
+                if (product) {
+                    product.count += item.quantity;
+                    await product.save();
+                }
             }
+        } else {
+            return res.status(400).json({ message: "Order items are not available or invalid" });
         }
-
 
         const result = await Order.findOneAndUpdate(
             { _id: Id },
@@ -253,6 +267,8 @@ const cancelOrder = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+
 
 const returnOrder = async (req,res)=>{
     try {

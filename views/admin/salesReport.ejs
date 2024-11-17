@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <title>Evara Dashboard</title>
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta property="og:title" content="">
+        <meta property="og:type" content="">
+        <meta property="og:url" content="">
+        <meta property="og:image" content="">
+        <!-- Favicon -->
+        <link rel="shortcut icon" type="image/x-icon" href="/assets/imgs/theme/favicon.svg">
+        <link rel="stylesheet" href="/assets/imgs/theme/favicon.svg">
+        <!-- Template CSS -->
+        <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <style>
+        /* General Styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* background-color: #f8f4e3; Light background to complement the gold */
+    /* color: #5a4e3f; Subtle dark text for readability */
+}
+
+/* Styled Select */
+.styled-select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 2px solid #f37821;
+    background-color: #fff;
+    color: #5a4e3f;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.styled-select:focus {
+    border-color: #f37821;
+    outline: none;
+}
+
+/* Filter Label */
+.filter-label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #5a4e3f;
+}
+
+/* Buttons */
+.styled-button {
+    padding: 10px 20px;
+    background-color: #f37821; /* Gold color */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.styled-button:hover {
+    background-color: #f37821;
+}
+
+/* Download Buttons */
+.animated-button {
+    padding: 10px 20px;
+    background-color: #10d81a; /*Gold color*/
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.animated-button:hover {
+    background-color: #10d81a;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Input Date Fields */
+input[type="date"] {
+    border: 2px solid #f37821;
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #5a4e3f;
+    font-weight: bold;
+    transition: border-color 0.3s;
+}
+
+input[type="date"]:focus {
+    border-color: #f37821;
+    outline: none;
+}
+
+/* Custom Date Inputs Container */
+#customDateInputs {
+    margin-top: 20px;
+}
+
+/* Form Row Styling */
+.row {
+    margin-top: 20px;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.justify-content-center {
+    justify-content: center;
+}
+
+/* Header Styling */
+h1, h2, h3, h4, h5, h6 {
+    color: #5a4e3f;
+    font-weight: bold;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #f37821;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #f8f4e3;
+}
+
+        .report-header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .stat-card {
+            border: none;
+            border-radius: 8px;
+            padding: 20px;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .stat-card.sales {
+            background-color: #28a745;
+        }
+        .stat-card.revenue {
+            background-color: #17a2b8;
+        }
+        .stat-card.profit {
+            background-color: #ffc107;
+        }
+        .report-header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .stat-card {
+            border: none;
+            border-radius: 8px;
+            padding: 20px;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .stat-card.sales { background-color: #28a745; }
+        .stat-card.revenue { background-color: #17a2b8; }
+        .stat-card.profit { background-color: #ffc107; }
+        .menu-link { color: #292f46; }
+        .animated-button { transition: background-color 0.3s, transform 0.2s; }
+        .animated-button:hover { background-color: #0056b3; transform: translateY(-3px); }
+    </style>
+    
+    <body>
+        <div class="screen-overlay"></div>
+        <aside class="navbar-aside" id="offcanvas_aside">
+            <div class="aside-top">
+                <a href="" class="brand-wrap">
+                    <img src="/assets/imgs/captureLogo.png" class="logo" alt="Evara Dashboard" >
+                </a>
+                <div>
+                    <!-- <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button> -->
+                </div>
+            </div>
+            <nav>
+                <ul class="menu-aside">
+                    <li class="menu-item ">
+                        <a class="menu-link" href=""> <i class="icon material-icons md-home"></i>
+                            <span class="text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="menu-item ">
+                        <a class="menu-link" href="/admin/products"> <i class="icon material-icons md-shopping_bag"></i>
+                            <span class="text">Products</span>
+                        </a>
+                    
+                    </li>
+                    <li class="menu-item ">
+                        <a class="menu-link" href=""> <i class="icon material-icons md-shopping_cart"></i>
+                            <span class="text">Order list</span>
+                        </a>
+      
+                    </li>
+                    <li class="menu-item ">
+                         
+                        <a href="/admin/users" class="menu-link" style="right: -10px; position: relative; color: #292f46;">   
+                            <i class="icon material-icons md-person"></i>  users</a>
+                    </li>
+                    <li class="menu-item ">
+                        <a class="menu-link" href=""> <i class="icon material-icons md-add_box"></i>
+                            <span class="text">Coupons</span>
+                        </a>
+                    </li>
+                    
+                    <li class="menu-item"></li>
+                        <a class="menu-link" href="/admin/category"> <i style="font-size: 117%; color: #adadad; right:0%" class="icon material-icons md-monetization_on "></i>
+                            <span class="text">category</span>
+                        </a>
+                    </li>
+                    <li class="menu-item ">
+                        <a class="menu-link" href=""> <i class="fas fa-bullhorn" style="font-size: 117%; color: #adadad; right:2%"></i>
+                            <span class="text" style="left:7%; position:  relative;">banners</span>
+                        </a>
+                     
+                    </li>
+                   
+                    <li class="menu-item active">
+                        <a class="menu-link" href="/admin/salesReport"> <i class="icon material-icons md-comment"></i>
+                            <span class="text">Sales Report</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a class="menu-link" href=""> <i class="icon material-icons md-stars"></i>
+                            <span class="text">Payments</span> </a>
+                    </li>
+                  
+                </ul>
+                <hr>
+                <ul class="menu-aside">
+                    <li class="menu-item ">
+                        <a class="menu-link" href=""> <i class="icon material-icons md-settings"></i>
+                            <span class="text">Settings</span>
+                        </a>
+                        <!-- <div class="submenu">
+                            <a href="page-settings-1.html">Setting sample 1</a>
+                            <a href="page-settings-2.html">Setting sample 2</a>
+                        </div> -->
+                    </li>
+                    <li class="menu-item">
+                        <a  style="left: 5%; font-size: 10px;" class="menu-link" href="/admin/Logout"> <i class="fa-solid fa-right-from-bracket">  Logout </i> 
+                         
+                        </a >
+                    </li>
+                </ul>
+                <br>
+                <br>
+            </nav>
+        </aside>
+    
+</head>
+<body>
+    <div style="margin-left: 320px; margin-top: 300px; width: 1100px;" class="container my-5">
+        <!-- Report Header -->
+        <div class="report-header">
+            <h1>Sales Report Form</h1>
+            <p class="lead">Download and Submit Sales Data</p>
+        </div>
+
+        <!-- Display Message if No Report Data is Found -->
+        <% if (!report) { %>
+            <p class="alert alert-warning"><%= message %></p>
+        <% } else { %>
+            <!-- Sales Statistics Form -->
+            <form id="salesReport">
+                <div class="row text-center" id="salesReports">
+                    <div class="col-md-4">
+                        <div class="stat-card sales">
+                            <h4>Total Orders</h4>
+                            <input type="number" name="total_orders" disabled class="form-control" value="<%= report.totalOrders %>">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card revenue">
+                            <h4>Total Amount</h4>
+                            <input type="text" name="total_amount" disabled class="form-control" value="Rs<%= report.totalAmount %>">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card profit">
+                            <h4>Total Coupon Discount</h4>
+                            <input type="text" name="total_coupon_discount" min="Rs<%= report.totalCoupondiscount %>" max="Rs<%= report.totalCoupondiscount %>" disabled class="form-control" value="Rs<%= report.totalCoupondiscount %>">
+                        </div>
+                    </div>
+                    <!-- Add other fields here similarly -->
+                    <div class="col-md-4">
+                        <div class="stat-card profit">
+                            <h4>Total Cancelled Orders</h4>
+                            <input type="number" name="total_delivered_orders" min="<%=report.totalCancelledOrders%>" max="<%=report.totalCancelledOrders%>" disabled class="form-control" value="<%=report.totalCancelledOrders%>">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card sales">
+                            <h4>Total Returned Orders</h4>
+                            <input type="number" name="total_returned_orders" disabled min="<%=report.totalReturnedOrders%>" max="<%=report.totalReturnedOrders%>" class="form-control" value="<%=report.totalReturnedOrders%>">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card revenue">
+                            <h4>Total Shipped Orders</h4>
+                            <input type="number" name="total_shipped_orders" class="form-control" min="<%=report.totalShippedOrders%>" max="<%=report.totalShippedOrders%>" disabled value="<%=report.totalShippedOrders%>">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="stat-card sales">
+                            <h4>Total Product Offer</h4>
+                            <input type="text" name="product_offer" class="form-control" min="<%=report.totalProductOffers%>" max="<%=report.totalProductOffers%>" disabled value="<%=report.totalProductOffers%>">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card sales">
+                            <h4>Total Category Offer</h4>
+                            <input type="text" name="product_offer" class="form-control" min="<%=report.totalProductOffers%>" max="<%=report.totalProductOffers%>" disabled value="<%=report.totalProductOffers%>">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card sales">
+                            <h4>Total Delivered Orders</h4>
+                            <input type="text" name="product_offer" class="form-control" min="<%=report.totalDeliveredOrders%>" max="<%=report.totalDeliveredOrders%>" disabled value="<%=report.totalDeliveredOrders%>">
+                        </div>
+                    </div>
+                </div>
+                
+
+                <!-- Date Filters -->
+                <div id="customDateInputs" style="display: none;">
+                    <label for="start">Start Date:</label>
+                    <input type="date" name="start" id="start">
+                    
+                    <label for="end">End Date:</label>
+                    <input type="date" name="end" id="end">
+                </div>
+                <!-- Time Range Filters -->
+                <div class="row my-4">
+                    <!-- <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-outline-primary">Daily</button>
+                        <button type="button" class="btn btn-outline-secondary">Weekly</button>
+                        <button type="button" class="btn btn-outline-success">Monthly</button>
+                        <button type="button" class="btn btn-outline-info">Yearly</button>
+                    </div> -->
+                    <label for="filter" class="filter-label">Select Report Filter:</label>
+                    <form id="salesReportFilterForm" action="your-form-action-url" method="GET">
+                        <select name="filter" id="filter" class="styled-select" onchange="handleFilterChange()">
+                            <option value="daily" <%= filter === 'daily' ? 'selected' : '' %>>Daily</option>
+                            <option value="weekly" <%= filter === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                            <option value="monthly" <%= filter === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                            <option value="yearly" <%= filter === 'yearly' ? 'selected' : '' %>>Yearly</option>
+                            <option value="custom" <%= filter === 'custom' ? 'selected' : '' %>>Custom Range</option>
+                        </select>
+                        
+                        <button type="submit" class="styled-button">Submit</button>
+                    </form>
+
+               
+
+
+                <!-- Submit Button -->
+                <!-- <div class="text-center my-4">
+                    <button id="downloadPdfButton" class="btn btn-primary">Download as PDF</button>
+                </div> -->
+                <div class="text-center my-4 d-flex justify-content-center">
+                    <button id="downloadPdfButton" class="animated-button me-2">Download PDF</button>
+                    <button id="downloadExcelButton" class="animated-button">Download Excel</button>
+                </div>
+                
+                
+                
+
+            </form>
+        <% } %>
+    </div>
+    <!-- Optional JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -730,19 +730,19 @@ strong.text-uppercase {
             button.addEventListener("click", function(event) {
                 const orderId = this.getAttribute("data-order-id1");
                 document.getElementById("orderIdInput1").value = orderId;
-                cancelfun(event, orderId); // Pass the orderId to the cancelfun
+                cancelfun11(event, orderId); // Pass the orderId to the cancelfun
             });
         });
     });
 
 
-    function cancelfun(event) {
+    function cancelfun11(event) {
             event.preventDefault(); // Prevent default action (if any)
             
             const orderId = document.getElementById("orderIdInput1").value;
 
             if (!orderId) {
-            alert("Order ID not found!");
+            alert("Order ID not found!!!!!!!!");
             return;
         }
 

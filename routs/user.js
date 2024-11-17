@@ -11,9 +11,17 @@ const passwordController = require("../controller/user/passwordController")
 const checkoutController = require("../controller/user/checkoutController")
 const wishlistController = require("../controller/user/wishlistController")
 const walletController = require("../controller/user/walletController")
+const rezorPayController = require("../controller/user/paymentController")
 const bodyParser = require('body-parser');
 const Razorpay = require('razorpay');
-require('dotenv').config();
+const crypto = require('crypto');
+const User = require("../model/userModel/userSchema")
+const Cart = require("../model/userModel/cartSchema")
+const Product = require("../model/userModel/productSchema")
+const Order = require("../model/userModel/orderSchema")
+const Address = require("../model/userModel/adressSchema")
+const Coupon = require("../model/userModel/couponSchema")
+const { v4: uuidv4 } = require('uuid');
 
 // const coupenController = require("../controller/user/")
 
@@ -116,35 +124,162 @@ router.post("/user/addFund", walletController.addFund)
 // coupen
 // router.get("/user/coupen", userAuth.checkSession, )
 
+
+
+
+// Initialize Razorpay
 const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID, // Use environment variables for security
+    key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET
-});
-
-// Razorpay Order Route
-router.post('/user/razorPay', async (req, res) => {
+  });
+  
+  // Route to create a Razorpay order
+  router.post('/user/razorPay', async (req, res) => {
+    // console.log('helloooo')
+    const email = req.session.User
+    const user = await User.findOne({email})
+    const cart1 = await Cart.findOne({userId:user._id})
+    const options = {
+      amount: cart1.grandTotal, 
+      currency: 'INR',
+      receipt: 'receipt#1',
+    };
+    // console.log(options);
+    
+  
     try {
-
-        console.log("ethi ethi ethi ethi")
-        // console.log("RAZORPAY_KEY_ID:", process.env.RAZORPAY_KEY_ID);
-// console.log("RAZORPAY_KEY_SECRET:", process.env.RAZORPAY_KEY_SECRET);
-
-        const amount = 111 * 100;
-        const options = {
-            amount: amount,
-            currency: 'INR',
-            receipt: 'order_rcptid_11'
-        };
-
-        // Create an order
-        const order = await razorpay.orders.create(options);
-        res.json({ success: true, order });
+      const order = await razorpay.orders.create(options);
+      res.json({
+        key: process.env.RAZORPAY_KEY_SECRET, 
+        amount: order.amount,
+        currency: order.currency,
+        id: order.id
+      });
     } catch (error) {
-        console.error('Error creating Razorpay order:', error);
-        res.status(500).json({ success: false, error: error.message });
+      res.status(500).send(error);
+    }
+  });
+  
+ 
+  router.post('/user/verify', async (req, res) => {
+    // console.log('Verifying Razorpay payment...');
+// console.log("1")
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, address } = req.body;
+    console.log('Received data:', { razorpay_order_id, razorpay_payment_id, razorpay_signature, address });
+
+    const key_secret = process.env.RAZORPAY_KEY_SECRET;
+    const userEmail = req.session.User;
+
+    try {
+        const user = await User.findOne({ email: userEmail });
+
+        if (!user) {
+            return res.status(400).json({ success: false, error: 'User not found' });
+        }
+
+        const userId = user._id;
+        const selectedAddress = await Address.findById(address);
+        if (!selectedAddress) {
+            return res.status(400).json({ success: false, error: 'Invalid address' });
+        }
+// console.log("2")
+        const cartDocuments = await Cart.find({ userId }).populate({
+            path: 'items.productId',
+            model: 'Product'
+        });
+
+        if (!cartDocuments || cartDocuments.length === 0) {
+            return res.status(400).json({ success: false, error: 'Cart is empty' });
+        }
+
+        let totalAmount = 0;
+        let totalQuantity = 0;
+        let totalProductOffer = 0;
+        const items = [];
+// console.log("3")
+        // Loop through each item in the cart
+        for (const cart of cartDocuments) {
+            for (const item of cart.items) {
+                const { productId, quantity, price } = item;
+                const product = productId;
+
+                if (product.count < quantity) {
+                    return res.status(400).json({
+                        success: false,
+                        error: `${product.productName} has insufficient stock. Only ${product.count} left.`
+                    });
+                }
+
+                let offer = 0;
+                if (typeof product.salePrice === 'number' && typeof product.regularPrice === 'number') {
+                    offer = product.regularPrice - product.salePrice;
+                    totalProductOffer += offer * quantity;
+                }
+
+                totalAmount += price * quantity;
+                totalQuantity += quantity;
+                items.push({
+                    product: product._id,
+                    quantity,
+                    price,
+                    name: product.productName,
+                });
+            }
+        }
+// console.log("4")
+        // Validate Razorpay signature
+        const generated_signature = crypto
+            .createHmac('sha256', key_secret)
+            .update(razorpay_order_id + '|' + razorpay_payment_id)
+            .digest('hex');
+
+        if (generated_signature !== razorpay_signature) {
+            return res.status(400).json({ success: false, error: 'Invalid signature' });
+        }
+        const cart = await Cart.findOne({userId})
+
+        const generatedOid = await getNextOrderId();
+
+        const newOrder = new Order({
+            userId,
+            orderId: generatedOid,
+            orderedItems: items,
+            totalPrice: cart.grandTotal,
+            discount: 0, 
+            finalAmount: totalAmount,
+            paymentMethod: 'Razorpay',
+            address: selectedAddress._id,
+            invoiceDate: new Date(),
+            createdOn: new Date(),
+            productOffer: totalProductOffer
+        });
+// console.log("5")
+        await newOrder.save();
+
+        // Reduce product stock
+        for (const item of items) {
+            const product = await Product.findById(item.product);
+            product.count -= item.quantity;
+            await product.save();
+        }
+
+        // Clear the user's cart
+        await Cart.deleteMany({ userId });
+// console.log("6")
+        res.json({ success: true, message: 'Payment verified and order placed successfully', orderId: generatedOid });
+    } catch (error) {
+        console.error('Error during payment verification or order processing:', error);
+        res.status(500).json({ status: 'failed', message: 'Error during payment verification or order processing' });
     }
 });
-  
+
+
+
+async function getNextOrderId() {
+    const timestamp = Date.now();
+    const randomSuffix = Math.floor(Math.random() * 1000);
+    return `ORD-${timestamp}-${randomSuffix}`;
+}
 
 
 module.exports = router

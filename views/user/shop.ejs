@@ -214,10 +214,9 @@
                                             </li>
                                             <li class=""><a href="#">Products</a>
                                                 <ul class="submenu">
-                                                    <li><a href=""> camera</a></li>
-                                                    <li><a href=""> lens</a></li>
-                                                    <li><a href=""> Bag</a></li>
-                                                    <li><a href=""> Others</a></li>
+                                                    <li><a href="#" onclick="applyFilters22('DSLR'); return false;">DSLR</a></li>
+                                                    <li><a href="#" onclick="applyFilters22('XLR'); return false;">XLR</a></li>
+                                                    <li><a href="#" onclick="applyFilters22('Accessories'); return false;">Accessories</a></li>                                                    
                                                 </ul>
                                             </li>
                                             <!-- <li><a href="">Blog</a>
@@ -1200,6 +1199,16 @@ function applyFilters(filterType) {
   let query = '?';
 
   if (filterType) query += `sort=${filterType}&`;
+
+  query = query.slice(-1) === '&' ? query.slice(0, -1) : query;
+
+  window.location.href = `/user/shop${query}`;
+}
+
+function applyFilters22(filterType) {
+  let query = '?';
+
+  if (filterType) query += `categoryType=${filterType}&`;
 
   query = query.slice(-1) === '&' ? query.slice(0, -1) : query;
 

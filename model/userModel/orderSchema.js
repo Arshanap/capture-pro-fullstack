@@ -61,7 +61,7 @@ const orderSchema = new Schema({
         type: String,
         required: true,
         default: "Processing",
-        enum: ["pending", "Processing", "Shipped", "Delivered", "Cancelled"]
+        enum: ["pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returned"]
     },
     createdOn: {
         type: Date,
@@ -71,6 +71,10 @@ const orderSchema = new Schema({
     couponApplied: {
         type: Boolean,
         default: false
+    },
+    productOffer: {
+        type: Number,
+        default: 0,
     }
 }, { timestamps: true });
 

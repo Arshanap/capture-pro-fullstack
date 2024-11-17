@@ -8,6 +8,7 @@ const customerController = require("../controller/admin/customerController")
 const productContoller = require("../controller/admin/productController")
 const orderController = require("../controller/admin/orderControlller")
 const coupenController = require("../controller/admin/coupenController")
+const salesController = require("../controller/admin/salesController")
 // const upload = require("../helper/multer")
 
 // login
@@ -69,6 +70,7 @@ router.delete("/deleteCoupon", coupenController.deleteCoupon)
 router.get("/editCoupon", adminAuth.checkSession, coupenController.loadEditCoupon)
 router.post("/editCoupon", coupenController.editCoupon)
 
+router.get("/salesReport", adminAuth.checkSession, salesController.loadSales)
 
 
 module.exports = router
