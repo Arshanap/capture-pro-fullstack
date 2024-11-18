@@ -60,17 +60,17 @@ const getSalesReport = async (filter, start, end) => {
                     totalAmount: { $sum: '$totalPrice' },
                     totalCouponDiscount: { $sum: '$discount' },
                     totalCancelledOrders: {
-                        $sum: { $cond: [{ $eq: ['$status', 'Cancelled'] }, 1, 0] }
-                    },
-                    totalReturnedOrders: {
-                        $sum: { $cond: [{ $eq: ['$status', 'Returned'] }, 1, 0] }
-                    },
-                    totalShippedOrders: {
-                        $sum: { $cond: [{ $eq: ['$status', 'Shipped'] }, 1, 0] }
-                    },
-                    totalDeliveredOrders: {
-                        $sum: { $cond: [{ $eq: ['$status', 'Delivered'] }, 1, 0] }
-                    },
+                        $sum: { $cond: [{ $eq: ["$status", "Cancelled"] }, 1, 0] },
+                      },
+                      totalReturnedOrders: {
+                        $sum: { $cond: [{ $eq: ["$status", "Returned"] }, 1, 0] },
+                      },
+                      totalShippedOrders: {
+                        $sum: { $cond: [{ $eq: ["$status", "Shipped"] }, 1, 0] },
+                      },
+                      totalDeliveredOrders: {
+                        $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, 1, 0] },
+                      },
                     totalProductOffers: { $sum: '$productOffer' },
                     totalCategoryOffer: { $sum: '$categoryOffer' }
                 }
@@ -126,39 +126,45 @@ const loadSales = async (req,res)=>{
 
 const downloadSalesReportPdf = async (req, res) => {
     try {
-      const filter = req.query.filter || 'daily';
-      const start = req.query.start || null;
-      const end = req.query.end || null;
-  
-      const report = await getSalesReport(filter, start, end);
-  
-      if (!report) {
-        return res.status(404).send('No report data available');
-      }
-  
-      const doc = new PDFDocument();
-  
-      res.setHeader('Content-Disposition', 'attachment; filename="sales-report.pdf"');
-      res.setHeader('Content-Type', 'application/pdf');
-  
-      doc.pipe(res);
-  
-      doc.fontSize(20).text('Sales Report', { align: 'center' });
-  
-      doc.fontSize(12).text(`Total Orders: ${report.totalOrders}`);
-      doc.text(`Total Amount: Rs${report.totalAmount}`);
-      doc.text(`Total Coupon Discount: Rs${report.totalCoupondiscount}`);
-      doc.text(`Total Delivered Orders: ${report.totalDeliveredOrders}`);
-      doc.text(`Total Returned Orders: ${report.totalReturnedOrders}`);
-      doc.text(`Total Shipped Orders: ${report.totalShippedOrders}`);
-      doc.text(`Total Product Offers: Rs${report.totalProductOffers}`);
-  
-      doc.end();
+        const filter = req.query.filter || 'daily';
+        const start = req.query.start || null;
+        const end = req.query.end || null;
+
+        // Assuming getSalesReport is a function that returns the report data
+        const report = await getSalesReport(filter, start, end);
+
+        if (!report) {
+            return res.status(404).send('No report data available');
+        }
+
+        // Create a new PDF document
+        const doc = new PDFDocument();
+
+        // Set headers for file download
+        res.setHeader('Content-Disposition', 'attachment; filename="sales-report.pdf"');
+        res.setHeader('Content-Type', 'application/pdf');
+
+        // Pipe the PDF document to the response
+        doc.pipe(res);
+
+        // Add content to the PDF
+        doc.fontSize(20).text('Sales Report', { align: 'center' });
+        doc.moveDown();
+        doc.fontSize(12).text(`Total Orders: ${report.totalOrders}`);
+        doc.text(`Total Amount: Rs${report.totalAmount}`);
+        doc.text(`Total Coupon Discount: Rs${report.totalCoupondiscount}`);
+        doc.text(`Total Delivered Orders: ${report.totalDeliveredOrders}`);
+        doc.text(`Total Returned Orders: ${report.totalReturnedOrders}`);
+        doc.text(`Total Shipped Orders: ${report.totalShippedOrders}`);
+        doc.text(`Total Product Offers: Rs${report.totalProductOffers}`);
+
+        // Finalize the PDF and end the stream
+        doc.end();
     } catch (error) {
-      console.error('Error generating PDF:', error);
-      res.status(500).send('Error generating PDF');
+        console.error('Error generating PDF:', error);
+        res.status(500).send('Error generating PDF');
     }
-  };
+};
 
 
 

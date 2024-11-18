@@ -1,4 +1,6 @@
 const Order = require("../../model/userModel/orderSchema")
+const Wallet = require("../../model/userModel/walletSchema")
+const Product = require("../../model/userModel/productSchema")
 
 
 const loadOrder = async (req, res) => {
@@ -70,6 +72,43 @@ const updateStatus = async (req, res) => {
 const cancelOrder = async (req, res) => {
     try {
         const { Id } = req.body;
+        const order = await Order.findById(Id);
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        if (order.paymentMethod === "Wallet") {
+            const userId = order.userId;
+            const wallet = await Wallet.findOne({ userId });
+
+            if (!wallet) {
+                return res.status(400).json({ message: "Wallet not found for the user" });
+            }
+
+            wallet.balance += order.totalPrice;
+
+            wallet.transaction.push({
+                transactionType: "credit",
+                amount: order.totalPrice,
+                status: "completed",
+                orderId: order._id,
+            });
+
+            await wallet.save();
+        }
+
+        if (Array.isArray(order.orderedItems)) {
+            for (const item of order.orderedItems) {
+                const product = await Product.findById(item.product);
+                if (product) {
+                    product.count += item.quantity;
+                    await product.save();
+                }
+            }
+        } else {
+            return res.status(400).json({ message: "Order items are not available or invalid" });
+        }
         
         const result = await Order.findOneAndUpdate(
             { _id:Id }, 

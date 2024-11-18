@@ -370,7 +370,7 @@
                                     </td>
                                     <td><%= address.address.addresstype %></td>
                                     <td>
-                                        <input type="radio" name="selectedAddress" value="<%= address._id %>" id="address_<%= address._id %>">
+                                        <input type="radio"checked name="selectedAddress" value="<%= address._id %>" id="address_<%= address._id %>">
                                         <label for="address_<%= address._id %>">Select</label>
                                         <a href="/user/checkoutEditAddress?addressId=<%= address._id %>"><button class="btn btn-secondary">Edit</button></a>
                                 </td>
@@ -458,12 +458,12 @@
                         </div>
                         
                         <div>
-                            <input type="radio" id="cashOnDelivery" name="paymentMethod" value="cashOnDelivery" onchange="togglePaymentInfo('cashOnDelivery')" >
+                            <input type="radio" id="cashOnDelivery" name="paymentMethod" value="cashOnDelivery" checked onchange="togglePaymentInfo('cashOnDelivery')" >
                             <label for="cashOnDelivery">Cash on Delivery</label>
                         </div>
 
                         <div>
-                            <input type="radio" id="Razorpay" name="paymentMethod" value="Razorpay" onchange="" checked>
+                            <input type="radio" id="Razorpay" name="paymentMethod" value="Razorpay" onchange="">
                             <label for="paypal">Razorpay</label>
                         </div>
                         

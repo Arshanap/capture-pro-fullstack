@@ -201,7 +201,7 @@ h1, h2, h3, h4, h5, h6 {
             <nav>
                 <ul class="menu-aside">
                     <li class="menu-item ">
-                        <a class="menu-link" href=""> <i class="icon material-icons md-home"></i>
+                        <a class="menu-link" href="/admin/dashboard"> <i class="icon material-icons md-home"></i>
                             <span class="text">Dashboard</span>
                         </a>
                     </li>
@@ -212,7 +212,7 @@ h1, h2, h3, h4, h5, h6 {
                     
                     </li>
                     <li class="menu-item ">
-                        <a class="menu-link" href=""> <i class="icon material-icons md-shopping_cart"></i>
+                        <a class="menu-link" href="/admin/order"> <i class="icon material-icons md-shopping_cart"></i>
                             <span class="text">Order list</span>
                         </a>
       
@@ -386,7 +386,7 @@ h1, h2, h3, h4, h5, h6 {
                 </div> -->
                 <div class="text-center my-4 d-flex justify-content-center">
                     <button id="downloadPdfButton" class="animated-button me-2">Download PDF</button>
-                    <button id="downloadExcelButton" class="animated-button">Download Excel</button>
+                    <!-- <button id="downloadExcelButton" class="animated-button">Download Excel</button> -->
                 </div>
                 
                 
@@ -396,6 +396,44 @@ h1, h2, h3, h4, h5, h6 {
         <% } %>
     </div>
     <!-- Optional JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <script>
+        document.getElementById('downloadPdfButton').addEventListener('click', function (e) {
+            e.preventDefault();
+            const pdfContent = document.getElementById('salesReports');
+    
+            html2canvas(pdfContent, { scale: 3 }) // Adjust scale for resolution
+                .then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new window.jspdf.jsPDF('p', 'pt', 'a4'); // Create PDF in A4 portrait
+    
+                    const imgWidth = 500; // Adjust image width as needed
+                    const pageHeight = pdf.internal.pageSize.height;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    
+                    let heightLeft = imgHeight;
+                    let position = 0;
+    
+                    pdf.addImage(imgData, 'PNG', 50, 10, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+    
+                    while (heightLeft > 0) {
+                        pdf.addPage();
+                        position -= pageHeight; // Adjust position for next page
+                        pdf.addImage(imgData, 'PNG', 50, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                    }
+    
+                    pdf.save('checkout-summary.pdf');
+                })
+                .catch(error => {
+                    console.error('Error generating PDF:', error);
+                });
+        });
+    </script>
+    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

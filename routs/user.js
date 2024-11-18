@@ -11,7 +11,6 @@ const passwordController = require("../controller/user/passwordController")
 const checkoutController = require("../controller/user/checkoutController")
 const wishlistController = require("../controller/user/wishlistController")
 const walletController = require("../controller/user/walletController")
-const rezorPayController = require("../controller/user/paymentController")
 const bodyParser = require('body-parser');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
