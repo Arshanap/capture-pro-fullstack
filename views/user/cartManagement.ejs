@@ -209,6 +209,7 @@
                 <tr>
                     <th>#</th>
                     <th>Product</th>
+                    <th>Name</th>
                     <th>Quantity</th>
                     <th>Price</th>
                     <th>Total</th>
@@ -225,12 +226,11 @@
                                     <img src="/uploads/re-image/<%= proData[i].productImage[0] %>" alt="Product Image" style="max-width: 100px;">
                                 <% } else { %>
                                     <img src="/path/to/default-image.jpg" alt="Default Image" style="max-width: 100px;">
-                                <% } %>
-                                <span class="ml-2"><%= proData[i].productName %></span>                                
+                                <% } %>                              
                             </td>
-                            
+                            <td><p> <%= proData[i].productName %></p></td>
                             <td>
-                                <input type="number" 
+                                <input type="number"
                                 id="quantity-<%= proData[i]._id %>" 
                                 value="<%= proData[i].quantity %>" 
                                 min="1" 

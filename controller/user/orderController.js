@@ -158,8 +158,8 @@ const placeOrder = async (req, res) => {
             orderId: await getNextOrderId(),
             orderedItems: items,
             totalPrice: cart.grandTotal,
-            discount: discountAmount,
-            finalAmount: totalAmount, // Final amount after applying the discount
+            discount: cart.discountAmount,
+            finalAmount: totalAmount,
             paymentMethod,
             address: selectedAddress._id,
             invoiceDate: new Date(),

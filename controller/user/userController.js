@@ -278,7 +278,7 @@ const loadHome = async (req, res) => {
         }
 
         const filter = {
-            isBlocked: true, 
+            isBlocked: false, 
             category: { $in: category.map(cat => cat._id) }
         };
 

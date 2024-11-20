@@ -117,7 +117,9 @@ const addCategory = async (req,res)=>{
         const {name,description,status,cateOffer} = req.body;
         // console.log(req.body);
 
-        const match = await Category.findOne({ name });
+        const match = await Category.findOne({
+            name: { $regex: new RegExp(`^${name}$`, "i") } // "i" for case-insensitive match
+        });
         if (match) {
             return res.json({ success: false, message: "Category already exists." });
         }

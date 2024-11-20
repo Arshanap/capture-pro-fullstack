@@ -370,7 +370,7 @@
                                     </td>
                                     <td><%= address.address.addresstype %></td>
                                     <td>
-                                        <input type="radio"checked name="selectedAddress" value="<%= address._id %>" id="address_<%= address._id %>">
+                                        <input type="radio" name="selectedAddress" value="<%= address._id %>" id="address_<%= address._id %>">
                                         <label for="address_<%= address._id %>">Select</label>
                                         <a href="/user/checkoutEditAddress?addressId=<%= address._id %>"><button class="btn btn-secondary">Edit</button></a>
                                 </td>
@@ -576,7 +576,9 @@
         </div>
     </div>
 </div>
-
+<script>
+    const grandTotal = '<%=grandTotal%>'
+</script>
             </div>
 
             <!-- Order Summary Table -->
@@ -588,8 +590,8 @@
                         <td>₹ <%= total %></td>
                     </tr>
                     <tr>
-                        <td>Shipping</td>
-                        <td>₹ 00.00</td>
+                        <td>Discount</td>
+                        <td>₹ <%=Discount%></td>
                     </tr>
                     
                     <tr class="fw-bold">
@@ -745,7 +747,7 @@ async function placeOrder(event) {
     const orderResponse = await fetch("/user/razorPay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: 5000 })
+        body: JSON.stringify({ amount:grandTotal})
     });
     const order = await orderResponse.json();
 
@@ -801,6 +803,9 @@ async function placeOrder(event) {
                     background: '#dc3545', // Error red color
                     color: '#fff', // White text color
                 });
+                setTimeout(() => {
+                    window.location.href="/user/orderSuccess"
+                }, 2000);
             }
         },
         prefill: {

@@ -510,7 +510,7 @@ document.getElementById('removeOfferButton').addEventListener('click', function(
                 validationDiv.innerText = "Category added successfully!";
             } else {
                 validationDiv.style.color = 'red';
-                validationDiv.innerText = response.data.message || "An error occurred while adding the category.";
+                validationDiv.innerText = response.data.message || "Category already exists.";
             }
         } catch (error) {
             console.error('Error:', error);

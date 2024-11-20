@@ -129,7 +129,7 @@ router.post("/user/addFund", walletController.addFund)
 // Initialize Razorpay
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
   });
   
   // Route to create a Razorpay order
@@ -147,10 +147,11 @@ const razorpay = new Razorpay({
     
   
     try {
+        const cart = await Cart.findOne({userId:user._id})
       const order = await razorpay.orders.create(options);
       res.json({
         key: process.env.RAZORPAY_KEY_SECRET, 
-        amount: order.amount,
+        amount: cart.grandTotal,
         currency: order.currency,
         id: order.id
       });
@@ -158,11 +159,12 @@ const razorpay = new Razorpay({
       res.status(500).send(error);
     }
   });
+
   
  
   router.post('/user/verify', async (req, res) => {
     // console.log('Verifying Razorpay payment...');
-// console.log("1")
+//  console.log("1")
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, address } = req.body;
     console.log('Received data:', { razorpay_order_id, razorpay_payment_id, razorpay_signature, address });
 
@@ -244,7 +246,7 @@ const razorpay = new Razorpay({
             orderId: generatedOid,
             orderedItems: items,
             totalPrice: cart.grandTotal,
-            discount: 0, 
+            discount: cart.discountAmount, 
             finalAmount: totalAmount,
             paymentMethod: 'Razorpay',
             address: selectedAddress._id,

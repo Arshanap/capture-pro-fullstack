@@ -48,6 +48,7 @@ const loadCheckout = async (req, res) => {
         // Access grandTotal and total from the cart document
         const grandTotal = cartItems.grandTotal;
         const total = cartItems.total;
+        const Discount = cartItems.discountAmount
 
         // Render the checkout page
         res.render("user/checkout", {
@@ -58,6 +59,7 @@ const loadCheckout = async (req, res) => {
             errorMessage,
             grandTotal,
             total,
+            Discount
         });
     } catch (error) {
         console.log("Error loading checkout:", error);

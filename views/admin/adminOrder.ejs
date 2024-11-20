@@ -202,7 +202,9 @@
                                     <% }else{ %>
                                         <button class="btn-primary btn-sm" style="width: 80px;" data-order-id="<%= orderItem._id %>" data-bs-toggle="modal" data-bs-target="#statusModal">Status</button>
                                     <%}%>
-
+                                    <a type="button"  class="btn-primary btn-sm" href='/admin/orderDetailsPage?id=<%= orderItem._id %>' style="width: 60px;" >
+                                        Details
+                                    </a>
                                     <%if(orderItem.status === "Cancelled"){%>
                                         <button class="btn-sm" data-order-id1="<%= orderItem._id %>" style=" width: 80px;" disabled>Cancel</button>
                                         <%}else if(orderItem.status === "Returned"){%>
@@ -266,6 +268,21 @@
     </main>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+<script>
+    function loadDetails(id) {
+        axios.get(`/admin/orderDetailsPage?id=${id}`)
+            .then(response => {
+                // If you want to display the data in a modal or redirect, add that logic here
+                console.log("Order details loaded successfully:", response.data);
+            })
+            .catch(error => {
+                console.error("Error loading order details:", error);
+                alert("Failed to load order details. Please try again.");
+            });
+    }
+</script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
     const statusButtons = document.querySelectorAll("[data-order-id]");

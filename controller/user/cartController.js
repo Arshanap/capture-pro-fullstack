@@ -26,7 +26,7 @@ const loadCart = async (req, res) => {
         const proData = cartItems.flatMap(cart => 
             cart.items.map(item => ({
                 _id: item.productId._id,
-                productName: item.productId.name,
+                productName: item.productId.productName,
                 productImage: item.productId.productImage || [],
                 quantity: item.quantity,
                 price: item.price,

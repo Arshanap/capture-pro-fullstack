@@ -201,14 +201,14 @@
                                     <td><%= prodata[i].regularPrice.toLocaleString() %></td>
                                     <td><%= prodata[i].salePrice.toLocaleString() %></td>
                                     <td><%= prodata[i].count %></td>
-                                    <td><% if (prodata[i].isBlocked === true) { %>
+                                    <td><% if (prodata[i].isBlocked === false) { %>
                                         <span id="listv" class="badge bg-success">listed</span>
                                     <% } else { %>
                                         <span id="listu" class="badge bg-danger">Unlisted</span>
                                     <% } %></td>
                                         <td>
                                             <a href="/admin/productedit?id=<%=prodata[i]._id%>" class="btn btn-sm btn-primary">Edit</a>
-                                            <% if (prodata[i].isBlocked === true) { %>
+                                            <% if (prodata[i].isBlocked === false) { %>
                                                 <a href="/admin/unlistProduct?id=<%=prodata[i]._id%>" onclick="return unList(event, this.href)">
                                                     <button style="margin-right: 10px;" id="newbtn1" class="btn btn-sm btn-danger">Unlist</button>
                                                 </a>

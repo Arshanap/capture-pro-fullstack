@@ -72,6 +72,7 @@ const updateStatus = async (req, res) => {
 const cancelOrder = async (req, res) => {
     try {
         const { Id } = req.body;
+        
         const order = await Order.findById(Id);
 
         if (!order) {
@@ -127,7 +128,32 @@ const cancelOrder = async (req, res) => {
     }
 };
 
+// const loadOrderDetails = async (req,res)=>{
+//     res.render("admin/sample")
+// }
+
+const loadOrderDetails = async (req, res) => {
+    const orderId = req.query.id;
+    // console.log("Order ID:", orderId);
+
+    try {
+        const order = await Order.findOne({ _id: orderId })
+            .populate("userId")
+            .populate("orderedItems.product")
+            .populate("address");
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        // Render the 'sample' view and pass the order details
+        res.render("admin/orderDetails", { order });
+    } catch (error) {
+        console.error("Error loading order details:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
 
 
 
-module.exports = {loadOrder, updateStatus, cancelOrder}
+module.exports = {loadOrder, updateStatus, cancelOrder, loadOrderDetails}
