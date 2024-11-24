@@ -90,23 +90,15 @@ const loadProduct = async (req, res) => {
 //     }
 // }
 
-
 const loadShop = async (req, res) => {
     try {
         // Get the sorting option from the query or default to 'new'
-        const sortOption = req.query.sort ;
+        const sortOption = req.query.sort;
+        const categoryType = req.query.categoryType || null; // Get categoryType from the query
         let sortCriteria;
+
+        // Fetch listed categories for filtering
         const category = await Category.find({ isListed: true });
-
-        // if (category.length === 0) {
-        //     return res.status(400).json({ success: false, message: "No categories found" });
-        // }
-
-        // if (req.query.categoryType) {
-        //     filter.category = { $in: category.filter(cat => cat.name === req.query.categoryType).map(cat => cat._id) };
-        //   }
-
-        //   product = await Product.find(filter).populate('category', 'name');
 
         // Define sort criteria based on the selected option
         switch (sortOption) {
@@ -117,10 +109,10 @@ const loadShop = async (req, res) => {
                 sortCriteria = { salePrice: -1 };
                 break;
             case 'a-z':
-                sortCriteria = { productName: 1 };  
+                sortCriteria = { productName: 1 };
                 break;
             case 'z-a':
-                sortCriteria = { productName: -1 };  
+                sortCriteria = { productName: -1 };
                 break;
             default:
                 sortCriteria = { createdAt: -1 };
@@ -132,47 +124,59 @@ const loadShop = async (req, res) => {
         const limit = 20;
         const skip = (page - 1) * limit;
 
+        // Filter for category if categoryType is provided
+        let filter = {
+            productName: { $regex: search, $options: 'i' },
+            isBlocked: false, // Show products that are NOT blocked
+        };
+
+        if (categoryType) {
+            const matchingCategory = category.find(cat => cat.name === categoryType);
+            if (matchingCategory) {
+                filter.category = matchingCategory._id; // Add category filter
+            } else {
+                return res.render("user/shop", {
+                    product: [], // No matching products if category doesn't exist
+                    totalProducts: 0,
+                    totalPages: 0,
+                    page,
+                    limit,
+                    sortOption,
+                    categoryType
+                });
+            }
+        }
+
         // Fetch products from the database with the selected criteria
-        const product = await Product.find({
-            productName: { $regex: search, $options: 'i' }, 
-            isBlocked: false,  // Show products that are NOT blocked
-            
-        })
+        const product = await Product.find(filter)
             .sort(sortCriteria)
             .skip(skip)
             .limit(limit)
             .populate('category', 'name');
 
         // Get the total number of products for pagination
-        const totalProducts = await Product.countDocuments({
-            productName: { $regex: search, $options: 'i' },
-            isBlocked: false,  // Count products that are NOT blocked
-        });
+        const totalProducts = await Product.countDocuments(filter);
 
         // Calculate total pages based on the limit
         const totalPages = Math.ceil(totalProducts / limit);
 
-        // Return the fetched products along with pagination details
-        res.render("user/shop",{
+        // Render the shop page with products and pagination details
+        res.render("user/shop", {
             product,
             totalProducts,
             totalPages,
             page,
             limit,
-            sortOption
+            sortOption,
+            categoryType,
         });
     } catch (error) {
-        console.log("Error in fetchProducts:", error);
+        console.log("Error in loadShop:", error);
         res.status(500).json({ message: "An error occurred while loading the products." });
     }
 };
 
 
-
-
-
-
-  
 
 
 

@@ -561,7 +561,28 @@
                         <li style="color: green;">Available</li>
                     <% } %>
 
-                    <input style="width: 50px;" id="quantityInput" onclick="return countfun()" type="number" value="1" max="<%=prodata.count%>" min="1">
+                    <div style="display: flex; align-items: center;">
+                        <!-- Minus Button -->
+                        <button style="padding: 5px 10px;" 
+                                onclick="decreaseQuantity('<%= prodata.count %>')">-</button>
+                    
+                        <!-- Quantity Input Field -->
+                        <input style="width: 50px; text-align: center;" 
+                               id="quantityInput" 
+                               type="number" 
+                               value="1" 
+                               max="<%= prodata.count %>" 
+                               min="1" disabled
+                               onchange="countfun('<%= prodata.count %>')">
+                    
+                        <!-- Plus Button -->
+                        <button style="padding: 5px 10px;" 
+                                onclick="increaseQuantity('<%= prodata.count %>')">+</button>
+                    </div>
+                    
+                    <div id="productError" style="color: red; margin-top: 5px;"></div>
+
+
                     <div id="productError" style="color: red; margin-top: 5px;"></div>
                     <div id="otpSuccess" class="error-messages" style="color: rgb(28, 237, 17);"></div> 
                     <div id="otpError" class="error-messages" style="color: red;"></div> 
@@ -990,22 +1011,44 @@ function showSideElements() {
 }
  </script>
  <script>
-    function countfun() {
-        const messageDiv = document.getElementById("productError");
-        const quantityInput = document.getElementById("quantityInput");
-        const value = quantityInput.value.trim();
-        const check = "<%= prodata.count %>";
+    function countfun(maxCount) {
+    const messageDiv = document.getElementById("productError");
+    const quantityInput = document.getElementById("quantityInput");
+    const value = quantityInput.value.trim();
 
-        if (parseInt(value) === parseInt(check)) {
-            messageDiv.textContent = `Only ${check} units available in stock`; 
-            messageDiv.style.transition = "opacity 0.5s ease";
-            messageDiv.style.opacity = "1";
-            setTimeout(() => messageDiv.style.display = "none", 3000);
-        } else {
-            messageDiv.textContent = '';
-            messageDiv.style.opacity = "0";
-        }
+    if (parseInt(value) === parseInt(maxCount)) {
+        messageDiv.textContent = `Only ${maxCount} units available in stock`; 
+        messageDiv.style.transition = "opacity 0.5s ease";
+        messageDiv.style.opacity = "1";
+        setTimeout(() => (messageDiv.style.opacity = "0"), 3000);
+    } else {
+        messageDiv.textContent = '';
+        messageDiv.style.opacity = "0";
     }
+}
+
+function decreaseQuantity(maxCount) {
+    const quantityInput = document.getElementById("quantityInput");
+    let currentValue = parseInt(quantityInput.value);
+
+    if (currentValue > 1) {
+        quantityInput.value = currentValue - 1;
+        countfun(maxCount);
+    }
+}
+
+function increaseQuantity(maxCount) {
+    const quantityInput = document.getElementById("quantityInput");
+    let currentValue = parseInt(quantityInput.value);
+
+    if (currentValue < parseInt(maxCount)) {
+        quantityInput.value = currentValue + 1;
+        countfun(maxCount);
+    } else {
+        countfun(maxCount);
+    }
+}
+
 </script>
          
      </body>

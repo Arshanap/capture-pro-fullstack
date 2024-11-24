@@ -25,6 +25,21 @@
 
 </head>
 <style>
+.input-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-group .form-control {
+    text-align: center;
+    padding: 5px;
+}
+
+.input-group button {
+    min-width: 30px;
+}
+
      .breadcrumb {
     padding: 10px 15px;
     background-color: #f8f9fa;
@@ -230,20 +245,38 @@
                             </td>
                             <td><p> <%= proData[i].productName %></p></td>
                             <td>
-                                <input type="number"
-                                id="quantity-<%= proData[i]._id %>" 
-                                value="<%= proData[i].quantity %>" 
-                                min="1" 
-                                max="<%= proData[i].count %>" 
-                                class="form-control" 
-                                style="width: 60px;" 
-                                onchange="updateQuantity('<%= proData[i]._id %>', this.value); countfun('<%= proData[i]._id %>', '<%= proData[i].count %>');">
-                         
-                         <div id="productError-<%= proData[i]._id %>" style="color: red; margin-top: 5px;"></div>
-                         
-
-
+                                <div class="input-group" style="width: 120px;">
+                                    <!-- Minus Button -->
+                                    <button class="btn btn-outline-secondary btn-sm" 
+                                            type="button" 
+                                            onclick="decreaseQuantity('<%= proData[i]._id %>', '<%= proData[i].count %>')">
+                                        -
+                                    </button>
+                            
+                                    <!-- Input Field -->
+                                    <input type="number"
+                                           id="quantity-<%= proData[i]._id %>" 
+                                           value="<%= proData[i].quantity %>" 
+                                           min="1" 
+                                           max="<%= proData[i].count %>" 
+                                           class="form-control text-center" 
+                                           style="width: 60px;" disabled
+                                           onchange="countfun('<%= proData[i]._id %>', '<%= proData[i].count %>');">
+                                    
+                                    <!-- Plus Button -->
+                                    <button class="btn btn-outline-secondary btn-sm" 
+                                            type="button" 
+                                            onclick="increaseQuantity('<%= proData[i]._id %>', '<%= proData[i].count %>')">
+                                        +
+                                    </button>
+                                </div>
+                                
+                                <!-- Error Message Display -->
+                                <div id="productError-<%= proData[i]._id %>" style="color: red; margin-top: 5px;"></div>
                             </td>
+                            
+                            
+                            
                             <td>₹ <%= Number(proData[i].price).toFixed(2) %></td>
                             <td>₹ <%= Number(proData[i].totalPrice).toFixed(2) %></td>
                             <td>
@@ -369,30 +402,79 @@
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    async function updateQuantity(productId, quantity) {
-        try {
-            // Send POST request with product ID and quantity as payload
+
+async function decreaseQuantity(productId, maxQuantity) {
+    try {
+        const quantityInput = document.getElementById(`quantity-${productId}`);
+        let currentValue = parseInt(quantityInput.value);
+
+        if (currentValue > 1) {
+            const newQuantity = currentValue - 1;
+            quantityInput.value = newQuantity;
+
+            // Update server-side quantity
             const response = await axios.post('/user/valueUpdate', {
                 productId: productId,
-                quantity: quantity
+                quantity: newQuantity
             });
 
             if (response.status === 200) {
-                console.log("Quantity updated successfully:", response.data.message);
+                console.log("Quantity decreased successfully:", response.data.message);
                 window.location.href = response.data.redirectUrl;
             } else {
-                console.error("Failed to update quantity:", response.data.message);
+                console.error("Failed to decrease quantity:", response.data.message);
             }
-        } catch (error) {
-            console.error("Error updating quantity:", error.response ? error.response.data : error.message);
-            Swal.fire({
-                title: "Error!",
-                text: "An error occurred while updating the quantity.",
-                icon: "error",
-                showConfirmButton: true
-            });
         }
+        // Call countfun to handle UI validation
+        countfun(productId, maxQuantity);
+    } catch (error) {
+        console.error("Error decreasing quantity:", error.response ? error.response.data : error.message);
+        Swal.fire({
+            title: "Error!",
+            text: "An error occurred while decreasing the quantity.",
+            icon: "error",
+            showConfirmButton: true
+        });
     }
+}
+
+async function increaseQuantity(productId, maxQuantity) {
+    try {
+        const quantityInput = document.getElementById(`quantity-${productId}`);
+        let currentValue = parseInt(quantityInput.value);
+
+        if (currentValue < maxQuantity) {
+            const newQuantity = currentValue + 1;
+            quantityInput.value = newQuantity;
+
+            // Update server-side quantity
+            const response = await axios.post('/user/valueUpdate', {
+                productId: productId,
+                quantity: newQuantity
+            });
+
+            if (response.status === 200) {
+                console.log("Quantity increased successfully:", response.data.message);
+                window.location.href = response.data.redirectUrl;
+            } else {
+                console.error("Failed to increase quantity:", response.data.message);
+            }
+        }
+        // Call countfun to handle UI validation
+        countfun(productId, maxQuantity);
+    } catch (error) {
+        console.error("Error increasing quantity:", error.response ? error.response.data : error.message);
+        Swal.fire({
+            title: "Error!",
+            text: "An error occurred while increasing the quantity.",
+            icon: "error",
+            showConfirmButton: true
+        });
+    }
+}
+
+
+
 </script>
 
 
@@ -422,36 +504,56 @@
 </script>
 
 <script>
-    function countfun(productId, maxQuantity) {
-        const messageDiv = document.getElementById(`productError-${productId}`);
-        const quantityInput = document.getElementById(`quantity-${productId}`);
-        const value = quantityInput.value.trim();
+   function countfun(productId, maxQuantity) {
+    const messageDiv = document.getElementById(`productError-${productId}`);
+    const quantityInput = document.getElementById(`quantity-${productId}`);
+    const value = parseInt(quantityInput.value.trim(), 10); // Ensure numeric parsing
 
-        if (parseInt(value) === parseInt(maxQuantity)) { 
-            messageDiv.textContent = `Only ${maxQuantity} units available in stock`; 
-            messageDiv.style.transition = "opacity 0.5s ease";
-            messageDiv.style.opacity = "1";
-            messageDiv.style.display = "block"; 
-            setTimeout(() => {
-                messageDiv.style.opacity = "0";
-                messageDiv.style.display = "none";
-            }, 6000);
-        } else if (parseInt(value) >= parseInt(maxQuantity)){
-            messageDiv.textContent = `Only ${maxQuantity} units available in stock`; 
-            messageDiv.style.transition = "opacity 0.5s ease";
-            messageDiv.style.opacity = "1";
-            messageDiv.style.display = "block"; 
-            setTimeout(() => {
-                messageDiv.style.opacity = "0";
-                messageDiv.style.display = "none";
-                document.getElementById(`quantity-${productId}`).value = maxQuantity;
-            }, 6000);
-        }else{
-            messageDiv.textContent = '';
+    if (isNaN(value)) {
+        // Handle invalid input (e.g., if the field is manually cleared)
+        messageDiv.textContent = "Invalid quantity value.";
+        messageDiv.style.transition = "opacity 0.5s ease";
+        messageDiv.style.opacity = "1";
+        messageDiv.style.display = "block";
+        setTimeout(() => {
             messageDiv.style.opacity = "0";
             messageDiv.style.display = "none";
-        }
+        }, 6000);
+        quantityInput.value = 1; // Reset to a valid default value
+        return;
     }
+
+    if (value == maxQuantity) {
+        // If the entered value exceeds the maximum stock
+        messageDiv.textContent = `Only ${maxQuantity} units available in stock`;
+        messageDiv.style.transition = "opacity 0.5s ease";
+        messageDiv.style.opacity = "1";
+        messageDiv.style.display = "block";
+        setTimeout(() => {
+            messageDiv.style.opacity = "0";
+            messageDiv.style.display = "none";
+        }, 6000);
+        quantityInput.value = maxQuantity; // Reset input value to maxQuantity
+    } else if (value < 1) {
+        // If the entered value is less than the minimum allowed (1)
+        messageDiv.textContent = "Quantity cannot be less than 1";
+        messageDiv.style.transition = "opacity 0.5s ease";
+        messageDiv.style.opacity = "1";
+        messageDiv.style.display = "block";
+        setTimeout(() => {
+            messageDiv.style.opacity = "0";
+            messageDiv.style.display = "none";
+        }, 6000);
+        quantityInput.value = 1; // Reset input value to minimum
+    } else {
+        // Clear the error message if the value is valid
+        messageDiv.textContent = '';
+        messageDiv.style.opacity = "0";
+        messageDiv.style.display = "none";
+    }
+}
+
+
 </script>
 
 
