@@ -139,7 +139,7 @@ const razorpay = new Razorpay({
     const user = await User.findOne({email})
     const cart1 = await Cart.findOne({userId:user._id})
     const options = {
-      amount: cart1.grandTotal, 
+      amount: cart1.grandTotal*100, 
       currency: 'INR',
       receipt: 'receipt#1',
     };
