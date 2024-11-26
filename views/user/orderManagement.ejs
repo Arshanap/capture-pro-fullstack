@@ -547,15 +547,17 @@ strong.text-uppercase {
                                             <button class="btn-warning btn-sm" data-order-id="<%= orderItem._id %>">Cancel</button>
                                         <% } else if (orderItem.status == "Shipped") { %>
                                             <button class="btn-warning btn-sm" data-order-id="<%= orderItem._id %>">Cancel</button>
-                                        <% } else if (orderItem.status == "Delivered") { %>
+                                        <% } else if (orderItem.status == "Delivered" && orderItem.returned == false) { %>
                                             <button class="btn-success btn-sm" data-order-id1="<%= orderItem._id %>">Return request</button>
                                         <% } else if (orderItem.status == "Cancelled") { %>
                                         <button class="btn-sm" disabled>Cancelled</button>
+                                        
                                         <% } else if (orderItem.status == "Returned"){ %>
                                             <button class="btn-order-returned-gray btn-sm" disabled>Order Returned</button>
-                                            <% } else { %>
-                                            <button class="btn-sm"  disabled>Invalid Status</button>
                                         <% } %>
+                                        <%if (orderItem.returned == true && orderItem.status != "Returned") {%>
+                                            <button class="btn-order-returned-gray btn-sm" disabled>request send</button>
+                                        <% }%>
                                         <input type="hidden" id="orderIdInput1" name="orderId1" value="">                               
                                         <input type="hidden" id="orderIdInput" name="orderId" value="">
                                     </div>

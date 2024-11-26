@@ -30,6 +30,7 @@ const loadOrder = async (req, res) => {
                 path: 'orderedItems.product',
                 model: 'Product'
             })
+            .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
 
@@ -287,6 +288,7 @@ const cancelOrder = async (req, res) => {
 
 
 
+
 const returnOrder = async (req,res)=>{
     try {
         const { Id } = req.body;
@@ -297,35 +299,14 @@ const returnOrder = async (req,res)=>{
         if (!order) {
             return res.status(404).json({ message: "Order not found" });
         }
-        if (order.paymentMethod === "Wallet" || order.paymentMethod === "Razorpay" || (order.paymentMethod === "cashOnDelivery" && order.status === "Delivered")) {
-            const userId = order.userId;
-
-            const wallet = await Wallet.findOne({ userId });
-
-            if (!wallet) {
-                return res.status(400).json({ message: "Wallet not found for the user" });
-            }
-
-            wallet.balance += order.totalPrice; 
-
-            wallet.transaction.push({
-                transactionType: 'credit', 
-                amount: order.totalPrice,
-                status: 'completed',
-                orderId: order._id,
-            });
-
-            await wallet.save();
-        }
 
         const result = await Order.findOneAndUpdate(
             { _id: Id },
-            { status: "Returned" },
+            { returned: true  },
             { new: true }
         );
-
         if (result) {
-            res.status(200).json({ message: "Order successfully returned", order: result });
+            res.status(200).json({ message: "Order return request send successfully ", order: result });
         } else {
             res.status(404).json({ message: "Order not found" });
         }
@@ -334,7 +315,6 @@ const returnOrder = async (req,res)=>{
         console.log("error for return order ",error)
     }
 }
-
 
 
 

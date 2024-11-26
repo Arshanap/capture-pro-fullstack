@@ -87,7 +87,7 @@ const cancelOrder = async (req, res) => {
                 return res.status(400).json({ message: "Wallet not found for the user" });
             }
 
-            
+
 
             wallet.balance += order.totalPrice;
 
@@ -161,4 +161,54 @@ const loadOrderDetails = async (req, res) => {
 
 
 
-module.exports = {loadOrder, updateStatus, cancelOrder, loadOrderDetails}
+const returnOrder = async (req,res)=>{
+    try {
+        const { Id } = req.query;
+        // console.log("id is:",Id)
+
+        const order = await Order.findById(Id);
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+        if (order.paymentMethod === "Wallet" || order.paymentMethod === "Razorpay" || (order.paymentMethod === "cashOnDelivery" && order.status === "Delivered")) {
+            const userId = order.userId;
+
+            const wallet = await Wallet.findOne({ userId });
+
+            if (!wallet) {
+                return res.status(400).json({ message: "Wallet not found for the user" });
+            }
+
+            wallet.balance += order.totalPrice; 
+
+            wallet.transaction.push({
+                transactionType: 'credit', 
+                amount: order.totalPrice,
+                status: 'completed',
+                orderId: order._id,
+            });
+
+            await wallet.save();
+        }
+
+        const result = await Order.findOneAndUpdate(
+            { _id: Id },
+            { status: "Returned" },
+            { new: true }
+        );
+
+        if (result) {
+            res.status(200).json({ message: "Order successfully returned", order: result });
+        } else {
+            res.status(404).json({ message: "Order not found" });
+        }
+        
+    } catch (error) {
+        console.log("error for return order ",error)
+    }
+}
+
+
+
+module.exports = {loadOrder, updateStatus, cancelOrder, loadOrderDetails, returnOrder}

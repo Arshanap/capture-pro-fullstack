@@ -207,18 +207,46 @@
                                     </a>
                                     <%if(orderItem.status === "Cancelled"){%>
                                         <button class="btn-sm" data-order-id1="<%= orderItem._id %>" style=" width: 80px;" disabled>Cancel</button>
-                                        <%}else if(orderItem.status === "Returned"){%>
+                                    <%}else if(orderItem.status === "Returned"){%>
                                         <button class="btn-order-returned-gray btn-sm" disabled>Order Returned</button>
-                                        <%}else{%>
+                                    <%}else{%>
                                         <button class=" btn-danger btn-sm" data-order-id1="<%= orderItem._id %>" onclick="return cancelfun(event)" style=" width: 80px;">Cancel</button>
+                                    <%}%>
+                                    <%if(orderItem.returned == true && orderItem.status != "Returned"){%>
+                                        <button style="border: 0;" class="fas fa-exclamation-circle" data-toggle="modal" data-target="#exampleModal"></button>
                                     <%}%>
                                     <input type="hidden" id="orderIdInput1" name="orderId1" value="">
                                 </td>
                             </tr>
+
+
+                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Confirm Action</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to Approve this order return?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <button type="button" onclick="return approve('<%= orderItem._id %>')" class="btn btn-primary" id="approveButton">Approve</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
                         <% }) %>
                     <% }) %>
                     </tbody>
                 </table>
+
+                
             </div>
             <div class="container m-3">
                 <nav aria-label="page navigation">
@@ -266,6 +294,9 @@
 
 
     </main>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
@@ -414,7 +445,36 @@ function cancelfun(event) {
     }
 </script>
         
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
+<script>
+    function approve(Id) {
+    // Make an Axios POST request to your backend
+    axios.post(`/admin/returnApprove?Id=${Id}`)
+        .then(function (response) {
+            // SweetAlert2 success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Action Approved',
+                text: response.data.message,
+                confirmButtonText: 'OK'
+            }).then(() => {
+                // Reload the page after the confirmation
+                window.location.reload();
+            });
+        })
+        .catch(function (error) {
+            // SweetAlert2 error message
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message,
+                confirmButtonText: 'Try Again'
+            });
+        });
+}
+
+</script>
 
  
     

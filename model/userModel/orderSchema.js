@@ -75,6 +75,10 @@ const orderSchema = new Schema({
     productOffer: {
         type: Number,
         default: 0,
+    },
+    returned: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 

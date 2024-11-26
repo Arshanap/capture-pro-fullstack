@@ -27,8 +27,9 @@ const loadWallet = async (req, res) => {
       const limit = 5; // Number of transactions per page
       const skip = (page - 1) * limit;
 
-      // Paginate transactions
-      const transactions = wallet.transaction.slice(skip, skip + limit);
+      const reversedTransactions = wallet.transaction.reverse();
+
+     const transactions = reversedTransactions.slice(skip, skip + limit);
       const totalTransactions = wallet.transaction.length;
       const totalPages = Math.ceil(totalTransactions / limit);
 
