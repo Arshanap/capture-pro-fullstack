@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>eCommerce HTML-5 Template </title>
+        <title>Capture Pro</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="manifest" href="site.webmanifest">
@@ -25,6 +25,41 @@
             <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
    </head>
    <style>
+    .pagination-container {
+    margin: 20px 0;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin-top: 100px;
+}
+
+.pagination .page-item {
+    margin: 0 5px;
+}
+
+.pagination .page-link {
+    text-decoration: none;
+    color: #007bff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 8px 12px;
+    transition: background-color 0.3s ease;
+}
+
+.pagination .page-link:hover {
+    background-color: #f1f1f1;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
     .discount{
         color: #ff003c;
   text-decoration: line-through;
@@ -410,6 +445,38 @@
                         </div>
                         
                     </div>
+
+                    <div class="pagination-container text-center my-4">
+                        <nav aria-label="Shop Pagination">
+                            <ul class="pagination justify-content-center">
+                                <!-- Previous Button -->
+                                <% if (page > 1) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=<%= page - 1 %>&sort=<%= sortOption %>&categoryType=<%= categoryType %>" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                <% } %>
+                    
+                                <!-- Page Numbers -->
+                                <% for (let i = 1; i <= totalPages; i++) { %>
+                                    <li class="page-item <%= (i === page) ? 'active' : '' %>">
+                                        <a class="page-link" href="?page=<%= i %>&sort=<%= sortOption %>&categoryType=<%= categoryType %>"><%= i %></a>
+                                    </li>
+                                <% } %>
+                    
+                                <!-- Next Button -->
+                                <% if (page < totalPages) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=<%= page + 1 %>&sort=<%= sortOption %>&categoryType=<%= categoryType %>" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                <% } %>
+                            </ul>
+                        </nav>
+                    </div>
+                    
                     <!-- Card two -->
                     <!-- <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                         <div class="row">

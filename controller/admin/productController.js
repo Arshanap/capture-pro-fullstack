@@ -71,17 +71,18 @@ const loadProducts = async (req, res) => {
 // Adding a new product in product page 
 const addProduct = async (req, res) => {
     try {
+        // console.log("ethi ethi ethi")
         const { productName, description, category, regularPrice, salePrice, count } = req.body;
-    
+        // console.log(productName, description, category, regularPrice, salePrice, count )
         // Validate required fields
-        if (!productName || !description || !category || !regularPrice || !salePrice || !count) {
-            return res.status(400).json({ error: 'All required fields must be provided' });
-        }
+        // if (!productName || !description || !category || !regularPrice || !salePrice || !count) {
+        //     return res.status(400).json({ error: 'All required fields must be provided' });
+        // }
     
         // Check if the product already exists
         const productExist = await Product.findOne({ productName });
         if (productExist) {
-            return res.status(400).json({ error: 'Product already exists' });
+            // return res.status(400).json({ error: 'Product already exists' });
         }
     
         // Set up the directory for resized images
@@ -114,7 +115,7 @@ const addProduct = async (req, res) => {
                     uploadImages.push(resizedFilename);
                 } catch (sharpError) {
                     console.error('Error processing image with sharp:', sharpError);
-                    return res.status(500).json({ error: 'Error processing image' });
+                    // return res.status(500).json({ error: 'Error processing image' });
                 }
             }
         }
@@ -146,8 +147,11 @@ const addProduct = async (req, res) => {
         // console.log("Product added successfully:", newProduct);
         
     } catch (error) {
+        req.session.successMessage = "";
+            req.session.errorMessage = "Product Adding Not successful";
+            res.redirect('/admin/products')
         console.error('Error saving product:', error);
-        return res.status(500).json({ error: 'An error occurred while saving the product' });
+        // return res.status(500).json({ error: 'An error occurred while saving the product' });
     }
     
 };
@@ -326,12 +330,12 @@ const addProductOffer = async (req, res) => {
 
         // Calculate the discount amount and new sale price
         const discountAmount = (product.regularPrice * Number(offerP)) / 100;
-        const newSalePrice = product.salePrice - discountAmount;
+        const newSalePrice = Math.round(product.salePrice - discountAmount);
 
         // Update product details
         product.productOffer = Number(offerP);
         product.salePrice = newSalePrice;
-        await product.save().then(()=> console.log("successfully"))
+        await product.save()
 
         res.status(200).json({
             success: true,
@@ -380,7 +384,7 @@ const removeProductOffer = async (req, res) => {
 
         // Update product details
         product.productOffer = 0;
-        product.salePrice += discountAmount
+        Math.round(product.salePrice += discountAmount)
         await product.save().then(()=> console.log("successfully"))
 
 

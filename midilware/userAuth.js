@@ -1,9 +1,10 @@
 const User = require("../model/userModel/userSchema")
 
 
-const islogin = (req, res, next) => {
-   
-    if (req.session.user) {
+const islogin = async (req, res, next) => {
+    const email = req.session.User;
+    const user = await User.findOne({email})
+    if (req.session.user && user.isBlocked===false) {
         return res.redirect("/user/home"); 
     } else {
         next(); 
@@ -11,8 +12,10 @@ const islogin = (req, res, next) => {
 };
 
 
-const checkSession = (req,res,next)=>{
-    if(req.session.user){
+const checkSession = async (req,res,next)=>{
+    const email = req.session.User;
+    const user = await User.findOne({email})
+    if(req.session.user && user.isBlocked===false){
        next()
     }else{
         res.redirect("/user/login")

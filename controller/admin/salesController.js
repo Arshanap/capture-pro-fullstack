@@ -88,7 +88,7 @@ const getSalesReport = async (filter, start, end) => {
 
 const loadSales = async (req,res)=>{
     try {
-        const filter=req.query.filter||'daily'
+        const filter=req.query.filter||'yearly'
         const start = req.query.start || null;
         const end = req.query.end || null;
 

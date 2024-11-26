@@ -89,7 +89,6 @@ router.post("/user/updateDetails", accountController.editDetails)
 router.get("/user/cart", userAuth.checkSession, cartController.loadCart)
 router.post("/user/addToCart", cartController.addProduct)
 router.delete("/user/cartRemove", cartController.removeProduct);
-
 router.post("/user/valueUpdate", cartController.valueUpdate)
 
 // checkout

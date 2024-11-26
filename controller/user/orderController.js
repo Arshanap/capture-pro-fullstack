@@ -20,12 +20,29 @@ const loadOrder = async (req, res) => {
             return res.redirect("/user/login");
         }
 
-        const orders = await Order.find({ userId: user._id }).populate({
-            path: 'orderedItems.product',
-            model: 'Product'
-        });
+        const page = parseInt(req.query.page) || 1; // Default to page 1
+        const limit = 5; // Number of orders per page
+        const skip = (page - 1) * limit;
 
-        res.render("user/orderManagement", { user, orders });
+        // Fetch paginated orders with populated product details
+        const orders = await Order.find({ userId: user._id })
+            .populate({
+                path: 'orderedItems.product',
+                model: 'Product'
+            })
+            .skip(skip)
+            .limit(limit);
+
+        // Get the total number of orders
+        const totalOrders = await Order.countDocuments({ userId: user._id });
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        res.render("user/orderManagement", {
+            user,
+            orders,
+            currentPage: page,
+            totalPages,
+        });
     } catch (error) {
         console.error("Error loading orders:", error);
         res.status(500).send("Internal Server Error");
@@ -218,7 +235,7 @@ const cancelOrder = async (req, res) => {
             return res.status(404).json({ message: "Order not found" });
         }
 
-        if (order.paymentMethod === "Wallet") {
+        if (order.paymentMethod === "Wallet" || order.paymentMethod === "Razorpay" || (order.paymentMethod === "cashOnDelivery" && order.status === "Delivered")) {
             const userId = order.userId;
             const wallet = await Wallet.findOne({ userId });
 
@@ -280,7 +297,7 @@ const returnOrder = async (req,res)=>{
         if (!order) {
             return res.status(404).json({ message: "Order not found" });
         }
-        if (order.paymentMethod === "Wallet") {
+        if (order.paymentMethod === "Wallet" || order.paymentMethod === "Razorpay" || (order.paymentMethod === "cashOnDelivery" && order.status === "Delivered")) {
             const userId = order.userId;
 
             const wallet = await Wallet.findOne({ userId });

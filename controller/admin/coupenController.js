@@ -1,20 +1,41 @@
 const Coupen = require("../../model/userModel/couponSchema")
 
 
-const loadCoupen = async (req,res)=>{
-    try {
-        const coupon = await Coupen.find()
+const loadCoupen = async (req, res) => {
+  try {
+      const page = parseInt(req.query.page) || 1; 
+      const limit = parseInt(req.query.limit) || 5 ;
 
-        res.render("admin/coupen",{coupon})
+      const skip = (page - 1) * limit;
 
-    } catch (error) {
-        console.log("error for load coupons",error)
-    }
-}
+      const coupon = await Coupen.find()
+          .skip(skip)
+          .limit(limit);
+
+      const totalCoupons = await Coupen.countDocuments();
+
+      const totalPages = Math.ceil(totalCoupons / limit);
+
+      res.render("admin/coupen", {
+          coupon,
+          currentPage: page,
+          totalPages,
+          limit,
+          totalCoupons
+      });
+
+  } catch (error) {
+      console.log("Error loading coupons:", error);
+      res.status(500).send("Server Error");
+  }
+};
+
+
+
 
 const addCoupen = async (req, res) => {
     try {
-      const { isActive, usageLimit, maxDiscount, expirationDate, minPurchaseAmount, discountAmount, discountType, couponCode } = req.body;
+      const { isActive, usageLimit, expirationDate, minPurchaseAmount, discountAmount, discountType, couponCode } = req.body;
   
     //   console.log(isActive, usageLimit, maxDiscount, expirationDate, minPurchaseAmount, discountAmount, discountType, couponCode);
   
@@ -24,12 +45,11 @@ const addCoupen = async (req, res) => {
         discountAmount,
         minPurchaseAmount,
         expirationDate,
-        maxDiscount,
         usageLimit,
         isActive,
       });
 
-      console.log('arshankuttide coupon',coupen)
+      // console.log('arshankuttide coupon',coupen)
   
       await coupen.save();
   

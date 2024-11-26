@@ -5,30 +5,50 @@ const Wallet = require("../../model/userModel/walletSchema")
 
 
 const loadWallet = async (req, res) => {
-    try {
-        const email = req.session.User;
-        const user = await User.findOne({ email });
+  try {
+      const email = req.session.User;
+      const user = await User.findOne({ email });
 
-        if (!user) {
-            return res.render("user/wallet", { wallet: null, message: "User not found." });
-        }
+      if (!user) {
+          return res.render("user/wallet", { wallet: null, message: "User not found." });
+      }
 
-        const wallet = await Wallet.findOne({ userId: user._id });
+      const wallet = await Wallet.findOne({ userId: user._id });
 
-        if (!wallet) {
-            // If wallet is not found, handle it gracefully
-            return res.render("user/wallet", {
-                wallet: { balance: 0, transaction: [] }, // Default values
-                message: "Wallet not found. Please add funds to your wallet."
-            });
-        }
+      if (!wallet) {
+          // If wallet is not found, handle it gracefully
+          return res.render("user/wallet", {
+              wallet: { balance: 0, transaction: [] }, // Default values
+              message: "Wallet not found. Please add funds to your wallet."
+          });
+      }
 
-        res.render("user/wallet", { wallet });
-    } catch (error) {
-        console.log("Error loading wallet", error);
-        res.render("user/wallet", { wallet: null, message: "An error occurred while loading the wallet." });
-    }
+      const page = parseInt(req.query.page) || 1; // Default to page 1
+      const limit = 5; // Number of transactions per page
+      const skip = (page - 1) * limit;
+
+      // Paginate transactions
+      const transactions = wallet.transaction.slice(skip, skip + limit);
+      const totalTransactions = wallet.transaction.length;
+      const totalPages = Math.ceil(totalTransactions / limit);
+
+      res.render("user/wallet", {
+          wallet: {
+              balance: wallet.balance,
+              transaction: transactions,
+          },
+          currentPage: page,
+          totalPages,
+      });
+  } catch (error) {
+      console.log("Error loading wallet", error);
+      res.render("user/wallet", {
+          wallet: null,
+          message: "An error occurred while loading the wallet.",
+      });
+  }
 };
+
 
 
 // Express.js Controller

@@ -79,7 +79,7 @@ const cancelOrder = async (req, res) => {
             return res.status(404).json({ message: "Order not found" });
         }
 
-        if (order.paymentMethod === "Wallet") {
+        if (order.paymentMethod === "Wallet" || order.paymentMethod === "Razorpay") {
             const userId = order.userId;
             const wallet = await Wallet.findOne({ userId });
 
@@ -87,7 +87,12 @@ const cancelOrder = async (req, res) => {
                 return res.status(400).json({ message: "Wallet not found for the user" });
             }
 
+            
+
             wallet.balance += order.totalPrice;
+
+
+            
 
             wallet.transaction.push({
                 transactionType: "credit",

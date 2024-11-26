@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf-8">
-        <title>Evara Dashboard</title>
+        <title>Capture Pro</title>
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,7 +18,23 @@
         <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     </head>
-    
+    <style>
+      .pagination a {
+  padding: 5px 10px;
+  margin: 0 5px;
+  text-decoration: none;
+  border: 1px solid #ccc;
+}
+
+.pagination a:hover {
+  background-color: #f0f0f0;
+}
+
+.pagination span {
+  padding: 5px 10px;
+}
+
+    </style>
     <body>
         <div class="screen-overlay"></div>
         <aside class="navbar-aside" id="offcanvas_aside">
@@ -137,7 +153,6 @@
             <th scope="col">Discount Type</th>
             <th scope="col">D Amount</th>
             <th scope="col">M P Amount</th>
-            <th scope="col">MX Amount</th>
             <th scope="col">usageLimit</th>
             <th scope="col">End Date</th>
             <th scope="col">Status</th>
@@ -151,7 +166,6 @@
             <td><%=item.discountType%></td>
             <td><%=item.discountAmount%></td>
             <td><%=item.minPurchaseAmount%></td>
-            <td><%=item.maxDiscount%></td>
             <td><%=item.usageLimit%></td>
             <td><%=item.expirationDate.toDateString()%></td>
             <td>
@@ -171,6 +185,19 @@
       </table>
     </div>
   </div>
+
+  <div class="container m-3">
+    <nav aria-label="page navigation">
+        <ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+            <% } %>   
+        </ul>
+    </nav>
+</div>
+
 
   <!-- Add Coupon Modal -->
   <div class="modal fade" id="addCouponModal" tabindex="-1" aria-labelledby="addCouponModalLabel" aria-hidden="true">
@@ -220,12 +247,6 @@
                   <div class="text-danger" id="expirationDateError"></div>
                 </div>
               
-                <!-- Maximum Discount (Optional) -->
-                <div class="mb-3">
-                  <label for="maxDiscount" class="form-label">Maximum Discount</label>
-                  <input type="number" class="form-control" name="maxDiscount" id="maxDiscount">
-                  <div class="text-danger" id="maxDiscountError"></div>
-                </div>
               
                 <!-- Usage Limit (Optional) -->
                 <div class="mb-3">
@@ -299,136 +320,123 @@
   </script>
 
 <script>
-    document.getElementById('couponForm').addEventListener('submit', function (e) {
-      e.preventDefault(); // Prevent form submission
-
-      let isValid = true;
-      const errors = {
-        couponCode: '',
-        discountType: '',
-        discountAmount: '',
-        minPurchaseAmount: '',
-        expirationDate: '',
-        maxDiscount: '',
-        usageLimit: '',
-        isActive: '',
-      };
-
-      // Clear previous error messages
+  document.getElementById('couponForm').addEventListener('submit', function (e) {
+    e.preventDefault(); // Prevent form submission
+  
+    let isValid = true;
+    const errors = {
+      couponCode: '',
+      discountType: '',
+      discountAmount: '',
+      minPurchaseAmount: '',
+      expirationDate: '',
+      usageLimit: '',
+      isActive: '',
+    };
+  
+    // Clear previous error messages
+    Object.keys(errors).forEach((field) => {
+      document.getElementById(`${field}Error`).textContent = '';
+    });
+  
+    // Validation logic
+    const couponCode = document.getElementById('couponCode').value.trim();
+    const couponCodePattern = /^[a-zA-Z0-9]{5,20}$/;
+    if (!couponCode) {
+      errors.couponCode = 'Coupon Code is required.';
+      isValid = false;
+    } else if (!couponCodePattern.test(couponCode)) {
+      errors.couponCode = 'Coupon Code must be 5-20 alphanumeric characters.';
+      isValid = false;
+    }
+  
+    const discountType = document.getElementById('discountType').value;
+  
+    const discountAmount = parseFloat(document.getElementById('discountAmount').value);
+    if (isNaN(discountAmount) || discountAmount <= 0) {
+      errors.discountAmount = 'Discount Amount must be a positive number.';
+      isValid = false;
+    }
+  
+    const minPurchaseAmount = parseFloat(document.getElementById('minPurchaseAmount').value);
+    if (isNaN(minPurchaseAmount) || minPurchaseAmount <= 0) {
+      errors.minPurchaseAmount = 'Minimum Purchase Amount must be a positive number.';
+      isValid = false;
+    } else if (discountAmount >= minPurchaseAmount) {
+      errors.discountAmount = 'Discount Amount must be less than the Minimum Purchase Amount.';
+      isValid = false;
+    }
+  
+    const expirationDate = document.getElementById('expirationDate').value;
+    if (!expirationDate) {
+      errors.expirationDate = 'Expiration Date is required.';
+      isValid = false;
+    } else if (new Date(expirationDate) < new Date()) {
+      errors.expirationDate = 'Expiration Date must be in the future.';
+      isValid = false;
+    }
+  
+    const usageLimit = document.getElementById('usageLimit').value;
+    if (usageLimit && (isNaN(usageLimit) || parseInt(usageLimit) < 0)) {
+      errors.usageLimit = 'Usage Limit must be a non-negative integer.';
+      isValid = false;
+    }
+  
+    const isActive = document.getElementById('isActive').value;
+  
+    // Show error messages
+    if (!isValid) {
       Object.keys(errors).forEach((field) => {
-        document.getElementById(`${field}Error`).textContent = '';
+        if (errors[field]) {
+          document.getElementById(`${field}Error`).textContent = errors[field];
+        }
       });
-
-      // Validation logic
-      const couponCode = document.getElementById('couponCode').value.trim();
-      const couponCodePattern = /^[a-zA-Z0-9]{5,20}$/;
-      if (!couponCode) {
-        errors.couponCode = 'Coupon Code is required.';
-        isValid = false;
-      } else if (!couponCodePattern.test(couponCode)) {
-        errors.couponCode = 'Coupon Code must be 5-20 alphanumeric characters.';
-        isValid = false;
-      }
-
-      const discountType = document.getElementById('discountType').value;
-    //   const validDiscountTypes = ['Percentage', 'Fixed'];
-    //   if (!discountType || !validDiscountTypes.includes(discountType)) {
-    //     errors.discountType = 'Discount Type is required and must be valid.';
-    //     isValid = false;
-    //   }
-
-      const discountAmount = parseFloat(document.getElementById('discountAmount').value);
-      if (isNaN(discountAmount) || discountAmount <= 0) {
-        errors.discountAmount = 'Discount Amount must be a positive number.';
-        isValid = false;
-      }
-
-      const minPurchaseAmount = parseFloat(document.getElementById('minPurchaseAmount').value);
-      if (isNaN(minPurchaseAmount) || minPurchaseAmount <= 0) {
-        errors.minPurchaseAmount = 'Minimum Purchase Amount must be a positive number.';
-        isValid = false;
-      }
-
-      const expirationDate = document.getElementById('expirationDate').value;
-      if (!expirationDate) {
-        errors.expirationDate = 'Expiration Date is required.';
-        isValid = false;
-      } else if (new Date(expirationDate) < new Date()) {
-        errors.expirationDate = 'Expiration Date must be in the future.';
-        isValid = false;
-      }
-
-      const maxDiscount = document.getElementById('maxDiscount').value;
-      if (maxDiscount && parseFloat(maxDiscount) < 0) {
-        errors.maxDiscount = 'Maximum Discount cannot be negative.';
-        isValid = false;
-      }
-
-      const usageLimit = document.getElementById('usageLimit').value;
-      if (usageLimit && (isNaN(usageLimit) || parseInt(usageLimit) < 0)) {
-        errors.usageLimit = 'Usage Limit must be a non-negative integer.';
-        isValid = false;
-      }
-
-      const isActive = document.getElementById('isActive').value;
-    //   if (!isActive || (isActive !== 'Yes' && isActive !== 'No')) {
-    //     errors.isActive = 'Is Active selection is required and must be Yes or No.';
-    //     isValid = false;
-    //   }
-
-      // Show error messages
-      if (!isValid) {
-        Object.keys(errors).forEach((field) => {
-          if (errors[field]) {
-            document.getElementById(`${field}Error`).textContent = errors[field];
-          }
-        });
-        return;
-      }
-
-      // If validation passes, proceed with form submission
-      const formData = {
-        couponCode,
-        discountType,
-        discountAmount,
-        minPurchaseAmount,
-        expirationDate,
-        maxDiscount: maxDiscount || null,
-        usageLimit: usageLimit || null,
-        isActive
-      };
-
-      axios.post('/admin/addCoupen', formData)
-        .then(response => {
-          if (response.data.success) {
-            Swal.fire({
-              title: 'Success!',
-              text: response.data.message,
-              icon: 'success',
-              showConfirmButton: false,
-              timer: 2000
-            }).then(() => {
-              window.location.reload();
-            });
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Failed to add coupon. Please try again.',
-              confirmButtonText: 'OK'
-            });
-          }
-        })
-        .catch(error => {
+      return;
+    }
+  
+    // If validation passes, proceed with form submission
+    const formData = {
+      couponCode,
+      discountType,
+      discountAmount,
+      minPurchaseAmount,
+      expirationDate,
+      usageLimit: usageLimit || null,
+      isActive,
+    };
+  
+    axios.post('/admin/addCoupen', formData)
+      .then(response => {
+        if (response.data.success) {
           Swal.fire({
-            title: 'Error!',
-            text: error.response?.data?.message || 'Failed to add coupon. Please try again.',
+            title: 'Success!',
+            text: response.data.message,
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 2000
+          }).then(() => {
+            window.location.reload();
+          });
+        } else {
+          Swal.fire({
             icon: 'error',
+            title: 'Error',
+            text: 'Failed to add coupon. Please try again.',
             confirmButtonText: 'OK'
           });
+        }
+      })
+      .catch(error => {
+        Swal.fire({
+          title: 'Error!',
+          text: error.response?.data?.message || 'Failed to add coupon. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'OK'
         });
-    });
+      });
+  });
   </script>
+  
 
   <!-- Bootstrap JS Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -253,7 +253,7 @@ const addCategoryOffer = async (req, res) => {
         const products = await Product.find({ category: id });
         for (const product of products) {
             const discountAmount = (product.regularPrice * Number(offerP)) / 100;
-            product.salePrice = product.salePrice - discountAmount;
+            product.salePrice = Math.round(product.salePrice - discountAmount);
             await product.save();
         }
 
@@ -302,7 +302,7 @@ const removeCategoryOffer = async (req, res) => {
         const products = await Product.find({ category: id });
         for (const product of products) {
             const discountAmount = (product.regularPrice * offer) / 100;
-            product.salePrice += discountAmount  
+            Math.round(product.salePrice += discountAmount  )
             await product.save();
         }
         await category.save();

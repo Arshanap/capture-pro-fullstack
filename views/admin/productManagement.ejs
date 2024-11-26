@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf-8">
-        <title>Evara Dashboard</title>
+        <title>Capture Pro</title>
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -272,6 +272,7 @@
                                         <div class="col-md-6 mb-3">
                                             <label for="productCategory" class="form-label">Category</label>
                                             <select class="form-control" id="productCategory" name="category">
+                                                <option value="">select category</option>
                                                 <% for(let i = 0; i < categories.length; i++) { %>
                                                     <option value="<%= categories[i].name %>"><%= categories[i].name %></option>
                                                 <% } %>
@@ -323,6 +324,7 @@
                                         <div class="card-body align-items-center" style="margin-bottom: 20px;">
                                             <img src="" alt="" id="imgView2" style="max-width: 200px;">
                                             <input class="form-control" type="file" name="images" id="input2" accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 2)">
+                                            <div id="images2-error" class="error-message text-danger"></div>
                                         </div>
                                         <div id="cropperContainer2" class="image-cropper d-flex align-items-center"
                                              style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
@@ -336,6 +338,7 @@
                                         <div class="card-body align-items-center" style="margin-bottom: 20px;">
                                             <img src="" alt="" id="imgView3" style="max-width: 200px;">
                                             <input class="form-control" type="file" name="images" id="input3" accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 3)">
+                                            <div id="images3-error" class="error-message text-danger"></div>
                                         </div>
                                         <div id="cropperContainer3" class="image-cropper d-flex align-items-center"
                                              style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
@@ -349,6 +352,7 @@
                                         <div class="card-body align-items-center" style="margin-bottom: 20px;">
                                             <img src="" alt="" id="imgView4" style="max-width: 200px;">
                                             <input class="form-control" type="file" name="images" id="input4" accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 4)">
+                                            <div id="images4-error" class="error-message text-danger"></div>
                                         </div>
                                         <div id="cropperContainer4" class="image-cropper d-flex align-items-center"
                                              style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
@@ -406,6 +410,7 @@
                 <!-- edit -->
                 <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <script src="script.js?v=1.0"></script>
 
                 
 <script>
@@ -486,82 +491,95 @@
     }, 3000); // 3000 milliseconds = 3 seconds
 </script>
 <script>
-    function validateForm() {
+   
+function validateForm() {
     let isValid = true;
 
-    // Function to check for special characters
-    const hasSpecialCharacters = (input) => /[!@#$%^&*(),.?":{}|<>]/g.test(input);
-
-    // Product Name Validation
-    const productName = document.getElementById('productName').value.trim();
-    if (productName === '' || hasSpecialCharacters(productName)) {
-        document.getElementById('productName-error').innerText = 'Product name is required and cannot contain special characters.';
+    // Product Name validation
+    const productName = document.getElementById('pproductName').value.trim();
+    const nameRegex = /^[a-zA-Z0-9\s]+$/; // Alphanumeric and spaces only
+    if (productName.length < 3 || !nameRegex.test(productName)) {
+        document.getElementById('productName-error').innerText = 
+            "Product name must be at least 3 characters and cannot contain special characters.";
         isValid = false;
     } else {
-        document.getElementById('productName-error').innerText = '';
+        document.getElementById('productName-error').innerText = "";
     }
 
-    // Category Validation
-    const productCategory = document.getElementById('productCategory').value;
-    if (productCategory === '') {
-        document.getElementById('productCategory-error').innerText = 'Category is required.';
+    // Category validation
+    const productCategory = document.getElementById('productCategory').value.trim();
+    if (productCategory === "") {
+        document.getElementById('productCategory-error').innerText = "Please select a category.";
         isValid = false;
     } else {
-        document.getElementById('productCategory-error').innerText = '';
+        document.getElementById('productCategory-error').innerText = "";
     }
 
-    // Regular Price Validation
-    const regularPrice = document.getElementById('regularPrice').value.trim();
-    if (regularPrice === '' || parseFloat(regularPrice) <= 0) {
-        document.getElementById('regularPrice-error').innerText = 'Regular price is required and must be greater than 0.';
+    // Regular Price validation
+    const regularPrice = parseFloat(document.getElementById('pproductPrice').value);
+    if (isNaN(regularPrice) || regularPrice <= 0) {
+        document.getElementById('regularPrice-error').innerText = "Regular price must be a positive number.";
         isValid = false;
     } else {
-        document.getElementById('regularPrice-error').innerText = '';
+        document.getElementById('regularPrice-error').innerText = "";
     }
 
-    // Sale Price Validation
-    const salePrice = document.getElementById('salePrice').value.trim();
-    if (salePrice === '' || parseFloat(salePrice) <= 0) {
-        document.getElementById('salePrice-error').innerText = 'Sale price is required and must be greater than 0.';
-        isValid = false;
-    } else if (parseFloat(salePrice) >= parseFloat(regularPrice)) {
-        document.getElementById('salePrice-error').innerText = 'Sale price must be less than regular price.';
+    // Sale Price validation
+    const salePrice = parseFloat(document.getElementById('psalePrice').value);
+    if (isNaN(salePrice) || salePrice < 0 || salePrice > regularPrice) {
+        document.getElementById('salePrice-error').innerText = 
+            "Sale price must be a positive number and less than or equal to the regular price.";
         isValid = false;
     } else {
-        document.getElementById('salePrice-error').innerText = '';
+        document.getElementById('salePrice-error').innerText = "";
     }
 
-    // Quantity Validation
-    const quantity = document.getElementById('count').value.trim();
-    if (quantity === '' || isNaN(quantity) || parseInt(quantity) <= 0) {
-        document.getElementById('quantity-error').innerText = 'Please enter a valid quantity greater than 0.';
+    // Check if sale price equals the regular price
+    if (salePrice === regularPrice) {
+        document.getElementById('salePrice-error').innerText = 
+            "Sale price should ideally be less than the regular price.";
+        isValid = false;
+    }
+
+    // Description validation
+    const description = document.getElementById('productDescription').value.trim();
+    if (description.length < 10) {
+        document.getElementById('description-error').innerText = "Description must be at least 10 characters.";
         isValid = false;
     } else {
-        document.getElementById('quantity-error').innerText = '';
+        document.getElementById('description-error').innerText = "";
     }
 
-    // Full Description Validation
-    const productDescription = document.getElementById('description').value.trim();
-    if (productDescription === '' || hasSpecialCharacters(productDescription)) {
-        document.getElementById('description-error').innerText = 'Description is required and cannot contain special characters.';
+    // Quantity validation
+    const quantity = parseInt(document.getElementById('editProductVariant').value);
+    if (isNaN(quantity) || quantity <= 0) {
+        document.getElementById('quantity-error').innerText = "Quantity must be a positive integer.";
         isValid = false;
     } else {
-        document.getElementById('description-error').innerText = '';
+        document.getElementById('quantity-error').innerText = "";
     }
 
-    // Image Validation
-    const imageInputs = [document.getElementById('input1')]; // Add other inputs as needed
-    for (let i = 0; i < imageInputs.length; i++) {
-        const file = imageInputs[i]?.files[0];
-        if (file && !['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
-            document.getElementById(`images${i + 1}-error`).innerText = 'Only PNG, JPEG, and JPG formats are allowed.';
-            isValid = false;
-        } else {
-            document.getElementById(`images${i + 1}-error`).innerText = '';
-        }
+    // Images validation
+    const images = [1, 2, 3, 4].map(i => document.getElementById(`input${i}`).files[0]);
+    if (!images.some(img => img)) {
+        document.getElementById('images1-error').innerText = "At least one image must be uploaded.";
+        document.getElementById('images2-error').innerText = "At least one image must be uploaded.";
+        document.getElementById('images3-error').innerText = "At least one image must be uploaded.";
+        document.getElementById('images4-error').innerText = "At least one image must be uploaded.";
+        isValid = false;
+    } else {
+        document.getElementById('images1-error').innerText = "";
     }
 
     return isValid;
+}
+
+function viewImage(event, index) {
+    const imgView = document.getElementById(`imgView${index}`);
+    imgView.src = URL.createObjectURL(event.target.files[0]);
+    imgView.onload = function () {
+        URL.revokeObjectURL(imgView.src);
+    };
 }
 
 
@@ -824,11 +842,11 @@ function viewImage1(event) {
         const offerP = document.getElementById('offer').value.trim();
 
         // Validate the input
-        if (!offerP || isNaN(offerP) || Number(offerP) <= 0) {
+        if (!offerP || isNaN(offerP) || Number(offerP) <= 0 || Number(offerP) >= 100) {
             Swal.fire({
                 icon: 'error',
                 title: 'Invalid Input',
-                text: 'Please enter a valid number greater than 0 for the offer percentage.'
+                text: 'Please enter a valid number greater than 0 and less than 100 for the offer percentage.'
             });
             return;
         }

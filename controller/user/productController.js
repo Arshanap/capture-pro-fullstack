@@ -92,15 +92,18 @@ const loadProduct = async (req, res) => {
 
 const loadShop = async (req, res) => {
     try {
-        // Get the sorting option from the query or default to 'new'
-        const sortOption = req.query.sort;
-        const categoryType = req.query.categoryType || null; // Get categoryType from the query
+        const sortOption = req.query.sort || ''; // Sorting option
+        const categoryType = req.query.categoryType || null; // Filter by category type
+        const page = parseInt(req.query.page) || 1; // Current page
+        const limit = 6; // Products per page
+        const skip = (page - 1) * limit; // Skip products for pagination
         let sortCriteria;
+        let search = req.query.search || ''; // Search term
 
-        // Fetch listed categories for filtering
+        // Fetch categories for filtering
         const category = await Category.find({ isListed: true });
 
-        // Define sort criteria based on the selected option
+        // Determine sort criteria
         switch (sortOption) {
             case 'price-low-high':
                 sortCriteria = { salePrice: 1 };
@@ -118,46 +121,38 @@ const loadShop = async (req, res) => {
                 sortCriteria = { createdAt: -1 };
         }
 
-        // Set up search query, pagination, and limit
-        let search = req.query.search || '';
-        const page = parseInt(req.query.page) || 1;
-        const limit = 20;
-        const skip = (page - 1) * limit;
-
-        // Filter for category if categoryType is provided
+        // Create filter for query
         let filter = {
             productName: { $regex: search, $options: 'i' },
-            isBlocked: false, // Show products that are NOT blocked
+            isBlocked: false, // Exclude blocked products
         };
 
         if (categoryType) {
             const matchingCategory = category.find(cat => cat.name === categoryType);
             if (matchingCategory) {
-                filter.category = matchingCategory._id; // Add category filter
+                filter.category = matchingCategory._id; // Filter by category
             } else {
                 return res.render("user/shop", {
-                    product: [], // No matching products if category doesn't exist
+                    product: [],
                     totalProducts: 0,
                     totalPages: 0,
                     page,
                     limit,
                     sortOption,
-                    categoryType
+                    categoryType,
                 });
             }
         }
 
-        // Fetch products from the database with the selected criteria
+        // Fetch products with filters, sorting, and pagination
         const product = await Product.find(filter)
             .sort(sortCriteria)
             .skip(skip)
             .limit(limit)
             .populate('category', 'name');
 
-        // Get the total number of products for pagination
+        // Total product count for pagination
         const totalProducts = await Product.countDocuments(filter);
-
-        // Calculate total pages based on the limit
         const totalPages = Math.ceil(totalProducts / limit);
 
         // Render the shop page with products and pagination details
@@ -169,9 +164,10 @@ const loadShop = async (req, res) => {
             limit,
             sortOption,
             categoryType,
+            category,
         });
     } catch (error) {
-        console.log("Error in loadShop:", error);
+        console.error("Error in loadShop:", error);
         res.status(500).json({ message: "An error occurred while loading the products." });
     }
 };

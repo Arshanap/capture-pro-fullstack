@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf-8">
-        <title>Evara Dashboard</title>
+        <title>Capture Pro</title>
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -425,11 +425,11 @@ document.getElementById('removeOfferButton').addEventListener('click', function(
                 const offerP = document.getElementById('categoryOffer').value.trim();
         
                 // Validation: Check if the input is a number greater than 0
-                if (!offerP || isNaN(offerP) || Number(offerP) <= 0) {
+                if (!offerP || isNaN(offerP) || Number(offerP) <= 0 || Number(offerP) >= 100) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Invalid Input',
-                        text: 'Please enter a valid number greater than 0 for the offer percentage.'
+                        text: 'Please enter a valid number greater than 0 and less than 100 for the offer percentage.'
                     });
                     return;
                 }
