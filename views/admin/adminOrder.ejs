@@ -233,7 +233,7 @@
                                             Are you sure you want to Approve this order return?
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <button type="button" onclick="return cancelReturn('<%= orderItem._id %>')" class="btn btn-secondary" >Cancel</button>
                                             <button type="button" onclick="return approve('<%= orderItem._id %>')" class="btn btn-primary" id="approveButton">Approve</button>
                                         </div>
                                     </div>
@@ -446,7 +446,32 @@ function cancelfun(event) {
 </script>
         
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    function cancelReturn(Id) {
+    // Make an Axios POST request to your backend
+    axios.post(`/admin/cancelReturn?Id=${Id}`)
+        .then(function (response) {
 
+            Swal.fire({
+                icon: 'success',
+                title: 'Action Cancel',
+                text: response.data.message,
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.reload();
+            });
+        })
+        .catch(function (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message,
+                confirmButtonText: 'Try Again'
+            });
+        });
+}
+
+</script>
 <script>
     function approve(Id) {
     // Make an Axios POST request to your backend

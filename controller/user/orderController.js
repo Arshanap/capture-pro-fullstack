@@ -67,6 +67,11 @@ const placeOrder = async (req, res) => {
             return res.status(400).json({ success: false, error: 'User not found' });
         }
 
+        const cart1=await Cart.findOne({ userId: user._id })
+        if(cart1.grandTotal>1000){
+            return res.status(400).json({success:false,error:'cash on delivery is not possible above 1000'})
+        }
+
         const userId = user._id;
         const selectedAddress = await Address.findById(address);
         if (!selectedAddress) {
@@ -81,6 +86,8 @@ const placeOrder = async (req, res) => {
         if (!cartDocuments || cartDocuments.length === 0) {
             return res.status(400).json({ success: false, error: 'Cart is empty' });
         }
+
+        
 
         let totalAmount = 0;
         let totalQuantity = 0;
@@ -256,13 +263,13 @@ const cancelOrder = async (req, res) => {
             await wallet.save();
         }
 
-        // Check if `orderedItems` exists and is an array
         if (Array.isArray(order.orderedItems)) {
             for (const item of order.orderedItems) {
                 const product = await Product.findById(item.product);
                 if (product) {
                     product.count += item.quantity;
                     await product.save();
+                    console.log("saved")
                 }
             }
         } else {
@@ -345,11 +352,6 @@ const loadOrderDetails = async (req, res) => {
     }
   };
   
-  
-
-
-
-
 
 
 

@@ -358,14 +358,9 @@ h1, h2, h3, h4, h5, h6 {
                 </div>
                 <!-- Time Range Filters -->
                 <div class="row my-4">
-                    <!-- <div class="col-md-12 text-center">
-                        <button type="button" class="btn btn-outline-primary">Daily</button>
-                        <button type="button" class="btn btn-outline-secondary">Weekly</button>
-                        <button type="button" class="btn btn-outline-success">Monthly</button>
-                        <button type="button" class="btn btn-outline-info">Yearly</button>
-                    </div> -->
+                  
                     <label for="filter" class="filter-label">Select Report Filter:</label>
-                    <form id="salesReportFilterForm" action="your-form-action-url" method="GET">
+                    <form id="salesReportFilterForm"  onsubmit="return validateCustomDateRange()">
                         <select name="filter" id="filter" class="styled-select" onchange="handleFilterChange()">
                             <option value="daily" <%= filter === 'daily' ? 'selected' : '' %>>Daily</option>
                             <option value="weekly" <%= filter === 'weekly' ? 'selected' : '' %>>Weekly</option>
@@ -374,16 +369,11 @@ h1, h2, h3, h4, h5, h6 {
                             <option value="custom" <%= filter === 'custom' ? 'selected' : '' %>>Custom Range</option>
                         </select>
                         
+                        
                         <button type="submit" class="styled-button">Submit</button>
                     </form>
 
                
-
-
-                <!-- Submit Button -->
-                <!-- <div class="text-center my-4">
-                    <button id="downloadPdfButton" class="btn btn-primary">Download as PDF</button>
-                </div> -->
                 <div class="text-center my-4 d-flex justify-content-center">
                     <button id="downloadPdfButton" class="animated-button me-2">Download PDF</button>
                     <!-- <button id="downloadExcelButton" class="animated-button">Download Excel</button> -->
@@ -398,7 +388,24 @@ h1, h2, h3, h4, h5, h6 {
     <!-- Optional JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    // Show/Hide the Custom Date Inputs
+    function handleFilterChange() {
+        const filter = document.getElementById('filter').value;
+        const customDateInputs = document.getElementById('customDateInputs');
+        if (filter === 'custom') {
+            customDateInputs.style.display = 'block';
+        } else {
+            customDateInputs.style.display = 'none';
+        }
+    }
+
     
+    // Initialize the form on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        handleFilterChange(); // Ensure the custom date fields are shown/hidden based on the selected filter
+    });
+</script>
     <script>
         document.getElementById('downloadPdfButton').addEventListener('click', function (e) {
             e.preventDefault();

@@ -64,6 +64,7 @@ router.post("/changeOrderStatus", orderController.updateStatus)
 router.post("/cancelOrder", orderController.cancelOrder)
 router.get("/orderDetailsPage", adminAuth.checkSession, orderController.loadOrderDetails);
 router.post("/returnApprove", orderController.returnOrder)
+router.post("/cancelReturn", orderController.cancelReturn)
 
 // coupen
 router.get("/coupen",adminAuth.checkSession, coupenController.loadCoupen)

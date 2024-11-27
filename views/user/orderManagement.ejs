@@ -541,22 +541,32 @@ strong.text-uppercase {
                                     <div class="card-footer d-flex justify-content-end">
                                         <!-- Action buttons for the order -->
                                         <a href="/user/orderDetails?id=<%=orderItem.orderId%>"><button id="ccbtn" class="btn-primary btn-sm mr-2">View Details</button></a>
-                                        <% if (orderItem.status == "Pending") { %>
+                                        <% if (orderItem.status == "Pending" && orderItem.paymentStatus != "Failed") { %>
                                             <button class="btn-warning btn-sm" data-order-id="<%= orderItem._id %>">Cancel</button>
-                                        <% } else if (orderItem.status == "Processing") { %>
+                                        <% } else if (orderItem.status == "Processing" && orderItem.paymentStatus != "Failed") { %>
                                             <button class="btn-warning btn-sm" data-order-id="<%= orderItem._id %>">Cancel</button>
-                                        <% } else if (orderItem.status == "Shipped") { %>
+                                        <% } else if (orderItem.status == "Shipped" && orderItem.paymentStatus != "Failed") { %>
                                             <button class="btn-warning btn-sm" data-order-id="<%= orderItem._id %>">Cancel</button>
                                         <% } else if (orderItem.status == "Delivered" && orderItem.returned == false) { %>
-                                            <button class="btn-success btn-sm" data-order-id1="<%= orderItem._id %>">Return request</button>
+                                            <button class="btn-success btn-sm" data-order-id1="<%= orderItem._id %>">Return</button>
                                         <% } else if (orderItem.status == "Cancelled") { %>
                                         <button class="btn-sm" disabled>Cancelled</button>
                                         
                                         <% } else if (orderItem.status == "Returned"){ %>
                                             <button class="btn-order-returned-gray btn-sm" disabled>Order Returned</button>
                                         <% } %>
-                                        <%if (orderItem.returned == true && orderItem.status != "Returned") {%>
+                                        <%if (orderItem.returned == true && orderItem.status != "Returned" && orderItem.requsted != true) {%>
                                             <button class="btn-order-returned-gray btn-sm" disabled>request send</button>
+                                        <% }%>
+                                        <%if (orderItem.returned == true && orderItem.status == "Delivered" && orderItem.requsted == true) {%>
+                                            <button class="btn-order-returned-gray btn-sm" disabled>rejected</button>
+                                        <% }%>
+                                        <%if (orderItem.paymentStatus == "Failed") {%>
+                                            <button class="btn-order-returned-gray btn-sm" 
+                                            data-order2-id="<%= orderItem._id %>" 
+                                            onclick="return repayRazor('<%= orderItem._id %>')">
+                                                Re Pay
+                                            </button>
                                         <% }%>
                                         <input type="hidden" id="orderIdInput1" name="orderId1" value="">                               
                                         <input type="hidden" id="orderIdInput" name="orderId" value="">
@@ -796,7 +806,68 @@ strong.text-uppercase {
     }
 </script>
 
+<script>
+    async function repayRazor(Id) {
+        try {
+            const response = await fetch("/user/razorPay2", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ Id })
+            });
+            const order = await response.json();
 
+            if (!order.id) throw new Error("Failed to create Razorpay order.");
+
+            const options = {
+                key: "rzp_test_egY68AG51tK15K",
+                amount: order.amount,
+                currency: "INR",
+                name: "Your Store",
+                description: "Order Payment",
+                order_id: order.id,
+                handler: async function (paymentResponse) {
+                    const verifyResponse = await fetch("/user/verify2", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            razorpay_order_id: paymentResponse.razorpay_order_id,
+                            razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                            razorpay_signature: paymentResponse.razorpay_signature,
+                            Id
+                        })
+                    });
+                    const result = await verifyResponse.json();
+
+                    if (result.success) {
+                        Swal.fire("Payment Success!", result.message, "success");
+                        setTimeout(() => {
+                            window.location.href = "/user/orderSuccess";
+                        }, 2000);
+                    } else {
+                        Swal.fire("Payment Failed", result.error || "Unknown error occurred.", "error");
+                    }
+                },
+                prefill: {
+                    name: "User Name",
+                    email: "user@example.com",
+                    contact: "1234567890"
+                }
+            };
+
+            const razorpay = new Razorpay(options);
+            razorpay.on("payment.failed", async function (error) {
+                console.error("Payment failed:", error);
+                Swal.fire("Payment Failed", "Please retry the payment.", "error");
+            });
+
+            razorpay.open();
+        } catch (error) {
+            console.error("Error during payment processing:", error);
+            Swal.fire("Error", "Unable to process payment. Please try again.", "error");
+        }
+    }
+</script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

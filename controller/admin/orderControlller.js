@@ -209,6 +209,33 @@ const returnOrder = async (req,res)=>{
     }
 }
 
+const cancelReturn = async (req,res)=>{
+    try {
+        const { Id } = req.query;
+        console.log("id is:",Id)
+
+        const order = await Order.findById(Id);
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        const result = await Order.findOneAndUpdate(
+            { _id: Id },
+            { returned: true, status: "Delivered", requsted: true },
+            { new: true }
+        );
+        if (result) {
+            res.status(200).json({ message: "Order return request send successfully ", order: result });
+        } else {
+            res.status(404).json({ message: "Order not found" });
+        }
+
+        
+    } catch (error) {
+        console.log("error for cancel return order admin side ",error)
+    }
+  }
 
 
-module.exports = {loadOrder, updateStatus, cancelOrder, loadOrderDetails, returnOrder}
+module.exports = {loadOrder, updateStatus, cancelOrder, loadOrderDetails, returnOrder, cancelReturn}
