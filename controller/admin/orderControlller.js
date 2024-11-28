@@ -222,7 +222,7 @@ const cancelReturn = async (req,res)=>{
 
         const result = await Order.findOneAndUpdate(
             { _id: Id },
-            { returned: true, status: "Delivered", requsted: true },
+            { returned: false, status: "Delivered", requsted: true },
             { new: true }
         );
         if (result) {

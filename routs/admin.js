@@ -16,7 +16,7 @@ router.get("/login", adminAuth.islogin, adminController.loadLogin)
 router.post("/login", adminController.login)
 
 // dashboard
-router.get("/dashboard", adminController.loadDashboard)
+router.get("/dashboard", adminAuth.checkSession, adminController.loadDashboard)
 
 //user
 router.get("/users",adminAuth.checkSession, customerController.customerInfo)

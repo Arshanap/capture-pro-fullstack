@@ -212,10 +212,17 @@
                                     <%}else{%>
                                         <button class=" btn-danger btn-sm" data-order-id1="<%= orderItem._id %>" onclick="return cancelfun(event)" style=" width: 80px;">Cancel</button>
                                     <%}%>
-                                    <%if(orderItem.returned == true && orderItem.status != "Returned"){%>
-                                        <button style="border: 0;" class="fas fa-exclamation-circle" data-toggle="modal" data-target="#exampleModal"></button>
-                                    <%}%>
+                                    <% if (orderItem.returned == true && orderItem.status != "Returned") { %>
+                                        <button 
+                                            style="border: 0;" 
+                                            onclick="return valuepush('<%= orderItem._id %>')" 
+                                            class="fas fa-exclamation-circle" 
+                                            data-toggle="modal" 
+                                            data-target="#exampleModal">
+                                        </button>
+                                    <% } %>
                                     <input type="hidden" id="orderIdInput1" name="orderId1" value="">
+                                    
                                 </td>
                             </tr>
 
@@ -233,8 +240,8 @@
                                             Are you sure you want to Approve this order return?
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" onclick="return cancelReturn('<%= orderItem._id %>')" class="btn btn-secondary" >Cancel</button>
-                                            <button type="button" onclick="return approve('<%= orderItem._id %>')" class="btn btn-primary" id="approveButton">Approve</button>
+                                            <button type="button" onclick="return cancelReturn()" class="btn btn-secondary" >Cancel</button>
+                                            <button type="button" onclick="return approve()" class="btn btn-primary" id="approveButton">Approve</button>
                                         </div>
                                     </div>
                                 </div>
@@ -299,7 +306,6 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-
 <script>
     function loadDetails(id) {
         axios.get(`/admin/orderDetailsPage?id=${id}`)
@@ -447,14 +453,34 @@ function cancelfun(event) {
         
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    function cancelReturn(Id) {
-    // Make an Axios POST request to your backend
+
+function valuepush(orderId) {
+    document.getElementById('orderIdInput1').value = orderId;
+
+    console.log('Order ID set:', orderId);
+    return false;
+}
+
+
+
+function cancelReturn() {
+    const Id = document.getElementById('orderIdInput1').value;
+
+    if (!Id) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No ID Found',
+            text: 'Please select an order before performing this action.',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
     axios.post(`/admin/cancelReturn?Id=${Id}`)
         .then(function (response) {
-
             Swal.fire({
                 icon: 'success',
-                title: 'Action Cancel',
+                title: 'Action Cancelled',
                 text: response.data.message,
                 confirmButtonText: 'OK'
             }).then(() => {
@@ -471,25 +497,32 @@ function cancelfun(event) {
         });
 }
 
-</script>
-<script>
-    function approve(Id) {
-    // Make an Axios POST request to your backend
+
+function approve() {
+    const Id = document.getElementById('orderIdInput1').value;
+
+    if (!Id) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No ID Found',
+            text: 'Please select an order before performing this action.',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
     axios.post(`/admin/returnApprove?Id=${Id}`)
         .then(function (response) {
-            // SweetAlert2 success message
             Swal.fire({
                 icon: 'success',
                 title: 'Action Approved',
                 text: response.data.message,
                 confirmButtonText: 'OK'
             }).then(() => {
-                // Reload the page after the confirmation
                 window.location.reload();
             });
         })
         .catch(function (error) {
-            // SweetAlert2 error message
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -499,9 +532,8 @@ function cancelfun(event) {
         });
 }
 
-</script>
 
- 
+</script>
     
     
     
