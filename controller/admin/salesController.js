@@ -14,7 +14,7 @@ const moment = require("moment")
 
 const getSalesReport = async (filter, start, end) => {
     let startDate, endDate;
-    console.log("ethi ethi ethi22")
+    // console.log("ethi ethi ethi22")
 
     if (filter === 'custom' && start && end) {
         startDate = new Date(start);
@@ -93,7 +93,7 @@ const loadSales = async (req,res)=>{
         const start = req.query.start || null;
         const end = req.query.end || null;
 
-        console.log("ethi ethi ethi 1")
+        // console.log("ethi ethi ethi 1")
 
 
         const report=await getSalesReport(filter,start,end)

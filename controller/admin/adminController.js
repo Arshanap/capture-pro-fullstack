@@ -52,19 +52,20 @@ const getSalesReport = async (filter, start, end) => {
     let startDate, endDate;
 
     if (filter === 'custom' && start && end) {
-        startDate = new Date(start);
-        endDate = new Date(end);
+        // Convert string dates to UTC midnight to ensure consistent date handling
+        startDate = moment(start).startOf('day').toDate();
+        endDate = moment(end).endOf('day').toDate();
     } else {
         switch (filter) {
-            case 'daily':
+            case 'today':  // Changed from 'daily' to match frontend
                 startDate = moment().startOf('day').toDate();
                 endDate = moment().endOf('day').toDate();
                 break;
-            case 'weekly':
+            case 'week':  // Changed from 'weekly' to match frontend
                 startDate = moment().startOf('week').toDate();
                 endDate = moment().endOf('week').toDate();
                 break;
-            case 'monthly':
+            case 'month':  // Changed from 'monthly' to match frontend
                 startDate = moment().startOf('month').toDate();
                 endDate = moment().endOf('month').toDate();
                 break;
@@ -73,7 +74,9 @@ const getSalesReport = async (filter, start, end) => {
                 endDate = moment().endOf('year').toDate();
                 break;
             default:
-                throw new Error("Invalid filter type.");
+                // Default to current month if filter is invalid
+                startDate = moment().startOf('month').toDate();
+                endDate = moment().endOf('month').toDate();
         }
     }
 
@@ -105,16 +108,34 @@ const getSalesReport = async (filter, start, end) => {
                     totalDeliveredOrders: {
                         $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, 1, 0] },
                     },
+                    totalProcessingOrders: {
+                        $sum: { $cond: [{ $eq: ["$status", "Processing"] }, 1, 0] },
+                    },
+                    totalPendingOrders:{
+                        $sum: { $cond: [{ $eq: ["$status", "Pending"] }, 1, 0] },
+                    },
                     totalProductOffers: { $sum: '$productOffer' },
                     totalCategoryOffer: { $sum: '$categoryOffer' }
                 }
             }
-        ]);
+        ]).exec(); // Added .exec() for proper promise handling
 
-        return order[0] || null;
+        return order[0] || {
+            totalOrders: 0,
+            totalAmount: 0,
+            totalCouponDiscount: 0,
+            totalCancelledOrders: 0,
+            totalReturnedOrders: 0,
+            totalShippedOrders: 0,
+            totalDeliveredOrders: 0,
+            totalProcessingOrders: 0,
+            totalPendingOrders:0,
+            totalProductOffers: 0,
+            totalCategoryOffer: 0
+        };
     } catch (error) {
         console.error('Error fetching sales report:', error);
-        return null;
+        throw error; // Propagate error to be handled by the calling function
     }
 };
 
@@ -122,34 +143,78 @@ const getSalesReport = async (filter, start, end) => {
 
 const loadDashboard = async (req, res) => {
     try {
-        const filter = req.query.filter || "yearly"; // Default to 'yearly'
+        const filter = req.query.filter || "month"; // Default to month view
         let start = req.query.start || null;
         let end = req.query.end || null;
 
-        // Validate custom date range
-        if (filter === 'custom') {
-            if (!start || !end) {
-                return res.status(400).send("Start and End dates are required for custom filter.");
-            }
-
-            start = new Date(start);
-            end = new Date(end);
-
-            if (isNaN(start) || isNaN(end)) {
-                return res.status(400).send("Invalid date format.");
-            }
-
-            if (start > end) {
-                return res.status(400).send("Start date cannot be after end date.");
-            }
-        }
-
-        // Get sales report data
         const salesReport = await getSalesReport(filter, start, end);
 
         if (!salesReport) {
             return res.status(404).send("No sales data available for the specified filter.");
         }
+
+        const topSoldProducts = await Order.aggregate([
+            { $unwind: "$orderedItems" },
+            {
+              $group: {
+                _id: "$orderedItems.product",
+                timesSold: { $sum: 1 },
+              },
+            },
+            { $sort: { timesSold: -1 } },
+            { $limit: 10 },
+            {
+              $lookup: {
+                from: "products", 
+                localField: "_id",
+                foreignField: "_id",
+                as: "productDetails",
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                productId: "$_id",
+                timesSold: 1,
+                productDetails: { $arrayElemAt: ["$productDetails", 0] },
+              },
+            },
+          ]);
+        //   console.log(topSoldProducts);
+
+          const topCategories = await Order.aggregate([
+            { $unwind: "$orderedItems" },
+            {
+              $lookup: {
+                from: "products", 
+                localField: "orderedItems.product",
+                foreignField: "_id",
+                as: "productDetails",
+              },
+            },
+            { $unwind: "$productDetails" },
+            {
+              $lookup: {
+                from: "categories", 
+                localField: "productDetails.category",
+                foreignField: "_id",
+                as: "categoryDetails",
+              },
+            },
+            { $unwind: "$categoryDetails" },
+            {
+              $group: {
+                _id: "$categoryDetails._id",
+                categoryName: { $first: "$categoryDetails.name" },
+                timesSold: { $sum: "$orderedItems.quantity" }, 
+              },
+            },
+            { $sort: { timesSold: -1 } }, 
+            { $limit: 10 },
+          ]);
+          
+        //   console.log(topCategories);
+          
 
         const {
             totalOrders,
@@ -157,27 +222,23 @@ const loadDashboard = async (req, res) => {
             totalCancelledOrders,
             totalReturnedOrders,
             totalShippedOrders,
-            totalDeliveredOrders
+            totalDeliveredOrders,
+            totalProcessingOrders,
+            totalPendingOrders,
         } = salesReport;
 
-        const chartLabels = ["Cancelled", "Returned", "Shipped", "Delivered"];
-        const chartData = [
-            totalCancelledOrders,
-            totalReturnedOrders,
-            totalShippedOrders,
-            totalDeliveredOrders
-        ];
-
-        // Render the dashboard view
+        // Render the dashboard view with the data
         res.render("admin/dashboard", {
-            chartLabels: JSON.stringify(chartLabels),
-            chartData: JSON.stringify(chartData),
             totalOrders,
             totalRevenue: totalAmount,
-            cancelledOrders: totalCancelledOrders,
-            returnedOrders: totalReturnedOrders,
-            shippedOrders: totalShippedOrders,
-            deliveredOrders: totalDeliveredOrders
+            cancelledOrders: totalCancelledOrders || 0,
+            returnedOrders: totalReturnedOrders || 0,
+            shippedOrders: totalShippedOrders || 0,
+            deliveredOrders: totalDeliveredOrders || 0,
+            totalProcessingOrders: totalProcessingOrders,
+            totalPendingOrders:totalPendingOrders,
+            topSoldProducts,
+            topCategories,
         });
     } catch (error) {
         console.error("Error loading dashboard:", error);

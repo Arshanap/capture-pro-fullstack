@@ -485,7 +485,7 @@ strong.text-uppercase {
             <div style="width: 500px;" class="card shadow-lg wallet-card">
               <div class="card-body text-center">
                 <h3 class="card-title mb-3">My Wallet</h3>
-                <p class="wallet-balance mb-4">₹  <%= wallet.balance %></p>
+                <p class="wallet-balance mb-4">₹  <%= wallet.balance%></p>
                 <!-- Add Funds Button -->
                 <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addFundsModal">Add Mony</button>
               </div>
@@ -529,11 +529,13 @@ strong.text-uppercase {
                 <nav aria-label="Wallet navigation">
                     <ul class="pagination justify-content-center">
                 
-                        <% for (let i = 1; i <= totalPages; i++) { %>
+                        <% const totalPagesWithDefault = totalPages || 1; %> 
+                        <% for (let i = 1; i <= totalPagesWithDefault; i++) { %>
                             <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
                                 <a class="page-link" href="?page=<%= i %>"><%= i %></a>
                             </li>
                         <% } %>
+                        
             
                        
                     </ul>

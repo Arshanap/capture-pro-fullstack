@@ -124,9 +124,11 @@
             <div>
                 <label for="filter">Filter:</label>
                 <select id="filter">
+                    <option >select</option>
                     <option value="today">Today</option>
                     <option value="week">This Week</option>
                     <option value="month">This Month</option>
+                    <option value="year">yearly</option>
                     <option value="custom">Custom</option>
                 </select>
             </div>
@@ -147,67 +149,171 @@
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script>
                 // Fetch labels and data dynamically passed from the backend
-                const labels = ['Cancelled', 'Returned', 'Shipped', 'Delivered'];
-                const data = <%= chartData %>; // Example: [10, 5, 15, 20]
+                const labels = ['Total Orders','Pending',"Processing",'Cancelled', 'Returned', 'Shipped', 'Delivered'];
+                const data = [
+                    '<%= totalOrders %>',
+                    '<%=totalPendingOrders%>',
+                    "<%=totalProcessingOrders%>",
+                    '<%= cancelledOrders %>',
+                    "<%= returnedOrders %>",
+                    "<%= shippedOrders %>",
+                    "<%= deliveredOrders %>",
+                ];
             
                 const ctx = document.getElementById('myChart').getContext('2d');
-            
                 new Chart(ctx, {
-                    type: 'bar',  // Ensure it's a bar chart (not line)
+                    type: 'bar',
                     data: {
-                        labels: labels, // Dynamic labels for the X-axis
+                        labels: labels,
                         datasets: [{
-                            label: 'Order Status Overview', // Dataset label
-                            data: data, // Dynamic data for the chart
+                            label: 'Order Status Overview',
+                            data: data,
                             backgroundColor: [
-                                'rgba(255, 99, 132, 0.5)', // Light Red for Total Orders
-                                'rgba(54, 162, 235, 0.5)', // Light Blue for Cancelled
-                                'rgba(75, 192, 192, 0.5)', // Light Green for Returned
-                                'rgba(153, 102, 255, 0.5)', // Light Purple for Shipped
-                                'rgba(255, 159, 64, 0.5)' // Light Orange for Delivered
+                                'rgba(255, 99, 132, 0.5)',  // Light Red
+                                'rgba(54, 162, 235, 0.5)',  // Light Blue
+                                'rgba(75, 192, 192, 0.5)',  // Light Green
+                                'rgba(153, 102, 255, 0.5)', // Light Purple
                             ],
                             borderColor: [
-                                'rgba(255, 99, 132, 1)', // Dark Red for Total Orders
-                                'rgba(54, 162, 235, 1)', // Dark Blue for Cancelled
-                                'rgba(75, 192, 192, 1)', // Dark Green for Returned
-                                'rgba(153, 102, 255, 1)', // Dark Purple for Shipped
-                                'rgba(255, 159, 64, 1)' // Dark Orange for Delivered
+                                'rgba(255, 99, 132, 1)',  // Dark Red
+                                'rgba(54, 162, 235, 1)',  // Dark Blue
+                                'rgba(75, 192, 192, 1)',  // Dark Green
+                                'rgba(153, 102, 255, 1)', // Dark Purple
                             ],
-                            borderWidth: 1 // Border width for the bars
+                            borderWidth: 1
                         }]
                     },
                     options: {
                         responsive: true,
                         scales: {
                             y: {
-                                beginAtZero: true, // Start Y-axis from 0
-                                title: {
-                                    display: true,
-                                    text: 'Number of Orders' // Y-axis label
-                                }
-                            },
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: '' // X-axis label
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
                                 }
                             }
                         }
                     }
                 });
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    const filterDropdown = document.getElementById('filter');
+                    const customDateRange = document.getElementById('customDateRange');
+
+                    // Show/Hide Custom Date Range Inputs
+                    filterDropdown.addEventListener('change', function () {
+                        if (this.value === 'custom') {
+                            customDateRange.style.display = 'block'; // Show custom date range inputs
+                        } else {
+                            customDateRange.style.display = 'none'; // Hide custom date range inputs
+                            updateDashboard(); // Auto-update for non-custom filters
+                        }
+                    });
+
+                    // Update Dashboard Logic
+                    document.querySelector('#customDateRange button').addEventListener('click', function () {
+                        updateDashboard();
+                    });
+                });
+
+                function updateDashboard() {
+                    const filter = document.getElementById('filter').value;
+                    const startDate = document.getElementById('startDate').value;
+                    const endDate = document.getElementById('endDate').value;
+
+                    // Construct Query Parameters
+                    const queryParams = new URLSearchParams();
+                    queryParams.append('filter', filter); // Always include the filter parameter
+
+                    if (filter === 'custom') {
+                        if (startDate && endDate) {
+                            queryParams.append('start', startDate);
+                            queryParams.append('end', endDate);
+                        } else {
+                            alert('Please select both start and end dates.');
+                            return; // Exit function if dates are incomplete
+                        }
+                    }
+
+                    // Redirect to the updated URL
+                    window.location.href = `/admin/dashboard?${queryParams.toString()}`;
+                }
             </script>
             
             
             <div>
                 <h3>Dashboard Overview</h3>
                 <p>Total Orders: <%= totalOrders %></p>
+                <p>Pending Orders: <%=totalPendingOrders%></p>
                 <p>Total Revenue:₹ <%= totalRevenue.toFixed(2) %></p>
                 <p>Cancelled Orders: <%= cancelledOrders %></p>
                 <p>Returned Orders: <%= returnedOrders %></p>
                 <p>Shipped Orders: <%= shippedOrders %></p>
                 <p>Delivered Orders: <%= deliveredOrders %></p>
+                <p>Processing Orders: <%=totalProcessingOrders%></p>
             </div>
             
+
+            <div class="container mt-5">
+                <!-- Top Sold Category Table -->
+                <h3 class="mb-3">Top Selling Categories</h3>
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Category Name</th>
+                            <th>Quantity Sold</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (topCategories && topCategories.length > 0) { %>
+                            <% topCategories.forEach((category, index) => { %>
+                              <tr>
+                                <td><%= index + 1 %></td>
+                                <td><%= category.categoryName || "Unknown Category" %></td>
+                                <td><%= category.timesSold %></td>
+                              </tr>
+                            <% }); %>
+                          <% } else { %>
+                            <tr>
+                              <td colspan="3" class="text-center">No categories found</td>
+                            </tr>
+                          <% } %>
+                        
+                    </tbody>
+                </table>
+        
+                <!-- Top Sold Product Table -->
+                <h3 class="mt-5 mb-3">Top Selling Products</h3>
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Product Name</th>
+                            <th>Quantity Sold</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (topSoldProducts && topSoldProducts.length > 0) { %>
+                            <% topSoldProducts.forEach((product, index) => { %>
+                              <tr>
+                                <td><%= index + 1 %></td>
+                                <td><%= product.productDetails.productName || "Unknown Product" %></td>
+                                <td><%= product.timesSold %></td>
+                              </tr>
+                            <% }); %>
+                          <% } else { %>
+                            <tr>
+                              <td colspan="3" class="text-center">No products found</td>
+                            </tr>
+                          <% } %>
+                       
+                    </tbody>
+                </table>
+            </div>
+
+
+
             <script>
 document.addEventListener('DOMContentLoaded', function () {
     const filterDropdown = document.getElementById('filter');
@@ -219,6 +325,7 @@ document.addEventListener('DOMContentLoaded', function () {
             customDateRange.style.display = 'block'; // Show custom date range inputs
         } else {
             customDateRange.style.display = 'none'; // Hide custom date range inputs
+            updateDashboard(); // Auto-update for non-custom filters
         }
     });
 

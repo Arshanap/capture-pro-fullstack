@@ -770,24 +770,33 @@ async function placeOrder(event) {
             });
 
             const result = await paymentResponse.json();
-            if (result.success) {
-                Swal.fire({
-                    position: "top-right",
-                    icon: "success",
-                    title: "Payment verified and order placed successfully!",
-                    showConfirmButton: false,
-                    timer: 3000,
-                });
-                setTimeout(() => {
-                    window.location.href = "/user/orderSuccess";
-                }, 2000);
-            } else {
-                Swal.fire({
-                    icon: "error",
-                    title: "Payment Failed",
-                    text: "Payment verification failed. Please try again.",
-                });
-            }
+
+if (result.success) {
+    Swal.fire({
+        position: "top-right",
+        icon: "success",
+        title: "Payment verified and order placed successfully!",
+        showConfirmButton: false,
+        timer: 3000,
+    });
+    setTimeout(() => {
+        window.location.href = "/user/orderSuccess";
+    }, 2000);
+} else if (result.errors && Array.isArray(result.errors)) {
+    const stockErrorMessages = result.errors.join("\n"); 
+    Swal.fire({
+        icon: "error",
+        title: "Stock Verification Failed",
+        text: stockErrorMessages,
+    });
+} else {
+    Swal.fire({
+        icon: "error",
+        title: "Payment Failed",
+        text: "Payment verification failed. Please try again.",
+    });
+}
+
         },
         prefill: {
             name: "User Name",

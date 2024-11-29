@@ -175,6 +175,36 @@ router.post('/user/verify', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Cart is empty' });
         }
 
+        const order = await Cart.findOne({ userId: user._id }).populate("items.productId");
+
+        if (!order) {
+          return res.status(400).json({ error: "Cart not found" });
+        }
+        
+            const stockErrors = []; // Array to collect errors
+            var handleStock1 = []; // Array to collect successful stock updates
+          
+            // Iterate over order items and process stock validation
+            for (const item of order.items) {
+              const product = await Product.findById(item.productId);
+          
+              if (!product || product.count < item.quantity) {
+                stockErrors.push(
+                  `Product "${product?.productName || "Unknown Product"}" is out of stock.`
+                );
+              } else {
+                handleStock1.push(product);
+              }
+            }
+          
+            if (stockErrors.length > 0) {
+                return res.status(400).json({
+                  message: "Stock verification failed for some products.",
+                  errors: stockErrors, // Array of error messages
+                });
+              }
+          
+
         let totalAmount = 0;
         const items = [];
 
@@ -290,9 +320,42 @@ router.post("/user/verify2", async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, Id } = req.body;
 
     try {
-        // Find the order and populate the 'product' field in 'orderedItems'
+        // Find the order and populate the ordered items
         const order = await Order.findById(Id).populate("orderedItems.product");
-        if (!order) return res.status(400).json({ error: "Order not found" });
+        if (!order) {
+          return res.status(400).json({ error: "Order not found" });
+        }
+      
+        // Arrays to handle stock validation results
+        const stockErrors = []; // Collects error messages
+        const handleStock = []; // Collects successfully validated products
+      
+        // Iterate over ordered items for stock validation
+        for (const item of order.orderedItems) {
+          const product = await Product.findById(item.product);
+      
+          if (!product || product.count < item.quantity) {
+            // Add errors to the stockErrors array
+            stockErrors.push(
+              `Product "${product?.productName || "Unknown Product"}" is out of stock.`
+            );
+          } else {
+            // Add valid products to handleStock
+            handleStock.push(product);
+          }
+        }
+      
+        // Check for any errors
+        if (stockErrors.length > 0) {
+          return res.status(400).json({
+            message: "Stock verification failed for some products.",
+            error: "Stock verification failed for some products.",
+          });
+        }
+      
+
+      
+        
 
         // Validate Razorpay signature
         const key_secret = process.env.RAZORPAY_KEY_SECRET;
@@ -319,6 +382,7 @@ router.post("/user/verify2", async (req, res) => {
             product.count -= item.quantity;
             await product.save();
         }
+
 
         res.json({ success: true, message: "Payment verified and order placed successfully." });
     } catch (error) {

@@ -9,15 +9,17 @@ const loadWallet = async (req, res) => {
       const email = req.session.User;
       const user = await User.findOne({ email });
 
-      if (!user) {
-          return res.render("user/wallet", { wallet: null, message: "User not found." });
-      }
+      // if (!user) {
+      //     return res.render("user/wallet", {totalPages, wallet: null, message: "User not found." });
+      // }
 
       const wallet = await Wallet.findOne({ userId: user._id });
 
       if (!wallet) {
           // If wallet is not found, handle it gracefully
           return res.render("user/wallet", {
+            totalPages:1,
+            currentPage:1,
               wallet: { balance: 0, transaction: [] }, // Default values
               message: "Wallet not found. Please add funds to your wallet."
           });
@@ -45,7 +47,9 @@ const loadWallet = async (req, res) => {
       console.log("Error loading wallet", error);
       res.render("user/wallet", {
           wallet: null,
+          totalPages,
           message: "An error occurred while loading the wallet.",
+          
       });
   }
 };
