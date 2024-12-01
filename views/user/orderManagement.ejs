@@ -568,6 +568,9 @@ strong.text-uppercase {
                                                 Re Pay
                                             </button>
                                         <% }%>
+                                        <% if(orderItem.paymentStatus != "Failed" && orderItem.status != "Cancelled"){%>
+                                            <a href="/user/Invoice?orderId=<%=orderItem.orderId%>" style="width: 90px; margin-left: 20px; border-radius: 4px; text-decoration: none;" class=" btn-danger"> Invoice</a>
+                                        <%}%>
                                         <input type="hidden" id="orderIdInput1" name="orderId1" value="">                               
                                         <input type="hidden" id="orderIdInput" name="orderId" value="">
                                     </div>

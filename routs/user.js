@@ -11,6 +11,7 @@ const passwordController = require("../controller/user/passwordController")
 const checkoutController = require("../controller/user/checkoutController")
 const wishlistController = require("../controller/user/wishlistController")
 const walletController = require("../controller/user/walletController")
+const invoiceController = require("../controller/user/invoiceContoller")
 const bodyParser = require('body-parser');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
@@ -118,6 +119,9 @@ router.delete("/user/wishlistRemove", wishlistController.removeProduct)
 // wallet 
 router.get("/user/wallet", userAuth.checkSession, walletController.loadWallet)
 router.post("/user/addFund", walletController.addFund)
+
+// Invoice
+router.get("/user/Invoice", invoiceController.getInvoice)
 
 // coupen
 // router.get("/user/coupen", userAuth.checkSession, )
@@ -266,7 +270,7 @@ router.post('/user/verify', async (req, res) => {
 
         await newOrder.save();
 
-        for (const item of items) {
+        for (const item of items) { 
             const product = await Product.findById(item.product);
             product.count -= item.quantity;
             await product.save();
