@@ -41,7 +41,7 @@ router.get("/products",adminAuth.checkSession, productContoller.loadProducts)
 router.post('/addproduct', upload.array('images', 4), productContoller.addProduct)
 router.get("/listProduct",productContoller.listProduct)
 router.get("/unlistProduct",productContoller.unlistProduct)
-// router.post("/deleteImage", productContoller.deleteSingleImage)
+router.post("/deleteSingleImage", productContoller.deleteSingleImage)
 router.post('/productedit', upload.array('image', 4), productContoller.editProduct2)
 router.get('/getProductData', productContoller.editProduct);
 router.get("/productedit",adminAuth.checkSession, productContoller.editProduct)

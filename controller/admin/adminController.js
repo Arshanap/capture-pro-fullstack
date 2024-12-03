@@ -69,14 +69,14 @@ const getSalesReport = async (filter, start, end) => {
                 startDate = moment().startOf('month').toDate();
                 endDate = moment().endOf('month').toDate();
                 break;
-            case 'yearly':
+            case 'year':
                 startDate = moment().startOf('year').toDate();
                 endDate = moment().endOf('year').toDate();
                 break;
             default:
                 // Default to current month if filter is invalid
-                startDate = moment().startOf('month').toDate();
-                endDate = moment().endOf('month').toDate();
+                startDate = moment().startOf('year').toDate();
+                endDate = moment().endOf('year').toDate();
         }
     }
 
@@ -143,7 +143,7 @@ const getSalesReport = async (filter, start, end) => {
 
 const loadDashboard = async (req, res) => {
     try {
-        const filter = req.query.filter || "month"; // Default to month view
+        const filter = req.query.filter || "year"; // Default to month view
         let start = req.query.start || null;
         let end = req.query.end || null;
 
