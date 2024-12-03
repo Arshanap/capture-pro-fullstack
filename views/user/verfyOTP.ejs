@@ -66,7 +66,7 @@
 
 <script>
     
-    let timerValue = 10;
+    let timerValue = 60;
 let timerInterval;
 
 function startTimer() {
@@ -93,7 +93,7 @@ function disableResendButton() {
     document.getElementById("resend-link").disabled = true;  
     document.getElementById("otp").disabled = false;         
     document.getElementById("verify-btn").disabled = false;  
-    timerValue = 10;                                             
+    timerValue = 60;                                             
     document.getElementById("timerValue").textContent = timerValue; 
     startTimer();                                           
 }

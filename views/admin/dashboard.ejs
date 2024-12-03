@@ -296,12 +296,12 @@
                     <tbody>
                         <% if (topSoldProducts && topSoldProducts.length > 0) { %>
                             <% topSoldProducts.forEach((product, index) => { %>
-                              <tr>
-                                <td><%= index + 1 %></td>
-                                <td><%= product.productDetails.productName || "Unknown Product" %></td>
-                                <td><%= product.timesSold %></td>
-                              </tr>
-                            <% }); %>
+                                <tr>
+                                  <td><%= index + 1 %></td>
+                                  <td><%= (product.productDetails && product.productDetails.productName) || "Unknown Product" %></td>
+                                  <td><%= product.timesSold %></td>
+                                </tr>
+                              <% }); %>
                           <% } else { %>
                             <tr>
                               <td colspan="3" class="text-center">No products found</td>

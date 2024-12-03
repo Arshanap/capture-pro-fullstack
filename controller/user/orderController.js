@@ -68,7 +68,8 @@ const placeOrder = async (req, res) => {
         }
 
         const cart1=await Cart.findOne({ userId: user._id })
-        if(cart1.grandTotal>1000){
+
+        if(cart1.grandTotal>1000 && paymentMethod === "Cash on Delivery"){
             return res.status(400).json({success:false,error:'cash on delivery is not possible above 1000'})
         }
 
@@ -165,6 +166,7 @@ const placeOrder = async (req, res) => {
             }
 
             if (wallet.balance < totalAmount) {
+                console.log("keri keri keri")
                 return res.status(400).json({ success: false, error: 'Insufficient wallet balance.' });
             }
 
