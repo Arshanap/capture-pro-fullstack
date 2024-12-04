@@ -623,15 +623,15 @@ strong.text-uppercase {
                   <h2>Order Summary</h2>
                   <div class="summary-item">
                     <span>Subtotal:</span>
-                    <span>₹  <%= order.totalPrice.toFixed(2) %></span>
+                    <span>₹  <%= order.finalAmount.toFixed(2) %></span>
                   </div>
                   <div class="summary-item">
                     <span>Shipping:</span>
                     <span>₹  00.00</span>
                   </div>
                   <div class="summary-item">
-                    <span>Tax:</span>
-                    <span>₹  00.00</span>
+                    <span>Coupon Discount:</span>
+                    <span>₹  <%= order.discount %></span>
                   </div>
                   <div class="summary-item total">
                     <strong>Total:</strong>

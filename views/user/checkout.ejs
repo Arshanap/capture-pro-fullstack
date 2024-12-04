@@ -530,9 +530,11 @@
                 <div class="mb-3">
                 <form id="couponForm">
                     <input type="text" id="couponCode" class="form-control" placeholder="Enter coupon code">
+                <% if(applied === null){ %>
                     <button class="btn btn-primary mt-2">Apply Coupon</button>
-                              
-                    <button style="left: 30px; top: 7px; " onclick="return removeCoupon(event)" id="removeCouponButton" class="btn btn-danger" >Remove Coupon</button>
+                <% }else{ %>              
+                    <button style="top: 7px; " onclick="return removeCoupon(event)" id="removeCouponButton" class="btn btn-danger" >Remove Coupon</button>
+                <% } %>
                 </form>
                     <div class="text-danger mt-2" id="couponError"></div>
                     <div class="text-success mt-2" id="couponSuccess"></div>

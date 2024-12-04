@@ -45,6 +45,8 @@ const loadCheckout = async (req, res) => {
             count: item.productId.count,
         }));
 
+        const applied = cartItems.couponCode || null
+
         // Access grandTotal and total from the cart document
         const grandTotal = cartItems.grandTotal;
         const total = cartItems.total;
@@ -59,7 +61,8 @@ const loadCheckout = async (req, res) => {
             errorMessage,
             grandTotal,
             total,
-            Discount
+            Discount,
+            applied,
         });
     } catch (error) {
         console.log("Error loading checkout:", error);

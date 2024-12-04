@@ -173,7 +173,7 @@ const returnOrder = async (req,res)=>{
         }
         if (order.paymentMethod === "Wallet" || order.paymentMethod === "Razorpay" || (order.paymentMethod === "cashOnDelivery" && order.status === "Delivered")) {
             const userId = order.userId;
-
+            // console.log("ind ind ind")
             const wallet = await Wallet.findOne({ userId });
 
             if (!wallet) {

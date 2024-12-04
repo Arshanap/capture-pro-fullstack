@@ -166,7 +166,6 @@ const placeOrder = async (req, res) => {
             }
 
             if (wallet.balance < totalAmount) {
-                console.log("keri keri keri")
                 return res.status(400).json({ success: false, error: 'Insufficient wallet balance.' });
             }
 
@@ -252,6 +251,7 @@ const cancelOrder = async (req, res) => {
             if (!wallet) {
                 return res.status(400).json({ message: "Wallet not found for the user" });
             }
+            
 
             wallet.balance += order.totalPrice;
 
