@@ -5,7 +5,7 @@ const multer = require('multer');
 const Product = require('../../model/userModel/productSchema'); 
 const Category = require("../../model/userModel/categorySchema");
 const mongoose = require("mongoose")
-
+const {statusCodes} = require("../../config/key")
 
 
 const loadProducts = async (req, res) => {
@@ -26,7 +26,7 @@ const loadProducts = async (req, res) => {
         if (productId) {
             product = await Product.findById(productId).populate('category');
             if (!product) {
-                return res.status(404).send('Product not found');
+                return res.status(statusCodes.BAD_REQUEST).send('Product not found');
             }
         }
 
@@ -60,7 +60,7 @@ const loadProducts = async (req, res) => {
 
     } catch (error) {
         console.error('Error loading products:', error);
-        res.status(500).send('Server error');
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).send('Server error');
     }
 };
 
@@ -85,7 +85,6 @@ const addProduct = async (req, res) => {
             // return res.status(400).json({ error: 'Product already exists' });
         }
     
-        // Set up the directory for resized images
         const dir = path.join(__dirname, 'public', 'uploads', 're-image');
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
@@ -105,7 +104,7 @@ const addProduct = async (req, res) => {
                 
                 const supportedFormats = ['image/jpeg', 'image/png', 'image/webp'];
                 if (!supportedFormats.includes(req.files[i].mimetype)) {
-                    return res.status(400).json({ error: 'Unsupported image format' });
+                    return res.status(statusCodes.BAD_REQUEST).json({ error: 'Unsupported image format' });
                 }
                 try {
                     await sharp(originalImagePath)
@@ -187,15 +186,15 @@ const listProduct = async (req,res)=>{
 const getProductById = async (req, res) => {
     try {
         const productId = req.query.id;
-        if (!productId) return res.status(400).json({ error: "Product ID is required" });
+        if (!productId) return res.status(statusCodes.BAD_REQUEST).json({ error: "Product ID is required" });
 
         const product = await Product.findById(productId).populate('category');
-        if (!product) return res.status(404).json({ error: "Product not found" });
+        if (!product) return res.status(statusCodes.BAD_REQUEST).json({ error: "Product not found" });
 
         res.json(product);
     } catch (error) {
         console.error("Error fetching product by ID:", error);
-        res.status(500).send("Server error");
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).send("Server error");
     }
 }
 
@@ -207,13 +206,13 @@ const editProduct = async (req, res) => {
         const categories = await Category.find();  
 
         if (!product) {
-            return res.status(404).render('errorPage', { message: 'Product not found' }); 
+            return res.status(statusCodes.BAD_REQUEST).render('errorPage', { message: 'Product not found' }); 
         }
         
         res.render('admin/ProductEdit', { product, categories });
     } catch (error) {
         console.error('Error fetching product data:', error);
-        res.status(500).render('errorPage', { message: 'Server error' }); 
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).render('errorPage', { message: 'Server error' }); 
     }
 };
 
@@ -223,7 +222,7 @@ const editProduct2 = async (req, res) => {
         const id = req.query.id;
         const product = await Product.findOne({ _id: id });
         if (!product) {
-            return res.status(404).json({ success: false, error: "Product not found" });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, error: "Product not found" });
         }
 
         const data = req.body;
@@ -233,7 +232,7 @@ const editProduct2 = async (req, res) => {
         });
 
         if (existingProduct) {
-            return res.status(400).json({ success: false, error: "Product with this name already exists. Please try with another name." });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, error: "Product with this name already exists. Please try with another name." });
         }
 
         // Handle deleted images
@@ -255,12 +254,11 @@ const editProduct2 = async (req, res) => {
             });
         }
 
-        // Handle new images
         const newImages = [];
         if (req.files && req.files.length > 0) {
             const totalImages = product.productImage.length + req.files.length;
             if (totalImages > 4) {
-                return res.status(400).json({ error: 'Cannot have more than 4 images per product' });
+                return res.status(statusCodes.BAD_REQUEST).json({ error: 'Cannot have more than 4 images per product' });
             }
 
             for (const file of req.files) {
@@ -270,7 +268,7 @@ const editProduct2 = async (req, res) => {
 
                 const supportedFormats = ['image/jpeg', 'image/png', 'image/webp'];
                 if (!supportedFormats.includes(file.mimetype)) {
-                    return res.status(400).json({ error: 'Unsupported image format' });
+                    return res.status(statusCodes.BAD_REQUEST).json({ error: 'Unsupported image format' });
                 }
 
                 try {
@@ -285,7 +283,6 @@ const editProduct2 = async (req, res) => {
             }
         }
 
-        // Update product with new data
         const updateFields = {
             productName: data.productName,
             description: data.description,
@@ -308,7 +305,7 @@ const editProduct2 = async (req, res) => {
                 message: "Product updated successfully" 
             });
         } else {
-            return res.status(400).json({ 
+            return res.status(statusCodes.BAD_REQUEST).json({ 
                 success: false, 
                 error: "Failed to update product" 
             });
@@ -317,7 +314,7 @@ const editProduct2 = async (req, res) => {
         
     } catch (error) {
         console.log("Error updating product:", error);
-        return res.status(500).json({ 
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ 
             success: false, 
             error: "Internal Server Error" 
         });
@@ -341,49 +338,45 @@ const deleteSingleImage = async (req, res) => {
         res.send({ status: true });
     } catch (error) {
         console.error("Error occurred while deleting", error);
-        res.status(400).json({ error: "Error occurred while deleting" });
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ error: "Error occurred while deleting" });
     }
 };
 
 const addProductOffer = async (req, res) => {
     try {
         const { offerP } = req.body;
-        const { id } = req.query;  // Get productId from the query string
+        const { id } = req.query; 
 
-        // Validate the offer percentage
         if (!offerP || isNaN(offerP) || Number(offerP) <= 0) {
-            return res.status(400).json({
+            return res.status(statusCodes.BAD_REQUEST).json({
                 success: false,
                 message: "Invalid offer percentage. It must be a number greater than 0."
             });
         }
 
-        // Find the product by ID
         const product = await Product.findById(id);
         if (!product) {
-            return res.status(404).json({
+            return res.status(statusCodes.BAD_REQUEST).json({
                 success: false,
                 message: "Product not found."
             });
         }
 
-        // Calculate the discount amount and new sale price
         const discountAmount = (product.regularPrice * Number(offerP)) / 100;
         const newSalePrice = Math.round(product.salePrice - discountAmount);
 
-        // Update product details
         product.productOffer = Number(offerP);
         product.salePrice = newSalePrice;
         await product.save()
 
-        res.status(200).json({
+        res.status(statusCodes.OK).json({
             success: true,
             message: "Product offer added successfully.",
             product
         });
     } catch (error) {
         console.error("Error while adding product offer:", error);
-        res.status(500).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "An error occurred while adding the product offer. Please try again later."
         });
@@ -393,91 +386,37 @@ const addProductOffer = async (req, res) => {
 
 const removeProductOffer = async (req, res) => {
     try {
-        const { id } = req.query; // Get productId from the query string
+        const { id } = req.query;
 
-        // Find the product by ID
         const product = await Product.findById(id);
         if (!product) {
-            return res.status(404).json({
+            return res.status(statusCodes.BAD_REQUEST).json({
                 success: false,
                 message: "Product not found."
             });
         }
 
-        // const originalDiscountAmount = (product.regularPrice * product.productOffer) / 100;
-        
-        // const reducedOfferPercentage = product.productOffer - 20;
-
-        // const finalOfferPercentage = reducedOfferPercentage < 0 ? 0 : reducedOfferPercentage;
-
-        // const newDiscountAmount = (product.regularPrice * finalOfferPercentage) / 100;
-
-        // product.salePrice = product.regularPrice - newDiscountAmount;
-
-        // product.productOffer = finalOfferPercentage;
-
-        // await product.save();
 
         const discountAmount = (product.regularPrice * product.productOffer) / 100;
-        // const newSalePrice = product.regularPrice  discountAmount;
 
-        // Update product details
         product.productOffer = 0;
         Math.round(product.salePrice += discountAmount)
         await product.save().then(()=> console.log("successfully"))
 
 
-        res.status(200).json({
+        res.status(statusCodes.OK).json({
             success: true,
             message: "Product offer updated successfully.",
             product
         });
     } catch (error) {
         console.error("Error while updating product offer:", error);
-        res.status(500).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "An error occurred while updating the product offer. Please try again later."
         });
     }
 };
-
-
-
-// const removeProductOffer = async (req, res) => {
-//     try {
-//         const { id } = req.query; // Get productId from the query string
-
-//         // Find the product by ID
-//         const product = await Product.findById(id);
-//         if (!product) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: "Product not found."
-//             });
-//         }
-
-//         // Remove the offer and reset the sale price
-//         product.productOffer = 0; // Reset the offer percentage
-//         product.salePrice = product.regularPrice; // Reset the sale price to the regular price
-//         await product.save();
-
-//         res.status(200).json({
-//             success: true,
-//             message: "Product offer removed successfully.",
-//             product
-//         });
-//     } catch (error) {
-//         console.error("Error while removing product offer:", error);
-//         res.status(500).json({
-//             success: false,
-//             message: "An error occurred while removing the product offer. Please try again later."
-//         });
-//     }
-// };
-
-
-
-
 
 
 

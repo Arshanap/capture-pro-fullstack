@@ -1,6 +1,7 @@
 const Order = require("../../model/userModel/orderSchema")
 const Wallet = require("../../model/userModel/walletSchema")
 const Product = require("../../model/userModel/productSchema")
+const {statusCodes} = require("../../config/key")
 
 
 const loadOrder = async (req, res) => {
@@ -55,16 +56,16 @@ const updateStatus = async (req, res) => {
 
         if (order) {
             
-            res.status(200).json({ message: "Order status updated successfully", order});
+            res.status(statusCodes.OK).json({ message: "Order status updated successfully", order});
         }else{
             
-            return res.status(404).json({ message: "Order not found" });
+            return res.status(statusCodes.BAD_REQUEST).json({ message: "Order not found" });
         }
 
         
     } catch (error) {
         console.error("Error updating status:", error);
-        res.status(500).json({ message: "An error occurred while updating status" });
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ message: "An error occurred while updating status" });
     }
 };
 
@@ -76,7 +77,7 @@ const cancelOrder = async (req, res) => {
         const order = await Order.findById(Id);
 
         if (!order) {
-            return res.status(404).json({ message: "Order not found" });
+            return res.status(statusCodes.BAD_REQUEST).json({ message: "Order not found" });
         }
 
         if (order.paymentMethod === "Wallet" || order.paymentMethod === "Razorpay") {
@@ -84,7 +85,7 @@ const cancelOrder = async (req, res) => {
             const wallet = await Wallet.findOne({ userId });
 
             if (!wallet) {
-                return res.status(400).json({ message: "Wallet not found for the user" });
+                return res.status(statusCodes.BAD_REQUEST).json({ message: "Wallet not found for the user" });
             }
 
 
@@ -113,7 +114,7 @@ const cancelOrder = async (req, res) => {
                 }
             }
         } else {
-            return res.status(400).json({ message: "Order items are not available or invalid" });
+            return res.status(statusCodes.BAD_REQUEST).json({ message: "Order items are not available or invalid" });
         }
         
         const result = await Order.findOneAndUpdate(
@@ -123,13 +124,13 @@ const cancelOrder = async (req, res) => {
         );
 
         if (result) {
-            res.status(200).json({ message: "Order successfully cancelled", order: result });
+            res.status(statusCodes.OK).json({ message: "Order successfully cancelled", order: result });
         } else {
-            res.status(404).json({ message: "Order not found" });
+            res.status(statusCodes.BAD_REQUEST).json({ message: "Order not found" });
         }
     } catch (error) {
         console.error("Error cancelling the order on user side:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
     }
 };
 
@@ -148,14 +149,14 @@ const loadOrderDetails = async (req, res) => {
             .populate("address");
 
         if (!order) {
-            return res.status(404).json({ message: "Order not found" });
+            return res.status(statusCodes.BAD_REQUEST).json({ message: "Order not found" });
         }
 
         // Render the 'sample' view and pass the order details
         res.render("admin/orderDetails", { order });
     } catch (error) {
         console.error("Error loading order details:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
     }
 };
 
@@ -169,7 +170,7 @@ const returnOrder = async (req,res)=>{
         const order = await Order.findById(Id);
 
         if (!order) {
-            return res.status(404).json({ message: "Order not found" });
+            return res.status(statusCodes.BAD_REQUEST).json({ message: "Order not found" });
         }
         if (order.paymentMethod === "Wallet" || order.paymentMethod === "Razorpay" || (order.paymentMethod === "cashOnDelivery" && order.status === "Delivered")) {
             const userId = order.userId;
@@ -177,7 +178,7 @@ const returnOrder = async (req,res)=>{
             const wallet = await Wallet.findOne({ userId });
 
             if (!wallet) {
-                return res.status(400).json({ message: "Wallet not found for the user" });
+                return res.status(statusCodes.BAD_REQUEST).json({ message: "Wallet not found for the user" });
             }
 
             wallet.balance += order.totalPrice; 
@@ -199,9 +200,9 @@ const returnOrder = async (req,res)=>{
         );
 
         if (result) {
-            res.status(200).json({ message: "Order successfully returned", order: result });
+            res.status(statusCodes.OK).json({ message: "Order successfully returned", order: result });
         } else {
-            res.status(404).json({ message: "Order not found" });
+            res.status(statusCodes.BAD_REQUEST).json({ message: "Order not found" });
         }
         
     } catch (error) {
@@ -217,7 +218,7 @@ const cancelReturn = async (req,res)=>{
         const order = await Order.findById(Id);
 
         if (!order) {
-            return res.status(404).json({ message: "Order not found" });
+            return res.status(statusCodes.BAD_REQUEST).json({ message: "Order not found" });
         }
 
         const result = await Order.findOneAndUpdate(
@@ -226,9 +227,9 @@ const cancelReturn = async (req,res)=>{
             { new: true }
         );
         if (result) {
-            res.status(200).json({ message: "Order return request send successfully ", order: result });
+            res.status(statusCodes.OK).json({ message: "Order return request send successfully ", order: result });
         } else {
-            res.status(404).json({ message: "Order not found" });
+            res.status(statusCodes.BAD_REQUEST).json({ message: "Order not found" });
         }
 
         

@@ -5,6 +5,7 @@ const Category = require("../../model/userModel/categorySchema")
 const Product = require("../../model/userModel/productSchema")
 const Order = require("../../model/userModel/orderSchema")
 const moment = require("moment")
+const {statusCodes} = require("../../config/key")
 
 
 const loadLogin = (req,res)=>{
@@ -150,7 +151,7 @@ const loadDashboard = async (req, res) => {
         const salesReport = await getSalesReport(filter, start, end);
 
         if (!salesReport) {
-            return res.status(404).send("No sales data available for the specified filter.");
+            return res.status(statusCodes.BAD_REQUEST).send("No sales data available for the specified filter.");
         }
 
         const topSoldProducts = await Order.aggregate([
@@ -242,11 +243,9 @@ const loadDashboard = async (req, res) => {
         });
     } catch (error) {
         console.error("Error loading dashboard:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
     }
 };
-
-
 
 
 
@@ -255,19 +254,6 @@ const loadlogout = (req,res)=>{
     req.session.Admin=null;
     res.redirect("/admin/login")
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

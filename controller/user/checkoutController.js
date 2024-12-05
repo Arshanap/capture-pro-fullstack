@@ -2,7 +2,7 @@ const User = require("../../model/userModel/userSchema")
 const Address = require("../../model/userModel/adressSchema")
 const Cart = require("../../model/userModel/cartSchema")
 const Coupon = require("../../model/userModel/couponSchema")
-
+const {statusCodes} = require("../../config/key")
 
 
 const loadCheckout = async (req, res) => {
@@ -84,7 +84,7 @@ const addAddress = async (req,res)=>{
 
         if(!user){
             console.log("user not found")
-            return res.status(404).json({ message: "User not found" });
+            return res.status(statusCodes.BAD_REQUEST).json({ message: "User not found" });
         }
 
         const address = new Address({
@@ -103,19 +103,8 @@ const addAddress = async (req,res)=>{
         })
      const result = await address.save()
 
-    //  if(result){
-    //     console.log("etthhhhiiiiii sette")
-    //     req.session.successMessage = "Address adding is successful";
-    //     req.session.errorMessage = "";
-    //     res.redirect("/user/checkout")
-    // }else{
-    //     console.log("paaali")
-    //     req.session.successMessage = "";
-    //     req.session.errorMessage = "Address adding is not successful";
-    //     res.redirect("/user/checkout")
-    // }
         
-            return res.status(200).json({ success: true, message: "Address added successfully" });
+    return res.status(statusCodes.OK).json({ success: true, message: "Address added successfully" });
             
         
         
@@ -193,7 +182,7 @@ const applyCoupon = async (req, res) => {
       const email = req.session.User;
       const user = await User.findOne({ email });
       if (!user) {
-        return res.status(400).json({
+        return res.status(statusCodes.BAD_REQUEST).json({
           success: false,
           message: "User not found."
         });
@@ -204,7 +193,7 @@ const applyCoupon = async (req, res) => {
       // Retrieve the cart for the user
       const cart = await Cart.findOne({ userId });
       if (!cart || cart.items.length === 0) {
-        return res.status(400).json({
+        return res.status(statusCodes.BAD_REQUEST).json({
           success: false,
           message: "Your cart is empty."
         });
@@ -212,7 +201,7 @@ const applyCoupon = async (req, res) => {
   
       // Check if a coupon is already applied to the cart
       if (cart.couponCode) {
-        return res.status(400).json({
+        return res.status(statusCodes.BAD_REQUEST).json({
           success: false,
           message: "A coupon is already applied to this cart."
         });
@@ -223,7 +212,7 @@ const applyCoupon = async (req, res) => {
     //   console.log(coupon)
     //   console.log(couponCode);
       if (!coupon) {
-        return res.status(400).json({
+        return res.status(statusCodes.BAD_REQUEST).json({
           success: false,
           message: "Invalid coupon code."
         });
@@ -231,7 +220,7 @@ const applyCoupon = async (req, res) => {
  // Check if the coupon is active and not expired
  const currentDate = new Date();
  if (!coupon.isActive || currentDate > coupon.expirationDate) {
-   return res.status(400).json({
+   return res.status(statusCodes.BAD_REQUEST).json({
      success: false,
      message: "This coupon is either inactive or has expired."
    });
@@ -239,7 +228,7 @@ const applyCoupon = async (req, res) => {
 
  // Check if the cart's grand total meets the coupon's minimum purchase amount
  if (cart.grandTotal < coupon.minPurchaseAmount) {
-   return res.status(400).json({
+   return res.status(statusCodes.BAD_REQUEST).json({
      success: false,
      message: `Minimum purchase amount of ${coupon.minPurchaseAmount} is required to apply this coupon.`
    });
@@ -258,7 +247,7 @@ const applyCoupon = async (req, res) => {
 
  // Check if the coupon usage limit is reached
  if (coupon.usageLimit !== null && coupon.usedCount >= coupon.usageLimit) {
-   return res.status(400).json({
+   return res.status(statusCodes.BAD_REQUEST).json({
      success: false,
      message: "This coupon has reached its usage limit."
    });
@@ -278,7 +267,7 @@ const applyCoupon = async (req, res) => {
 
 
  // Return the updated information
- return res.status(200).json({
+ return res.status(statusCodes.OK).json({
    success: true,
    message: `Coupon applied successfully. You saved ${discountAmount}.`,
    discountAmount,
@@ -287,7 +276,7 @@ const applyCoupon = async (req, res) => {
       
     } catch (error) {
       console.error("Error applying coupon:", error);
-      res.status(500).json({
+      res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: "An error occurred while applying the coupon."
       });
@@ -299,7 +288,7 @@ const applyCoupon = async (req, res) => {
         const email = req.session.User;
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({
+            return res.status(statusCodes.BAD_REQUEST).json({
                 success: false,
                 message: "User not found."
             });
@@ -310,7 +299,7 @@ const applyCoupon = async (req, res) => {
         // Retrieve the cart for the user
         const cart = await Cart.findOne({ userId });
         if (!cart || cart.items.length === 0) {
-            return res.status(400).json({
+            return res.status(statusCodes.BAD_REQUEST).json({
                 success: false,
                 message: "Your cart is empty."
             });
@@ -322,13 +311,13 @@ const applyCoupon = async (req, res) => {
         cart.grandTotal = cart.total; // Update grandTotal without discount
         await cart.save();
 
-        return res.status(200).json({
+        return res.status(statusCodes.OK).json({
             success: true,
             message: "Coupon removed successfully."
         });
     } catch (error) {
         console.error("Error removing coupon:", error);
-        return res.status(500).json({
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "An error occurred while removing the coupon."
         });

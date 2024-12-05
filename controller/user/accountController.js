@@ -1,6 +1,6 @@
 const Address = require("../../model/userModel/adressSchema")
 const User = require("../../model/userModel/userSchema")
-
+const {statusCodes} = require("../../config/key")
 
 
 
@@ -42,7 +42,7 @@ const addAddress = async (req, res) => {
 
         const user = await User.findOne({ email: userId });
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(statusCodes.BAD_REQUEST).json({ message: "User not found" });
         }
 
         const addresss = new Address({
@@ -131,7 +131,7 @@ const editAddress = async (req, res) => {
         }
     } catch (error) {
         console.error("Error updating address:", error);
-        res.status(500).send("An error occurred while updating the address.");
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).send("An error occurred while updating the address.");
     }
 };
 

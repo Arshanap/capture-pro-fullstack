@@ -1,6 +1,7 @@
 const User = require("../../model/userModel/userSchema")
 const Product = require("../../model/userModel/productSchema")
 const Cart = require("../../model/userModel/cartSchema")
+const {statusCodes} = require("../../config/key")
 
 
 const loadCart = async (req, res) => {
@@ -10,7 +11,7 @@ const loadCart = async (req, res) => {
         // Retrieve the user from the database based on the email
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).send("User not found.");
+            return res.status(statusCodes.BAD_REQUEST).send("User not found.");
         }
         const userId = user._id;
 
@@ -43,7 +44,7 @@ const loadCart = async (req, res) => {
 
     } catch (error) {
         console.log("Error loading cart:", error);
-        res.status(500).send("An error occurred while loading the cart.");
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).send("An error occurred while loading the cart.");
     }
 };
 
@@ -59,7 +60,7 @@ const addProduct = async (req, res) => {
         // Retrieve the user object based on the email to get the ObjectId
         const user = await User.findOne({ email: useremail });
         if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "User not found" });
         }
 
         // Check if a cart already exists for the user
@@ -68,7 +69,7 @@ const addProduct = async (req, res) => {
         // Retrieve the product details
         const product = await Product.findOne({ _id: id });
         if (!product) {
-            return res.status(404).json({ success: false, message: "Product not found" });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Product not found" });
         }
 
         // If the cart exists, check if the product already exists
@@ -78,11 +79,11 @@ const addProduct = async (req, res) => {
 
             if (productIndex > -1) {
                 // Product already exists in the cart, update the quantity and totalPrice
-                return res.status(400).json({ success: false, message: "This product is already in the cart." });
+                return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "This product is already in the cart." });
             } else {
                 // Product does not exist in the cart, add it
                 if (value > product.count) {
-                    return res.status(400).json({ success: false, message: "Not enough stock available" });
+                    return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Not enough stock available" });
                 }
 
                 cart.items.push({
@@ -96,7 +97,7 @@ const addProduct = async (req, res) => {
         } else {
             // If no cart exists, create a new cart with the product in the items array
             if (value > product.count) {
-                return res.status(400).json({ success: false, message: "Not enough stock available" });
+                return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Not enough stock available" });
             }
 
             cart = new Cart({
@@ -137,7 +138,7 @@ const addProduct = async (req, res) => {
         }
     } catch (error) {
         console.log("Error for add to cart:", error);
-        return res.status(500).json({ success: false, message: "An unexpected error occurred." });
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "An unexpected error occurred." });
     }
 };
 
@@ -152,7 +153,7 @@ const valueUpdate = async (req, res) => {
         // Retrieve the user object based on the email to get the ObjectId
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: 'User not found' });
         }
 
         const userId = user._id;
@@ -160,7 +161,7 @@ const valueUpdate = async (req, res) => {
         const cart = await Cart.findOne({ userId, 'items.productId': productId });
 
         if (!cart) {
-            return res.status(404).json({ success: false, message: 'Cart not found' });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: 'Cart not found' });
         }
 
         // Locate the item in the cart's items array
@@ -169,7 +170,7 @@ const valueUpdate = async (req, res) => {
         );
 
         if (existingItemIndex === -1) {
-            return res.status(404).json({ success: false, message: 'Product not found in cart' });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: 'Product not found in cart' });
         }
 
         // Update the quantity and recalculate the total price for the item
@@ -182,11 +183,11 @@ const valueUpdate = async (req, res) => {
         if (result) {
             return res.json({ success: true, redirectUrl: "/user/cart" });
         } else {
-            return res.status(500).json({ success: false, message: "Failed to update item" });
+            return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to update item" });
         }
     } catch (error) {
         console.error("Error updating quantity:", error);
-        return res.status(500).json({ success: false, message: "Internal Server Error" });
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal Server Error" });
     }
 };
 
@@ -195,20 +196,19 @@ const valueUpdate = async (req, res) => {
 
 const removeProduct = async (req, res) => {
     try {
-        const productId = req.query.id; // Get the product ID from the query
-        const email = req.session.User; // Get the user's email from the session
+        const productId = req.query.id; 
+        const email = req.session.User; 
 
-        // Retrieve the user object to get the user ID
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(statusCodes.BAD_REQUEST).json({ message: "User not found" });
         }
         const userId = user._id;
 
         // Check if the cart exists and contains the product
         const cart = await Cart.findOne({ userId, "items.productId": productId });
         if (!cart) {
-            return res.status(404).json({ message: "Cart not found or product not in cart" });
+            return res.status(statusCodes.BAD_REQUEST).json({ message: "Cart not found or product not in cart" });
         }
 
         // Use $pull to remove the product from the items array
@@ -218,13 +218,13 @@ const removeProduct = async (req, res) => {
         );
 
         if (result.modifiedCount === 0) {
-            return res.status(404).json({ message: "No product found for the user with the specified product" });
+            return res.status(statusCodes.BAD_REQUEST).json({ message: "No product found for the user with the specified product" });
         }
 
-        res.status(200).json({ message: "Product successfully removed from cart" });
+        res.status(statusCodes.OK).json({ message: "Product successfully removed from cart" });
     } catch (error) {
         console.error("Error removing product from cart:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
     }
 };
 

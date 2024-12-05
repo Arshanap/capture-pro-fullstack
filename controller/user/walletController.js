@@ -1,6 +1,6 @@
 const User = require("../../model/userModel/userSchema")
 const Wallet = require("../../model/userModel/walletSchema")
-
+const {statusCodes} = require("../../config/key")
 
 
 

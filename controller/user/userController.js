@@ -4,6 +4,7 @@ const nodemailer = require("nodemailer")
 const env = require("dotenv").config()
 const Product = require("../../model/userModel/productSchema")
 const Category = require("../../model/userModel/categorySchema")
+const {statusCodes} = require("../../config/key")
 
 
 const loadsignup = (req, res) => {
@@ -102,7 +103,7 @@ const registerUser = async (req,res) =>{
 
     } catch (error) {
         console.log("Error for OTP creating",error)
-        res.status(500).send("Internal server error")
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).send("Internal server error")
     }
 }
 
@@ -190,7 +191,7 @@ const verifyOtp = async (req, res) => {
         req.session.userOtp = Date.now() > req.session.otpExpires ? null : req.session.userOtp
 
         if (!user) {
-            return res.status(401).json({ success: false, message: "Session expired. Please try again." });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Session expired. Please try again." });
         }
 
         if (String(otp) === String(req.session.userOtp)) {
@@ -210,18 +211,18 @@ const verifyOtp = async (req, res) => {
             if(result){
                 req.session.successMessage1 = "user signup is successfully";
                 req.session.errorMessage1 = "";
-                return res.status(200).json({ success: true, message: "User registered successfully!", redirectUrl: "/user/login" });
+                return res.status(statusCodes.OK).json({ success: true, message: "User registered successfully!", redirectUrl: "/user/login" });
             }else{
                 req.session.successMessage1 = "";
                 req.session.errorMessage1 = "user singup not successfully";
             }
             
         } else {
-            return res.status(400).json({ success: false, message: "Invalid OTP, please try again." });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Invalid OTP, please try again." });
         }
     } catch (error) {
         console.error("Error verifying OTP", error);
-        return res.status(500).json({ success: false, message: "An error occurred during OTP verification." });
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "An error occurred during OTP verification." });
     }
 };
 
@@ -236,7 +237,7 @@ const resendOtp = async (req, res) => {
         
 
         if (!email) {
-            return res.status(400).json({ success: false, message: "Email not found in session" });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Email not found in session" });
         }
 
         const otp = generateOtp();
@@ -246,13 +247,13 @@ const resendOtp = async (req, res) => {
 
         if (emailSend) {
             console.log("Resent OTP:", otp);
-            return res.status(200).json({ success: true, message: "OTP Resent Successfully" });
+            return res.status(statusCodes.OK).json({ success: true, message: "OTP Resent Successfully" });
         } else {
-            return res.status(500).json({ success: false, message: "Failed to resend OTP, please try again." });
+            return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to resend OTP, please try again." });
         }
     } catch (error) {
         console.error("Error resending OTP", error);
-        return res.status(500).json({ success: false, message: "Internal server error during OTP resend" });
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error during OTP resend" });
     }
 };
 
@@ -267,7 +268,7 @@ const loadHome = async (req, res) => {
         const category = await Category.find({ isListed: true });
         
         if (category.length === 0) {
-            return res.status(400).json({ success: false, message: 'No categories found' });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: 'No categories found' });
         }
 
         if (user && user.isBlocked) {
@@ -293,7 +294,7 @@ const loadHome = async (req, res) => {
 
     } catch (error) {
         console.log("Error rendering user home page:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
     }
 };
 
@@ -310,30 +311,6 @@ const checksession = async (req, res, next) => {
     try {
         
         const { email } = req.user;
-
-        // const existingUser = await User.findOne({ email });
-
-        // if (existingUser) {
-        //     if (existingUser.isBlocked) {
-        //         return res.render("user/login", {
-        //             successMessage1:"",
-        //             errorMessage1:"",
-        //             successMessage: '',
-        //             errorMessage: "This user is blocked. Please contact support."
-        //         });
-        //     }
-        //     return res.render("user/login", {
-        //         successMessage1:"",
-        //         errorMessage1:"",
-        //         successMessage: '',
-        //         errorMessage: "This email is already registered. Please log in."
-        //     });
-        // }
-
-        // const newUser = new User({
-        //     email,
-        // });
-        // await newUser.save(); 
 
         req.session.user = true;
         req.session.User = email;

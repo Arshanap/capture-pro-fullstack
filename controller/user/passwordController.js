@@ -1,4 +1,4 @@
-
+const {statusCodes} = require("../../config/key")
 const User = require("../../model/userModel/userSchema")
 const bcrypt = require('bcrypt');
 const nodemailer = require("nodemailer")
@@ -52,14 +52,14 @@ const checkPassword = async (req, res) => {
         const userId = req.session.User;
 
         if (!userId) {
-            return res.status(400).json({ success: false, message: "User session not found." });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "User session not found." });
         }
 
         const user = await User.findOne({ email: userId });
 
         if (!user || !user.password) {
             console.log("User not found or missing password hash.");
-            return res.status(404).json({ success: false, message: "User not found or missing password hash." });
+            return res.status(statusCodes.NOT_FOUND).json({ success: false, message: "User not found or missing password hash." });
         }
 
         // console.log("Current Password:", currentPassword);
@@ -68,7 +68,7 @@ const checkPassword = async (req, res) => {
         const match = await bcrypt.compare(currentPassword, user.password);
 
         if (!match) {
-            return res.status(401).json({ success: false, message: "Current password is incorrect." });
+            return res.status(statusCodes.UNAUTHORIZED).json({ success: false, message: "Current password is incorrect." });
         }
 
         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
@@ -80,11 +80,11 @@ const checkPassword = async (req, res) => {
             req.session.User = null;
             req.session.successMessage1="Password changing is Success full"
             req.session.errorMessage1=""
-            return res.status(200).json({ success: true, message: "Password changed successfully!", redirectUrl: "/user/login" });
+            return res.status(statusCodes.OK).json({ success: true, message: "Password changed successfully!", redirectUrl: "/user/login" });
         }
     } catch (error) {
         console.error("Error updating password:", error);
-        return res.status(500).json({ success: false, message: "An error occurred while updating the password." });
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "An error occurred while updating the password." });
     }
 };
 
@@ -162,15 +162,15 @@ const checkOTP = (req, res) => {
             // req.session.forgotUser=null
             req.session.successMessage="OTP verify is successful"
             req.session.errorMessage=""
-            return res.status(200).json({ success: true, message: "OTP verification successful", redirectUrl: `/user/change-Password?id=${email}` });
+            return res.status(statusCodes.OK).json({ success: true, message: "OTP verification successful", redirectUrl: `/user/change-Password?id=${email}` });
         } else {
             req.session.successMessage=""
             req.session.errorMessage="OTP verify is not successful"
-            return res.status(401).json({ success: false, message: "OTP is incorrect." });
+            return res.status(statusCodes.UNAUTHORIZED).json({ success: false, message: "OTP is incorrect." });
         }
     } catch (error) {
         console.log("Error in OTP verification:", error);
-        return res.status(500).json({ success: false, message: "An error occurred while verifying OTP." });
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "An error occurred while verifying OTP." });
     }
 };
 
@@ -183,7 +183,7 @@ const resendOtp = async (req, res) => {
 
         if (!email) {
             // console.log("email no")
-            return res.status(400).json({ success: false, message: "Email not found in session" });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Email not found in session" });
         }
         // console.log(email)
         const otp = generateOtp();
@@ -194,13 +194,13 @@ const resendOtp = async (req, res) => {
         // console.log("ivide ethi")
         if (emailSend) {
             console.log("forgot Resent OTP forgot:", otp);
-            return res.status(200).json({ success: true, message: "OTP Resent Successfully" });
+            return res.status(statusCodes.OK).json({ success: true, message: "OTP Resent Successfully" });
         } else {
-            return res.status(500).json({ success: false, message: "Failed to resend OTP, please try again." });
+            return res.status(statusCodes.UNAUTHORIZED).json({ success: false, message: "Failed to resend OTP, please try again." });
         }
     } catch (error) {
         console.error("Error resending OTP", error);
-        return res.status(500).json({ success: false, message: "Internal server error during OTP resend" });
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error during OTP resend" });
     }
 };
 
@@ -226,7 +226,7 @@ const conformPassword = async (req, res) => {
         const { newPassword } = req.body;
 
         if (!email) {
-            return res.status(400).json({ success: false, message: "Session expired or email not found." });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Session expired or email not found." });
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -236,13 +236,13 @@ const conformPassword = async (req, res) => {
             { $set: { password: hashedPassword } });
 
         if (!result) {
-            console.log("nononononononk")
-            return res.status(404).json({ success: false, message: "User not found." });
+            // console.log("nononononononk")
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "User not found." });
         }
 
         req.session.forgotEmail = null;
         if(result){
-            console.log("sette")
+            // console.log("sette")
             req.session.successMessage="Password Change successful"
             req.session.errorMessage=""
             res.json({ success: true, message: "Password changed successfully!",redirectUrl:"/user/login" });
@@ -250,7 +250,7 @@ const conformPassword = async (req, res) => {
 
     } catch (error) {
         console.error("Error changing password:", error);
-        res.status(500).json({ success: false, message: "An error occurred while updating the password." });
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "An error occurred while updating the password." });
     }
 };
 
@@ -271,7 +271,7 @@ const createPassword = async (req, res) => {
 
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ success: false, message: "User not found." });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "User not found." });
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -285,7 +285,7 @@ const createPassword = async (req, res) => {
 
     } catch (error) {
         console.log("Error while setting password:", error);
-        res.status(500).json({ success: false, message: "An error occurred while setting the password." });
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "An error occurred while setting the password." });
     }
 };
 

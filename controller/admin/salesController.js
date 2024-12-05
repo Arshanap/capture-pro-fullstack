@@ -7,7 +7,7 @@ const path = require("path")
 const sharp = require("sharp")
 const PDFDocument = require('pdfkit');
 const moment = require("moment")
-
+const {statusCodes} = require("../../config/key")
 
 
 
@@ -72,6 +72,12 @@ const getSalesReport = async (filter, start, end) => {
                       totalDeliveredOrders: {
                         $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, 1, 0] },
                       },
+                      totalProcessingOrders: {
+                        $sum: { $cond: [{ $eq: ["$status", "Processing"] }, 1, 0] },
+                      },
+                      totalPendingOrders: {
+                        $sum: { $cond: [{ $eq: ["$status", "Pending"] }, 1, 0] },
+                      },
                     totalProductOffers: { $sum: '$productOffer' },
                     totalCategoryOffer: { $sum: '$categoryOffer' }
                 }
@@ -100,6 +106,8 @@ const loadSales = async (req,res)=>{
 
         if(!report){
            return res.render('admin/salesReport', {
+            start: start || '',
+            end: end || '',
                 report: null,
                 filter: filter,
                 message:'no result found for the search'
@@ -107,6 +115,8 @@ const loadSales = async (req,res)=>{
         }
 
             res.render('admin/salesReport',{
+                start: start || '',
+                end: end || '',
                 report:report,
                 filter:filter,
                 
@@ -116,6 +126,8 @@ const loadSales = async (req,res)=>{
     } catch (error) {
         console.error(error)
         res.render('admin/salesReport',{
+            start: start || '',
+            end: end || '',
             report:null,
             filter:filter,
             message:'error occured ',
@@ -135,7 +147,7 @@ const downloadSalesReportPdf = async (req, res) => {
         const report = await getSalesReport(filter, start, end);
 
         if (!report) {
-            return res.status(404).send('No report data available');
+            return res.status(statusCodes.BAD_REQUEST).send('No report data available');
         }
 
         // Create a new PDF document
@@ -163,7 +175,7 @@ const downloadSalesReportPdf = async (req, res) => {
         doc.end();
     } catch (error) {
         console.error('Error generating PDF:', error);
-        res.status(500).send('Error generating PDF');
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).send('Error generating PDF');
     }
 };
 

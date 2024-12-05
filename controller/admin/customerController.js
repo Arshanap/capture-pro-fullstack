@@ -1,6 +1,7 @@
 const User = require("../../model/userModel/userSchema")
 const Category = require("../../model/userModel/categorySchema")
 const Product = require("../../model/userModel/productSchema")
+const {statusCodes} = require("../../config/key")
 
 
 const customerInfo = async (req, res) => {
@@ -37,7 +38,7 @@ const customerInfo = async (req, res) => {
 
     } catch (error) {
         console.error("Error fetching user listing", error);
-        res.status(500).send("Error fetching user listing");
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).send("Error fetching user listing");
     }
 };
 const categoryInfo = async (req,res)=>{
@@ -154,7 +155,7 @@ const getCategoryById = async (req, res) => {
         res.json(category); 
     } catch (error) {
         console.error("Error fetching category by ID:", error);
-        res.status(500).send("Server error");
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).send("Server error");
     }
 };
 
@@ -192,7 +193,7 @@ const editCategory = async (req, res) => {
         } 
     } catch (error) {
         console.log("Error editing category:", error);
-        return res.status(500).send("Server error");
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).send("Server error");
     }
 };
 
@@ -232,7 +233,7 @@ const addCategoryOffer = async (req, res) => {
 
         // Validate the offer percentage
         if (!offerP || isNaN(offerP) || Number(offerP) <= 0) {
-            return res.status(400).json({
+            return res.status(statusCodes.BAD_REQUEST).json({
                 success: false,
                 message: "Invalid offer percentage. It must be a number greater than 0."
             });
@@ -241,7 +242,7 @@ const addCategoryOffer = async (req, res) => {
         // Find the category by ID
         const category = await Category.findById(id);
         if (!category) {
-            return res.status(404).json({
+            return res.status(statusCodes.BAD_REQUEST).json({
                 success: false,
                 message: "Category not found."
             });
@@ -257,14 +258,14 @@ const addCategoryOffer = async (req, res) => {
             await product.save();
         }
 
-        res.status(200).json({
+        res.status(statusCodes.OK).json({
             success: true,
             message: "Category offer added and product prices updated successfully.",
             category
         });
     } catch (error) {
         console.error("Error while adding category offer:", error);
-        res.status(500).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "An error occurred while adding the category offer. Please try again later."
         });
@@ -280,7 +281,7 @@ const removeCategoryOffer = async (req, res) => {
         // Find the category by ID
         const category = await Category.findById(id);
         if (!category) {
-            return res.status(404).json({
+            return res.status(statusCodes.BAD_REQUEST).json({
                 success: false,
                 message: "Category not found."
             });
@@ -288,7 +289,7 @@ const removeCategoryOffer = async (req, res) => {
 
         // Check if the category already has an offer
         if (category.categoryOffer === 0) {
-            return res.status(400).json({
+            return res.status(statusCodes.BAD_REQUEST).json({
                 success: false,
                 message: "No offer found for this category."
             });
@@ -307,14 +308,14 @@ const removeCategoryOffer = async (req, res) => {
         }
         await category.save();
 
-        res.status(200).json({
+        res.status(statusCodes.OK).json({
             success: true,
             message: "Category offer removed successfully.",
             category
         });
     } catch (error) {
         console.error("Error while removing category offer:", error);
-        res.status(500).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "An error occurred while removing the category offer. Please try again later."
         });

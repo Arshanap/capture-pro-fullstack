@@ -1,4 +1,5 @@
 const Coupen = require("../../model/userModel/couponSchema")
+const {statusCodes} = require("../../config/key")
 
 
 const loadCoupen = async (req, res) => {
@@ -26,7 +27,7 @@ const loadCoupen = async (req, res) => {
 
   } catch (error) {
       console.log("Error loading coupons:", error);
-      res.status(500).send("Server Error");
+      res.status(statusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
   }
 };
 
@@ -53,9 +54,9 @@ const addCoupen = async (req, res) => {
   
       await coupen.save();
   
-      return res.status(200).json({ success:true,message: 'Coupon added successfully!' });
+      return res.status(statusCodes.OK).json({ success:true,message: 'Coupon added successfully!' });
     } catch (error) {
-      return res.status(400).json({success:false,error:'something occured'})
+      return res.status(statusCodes.BAD_REQUEST).json({success:false,error:'something occured'})
     }
   };
   
@@ -69,15 +70,15 @@ const addCoupen = async (req, res) => {
       if (result.deletedCount > 0) {
         // console.log("Coupon deleted successfully");
 
-        return res.status(200).json({ message: "Coupon has been deleted successfully." });
+        return res.status(statusCodes.OK).json({ message: "Coupon has been deleted successfully." });
       } else {
         // console.log("No coupon found to delete");
 
-        return res.status(404).json({ message: "Coupon not found." });
+        return res.status(statusCodes.BAD_REQUEST).json({ message: "Coupon not found." });
       }
     } catch (error) {
       console.error("Error deleting coupon on admin side:", error);
-      return res.status(500).json({ message: "An error occurred while deleting the coupon. Please try again." });
+      return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ message: "An error occurred while deleting the coupon. Please try again." });
     }
   };
 
@@ -141,13 +142,13 @@ const addCoupen = async (req, res) => {
       );
   
       if (result) {
-        return res.status(200).json({ message: "Coupon has been updated successfully." });
+        return res.status(statusCodes.OK).json({ message: "Coupon has been updated successfully." });
       } else {
-        return res.status(404).json({ message: "Coupon not found." });
+        return res.status(statusCodes.BAD_REQUEST).json({ message: "Coupon not found." });
       }
     } catch (error) {
       console.error("Error updating coupon on admin side:", error);
-      return res.status(500).json({ message: "An error occurred while updating the coupon. Please try again." });
+      return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ message: "An error occurred while updating the coupon. Please try again." });
     }
   };
   

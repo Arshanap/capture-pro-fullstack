@@ -1,7 +1,7 @@
 const Wishlist = require("../../model/userModel/wishlistSchema")
 const Product = require("../../model/userModel/productSchema")
 const User = require("../../model/userModel/userSchema")
-
+const {statusCodes} = require("../../config/key")
 
 
 const loadWishlist = async (req,res)=>{
@@ -31,7 +31,7 @@ const addWishlist = async (req, res) => {
         // Ensure that req.session.User contains a valid email
         const email = req.session.User;
         if (!email) {
-            return res.status(401).json({ success: false, message: "User is not logged in" });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "User is not logged in" });
         }
 
         const id = req.body.id; // Corrected to get ID from req.body
@@ -39,7 +39,7 @@ const addWishlist = async (req, res) => {
         // Look for the user by email
         const user = await User.findOne({ email: email });
         if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "User not found" });
         }
 
         // Check if the product is already in the wishlist
@@ -55,7 +55,7 @@ const addWishlist = async (req, res) => {
         // Find the product by its ID
         const product = await Product.findOne({ _id: id });
         if (!product) {
-            return res.status(404).json({ success: false, message: "Product not found" });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Product not found" });
         }
 
         // Add the product to the wishlist
@@ -82,7 +82,7 @@ const addWishlist = async (req, res) => {
         }
     } catch (error) {
         console.error("Error for add wishlist:", error);
-        return res.status(500).json({ success: false, message: "Internal server error" });
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error" });
     }
 };
 
@@ -100,12 +100,12 @@ const removeProduct = async (req,res)=>{
         );
 
         if (result.nModified === 0) {
-            return res.status(404).json({ message: "Product not found in wishlist" });
+            return res.status(statusCodes.BAD_REQUEST).json({ message: "Product not found in wishlist" });
         }
 
         // console.log(result)
 
-        res.status(200).json({ message: "Product successfully removed from wishlist"});
+        res.status(statusCodes.OK).json({ message: "Product successfully removed from wishlist"});
     } catch (error) {
         console.log("error for remove product in wishlist",error)
     }
