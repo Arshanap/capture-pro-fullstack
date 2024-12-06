@@ -36,7 +36,7 @@ app.use(passport.session())
 app.use(expressLayout)
 
 // dbs connection
-mongoose.connect('mongodb://localhost:27017/CapturePro').then(console.log('db connected',process.env.MONGODB_URI))
+mongoose.connect(process.env.MONGODB_URI).then(console.log('db connected',process.env.MONGODB_URI))
 
 
 
