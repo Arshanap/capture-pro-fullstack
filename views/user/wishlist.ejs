@@ -484,40 +484,47 @@ strong.text-uppercase {
         <h2 class="text-center mb-4">My Wishlist</h2>
         <div class="row">
 
-            <% wishlist.forEach((item) =>{ %>
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="/uploads/re-image/<%= item.productItems[0].productId.productImage[0] %>" style="width: 200px; margin-left: 130px;" class="card-img-top" alt="Product Image">
-                    <div class="card-body">
-                        <h5 class="card-title"><%= item.productItems[0].productId.productName %></h5>
-                        <!-- <p class="card-text">Short description of the product.</p> -->
-                        <p class="price">₹  <%= item.productItems[0].productId.salePrice %></p>
-                        <div class="btn-group">
-                            <% if (Array.isArray(item.productItems) && item.productItems.length > 0) { %>
-                                <% const product = item.productItems[0].productId; %>
-                                <% if (product && product.count > 0) { %>
-                                    <a onclick="return addToCart('<%= product._id %>', 1)">
-                                        <button class="btn btn-primary btn-sm">Add to Cart</button>
-                                    </a>
+            <% wishlist.forEach((item) => { %>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <!-- Wrap the image in a link to the product detail page -->
+                        <a href="/user/productlist?id=<%= item.productItems[0].productId._id %>">
+                            <img src="/uploads/re-image/<%= item.productItems[0].productId.productImage[0] %>" 
+                                 style="width: 200px; margin-left: 130px;" 
+                                 class="card-img-top" 
+                                 alt="Product Image">
+                        </a>
+                        <div class="card-body">
+                            <!-- Wrap the product name in a link to the product detail page -->
+                            <a href="/user/productlist?id=<%= item.productItems[0].productId._id %>" style="text-decoration: none; color: inherit;">
+                                <h5 class="card-title"><%= item.productItems[0].productId.productName %></h5>
+                            </a>
+                            <p class="price">₹ <%= item.productItems[0].productId.salePrice %></p>
+                            <div class="btn-group">
+                                <% if (Array.isArray(item.productItems) && item.productItems.length > 0) { %>
+                                    <% const product = item.productItems[0].productId; %>
+                                    <% if (product && product.count > 0) { %>
+                                        <a onclick="return addToCart('<%= product._id %>', 1)">
+                                            <button class="btn btn-primary btn-sm">Add to Cart</button>
+                                        </a>
+                                    <% } else { %>
+                                        <a>
+                                            <button class="btn btn-primary btn-sm" disabled>Add to Cart</button>
+                                        </a>
+                                    <% } %>
                                 <% } else { %>
-                                    <a>
-                                        <button class="btn btn-primary btn-sm" disabled>Add to Cart</button>
-                                    </a>
+                                    <p>No product available</p>
                                 <% } %>
-                            <% } else { %>
-                                <p>No product available</p>
-                            <% } %>
-                            
-                            
-                            <a onclick="return removeFromWishlist('<%= item._id %>')"><button class="btn btn-danger btn-sm" >
-                                Remove
-                            </button></a>
+                                
+                                <a onclick="return removeFromWishlist('<%= item._id %>')">
+                                    <button class="btn btn-danger btn-sm">Remove</button>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
             <% }) %>
+            
             
             <!-- Repeat the above block for more wishlist items -->
         </div>
