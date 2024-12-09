@@ -582,19 +582,19 @@ updateImageInputs();
                              
                 
 <script>
-    let deletedImagesList = [];
+    let deletedImagesList1 = [];
 
     function markImageForDeletion(imageName, index) {
         if (confirm('Are you sure you want to mark this image for deletion?')) {
             const container = document.getElementById(`image-container-${index}`);
             const overlay = document.getElementById(`overlay-${index}`);
             
-            if (!deletedImagesList.includes(imageName)) {
-                deletedImagesList.push(imageName);
+            if (!deletedImagesList1.includes(imageName)) {
+                deletedImagesList1.push(imageName);
                 container.classList.add('marked-for-deletion');
                 document.getElementById(`deletedImage${index}`).value = imageName;
             } else {
-                deletedImagesList = deletedImagesList.filter(img => img !== imageName);
+                deletedImagesList1 = deletedImagesList1.filter(img => img !== imageName);
                 container.classList.remove('marked-for-deletion');
                 document.getElementById(`deletedImage${index}`).value = '';
             }
@@ -606,8 +606,8 @@ updateImageInputs();
         
         const formData = new FormData(this);
         
-        if (deletedImagesList.length > 0) {
-            deletedImagesList.forEach(img => {
+        if (deletedImagesList1.length > 0) {
+            deletedImagesList1.forEach(img => {
                 formData.append('deletedImages[]', img);
             });
         }
@@ -676,19 +676,19 @@ updateImageInputs();
                              
                 
 <script>
-    let deletedImagesList = [];
+    let deletedImagesList2 = [];
 
     function markImageForDeletion(imageName, index) {
         if (confirm('Are you sure you want to mark this image for deletion?')) {
             const container = document.getElementById(`image-container-${index}`);
             const overlay = document.getElementById(`overlay-${index}`);
             
-            if (!deletedImagesList.includes(imageName)) {
-                deletedImagesList.push(imageName);
+            if (!deletedImagesList2.includes(imageName)) {
+                deletedImagesList2.push(imageName);
                 container.classList.add('marked-for-deletion');
                 document.getElementById(`deletedImage${index}`).value = imageName;
             } else {
-                deletedImagesList = deletedImagesList.filter(img => img !== imageName);
+                deletedImagesList2 = deletedImagesList2.filter(img => img !== imageName);
                 container.classList.remove('marked-for-deletion');
                 document.getElementById(`deletedImage${index}`).value = '';
             }
@@ -703,8 +703,8 @@ updateImageInputs();
         const formData = new FormData(this);
         
         // Add the deleted images list to the form data
-        if (deletedImagesList.length > 0) {
-            deletedImagesList.forEach(img => {
+        if (deletedImagesList2.length > 0) {
+            deletedImagesList2.forEach(img => {
                 formData.append('deletedImages[]', img);
             });
         }
