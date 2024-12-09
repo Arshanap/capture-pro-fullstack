@@ -243,12 +243,13 @@ router.post('/user/verify', async (req, res) => {
                     finalAmount: totalAmount,
                     paymentMethod: 'Razorpay',
                     paymentStatus: "Failed",
+                    status:"Pending",
                     address: selectedAddress._id,
                     invoiceDate: new Date(),
                     createdOn: new Date(),
                 });
-        
                 await newOrder.save();
+                await Cart.deleteMany({ userId: user._id });
                 return res.status(200).json({ success: true, error: 'Payment not success but order saved' });
             }
 
@@ -276,7 +277,7 @@ router.post('/user/verify', async (req, res) => {
             await product.save();
         }
 
-        await Cart.deleteMany({ userId: user._id });
+        await Cart.deleteMany({ userId: user._id })
 
         res.json({ success: true, message: 'Payment processed and order placed', orderId: generatedOid });
     } catch (error) {

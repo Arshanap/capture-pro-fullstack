@@ -783,7 +783,7 @@ if (result.success) {
     });
     setTimeout(() => {
         window.location.href = "/user/orderSuccess";
-    }, 2000);
+    }, 1000);
 } else if (result.errors && Array.isArray(result.errors)) {
     const stockErrorMessages = result.errors.join("\n"); 
     Swal.fire({
@@ -825,10 +825,15 @@ rzp1.on("payment.failed", async function (response) {
     const result = await paymentResponse.json();
     if (result.success) {
         Swal.fire({
-            icon: "info",
-            title: "Payment Failed",
-            text: "Order saved with failed payment status. Please retry.",
-        });
+    icon: "info",
+    title: "Payment Failed",
+    text: "Order saved with failed payment status. Please retry.",
+    showConfirmButton: true,
+}).then((result) => {
+    if (result.isConfirmed) {
+        window.location.href = "/user/orders";
+    }
+});
     } else {
         Swal.fire({
             icon: "error",
