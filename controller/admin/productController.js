@@ -163,7 +163,7 @@ const addProduct = async (req, res) => {
 const unlistProduct = async (req,res)=>{
    try {
     const id = req.query.id;
-    await Product.updateOne({_id:id},{$set:{isBlocked:false}})
+    await Product.updateOne({_id:id},{$set:{isBlocked:true}})
     res.redirect("/admin/products")
    } catch (error) {
     console.log("error for product unlist",error)
@@ -174,7 +174,7 @@ const unlistProduct = async (req,res)=>{
 const listProduct = async (req,res)=>{
     try {
         const id = req.query.id;
-        await Product.updateOne({_id:id},{$set:{isBlocked:true}})
+        await Product.updateOne({_id:id},{$set:{isBlocked:false}})
         res.redirect("/admin/products")
     } catch (error) {
         console.log("error for listProduct",error)

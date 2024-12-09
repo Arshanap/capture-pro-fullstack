@@ -134,14 +134,14 @@
                                         <ul id="navigation">                                                                                                                                     
                                             <li><a href="/user/home">Home</a></li>
                                             <li><a href="/user/shop">Shop</a></li>
-                                            <li class=""><a href="#">Products</a>
+                                            <!-- <li class=""><a href="#">Products</a>
                                                 <ul class="submenu">
                                                     <li><a href=""> camera</a></li>
                                                     <li><a href=""> lens</a></li>
                                                     <li><a href=""> Bag</a></li>
                                                     <li><a href=""> Others</a></li>
                                                 </ul>
-                                            </li>
+                                            </li> -->
                                             <!-- <li><a href="">Blog</a>
                                                 <ul class="submenu">
                                                     <li><a href="">Blog</a></li>
@@ -247,7 +247,7 @@
                             <td>
                                 <div class="input-group" style="width: 120px;">
                                     <!-- Minus Button -->
-                                    <button class="btn btn-outline-secondary btn-sm" 
+                                    <button style="background: #007bff;border: none; color: #fff;" class="btn btn-outline-secondary btn-sm" 
                                             type="button" 
                                             onclick="decreaseQuantity('<%= proData[i]._id %>', '<%= proData[i].count %>')">
                                         -
@@ -264,7 +264,7 @@
                                            onchange="countfun('<%= proData[i]._id %>', '<%= proData[i].count %>');">
                                     
                                     <!-- Plus Button -->
-                                    <button class="btn btn-outline-secondary btn-sm" 
+                                    <button style="background: #007bff;border: none; color: #fff;" class="btn btn-outline-secondary btn-sm" 
                                             type="button" 
                                             onclick="increaseQuantity('<%= proData[i]._id %>', '<%= proData[i].count %>')">
                                         +
@@ -294,7 +294,7 @@
     
         <!-- Cart Summary -->
          <% if(proData.length > 0){%>
-        <div class="card mt-4">
+        <div class="card mt-4" style=" width: 40rem; left: 40rem;">
             <div class="card-body">
                 <h5 class="card-title">Cart Summary</h5>
                 <p class="d-flex justify-content-between"><span>Subtotal:</span><span>₹ <%= grandTotal.toFixed(2) %></span></p>

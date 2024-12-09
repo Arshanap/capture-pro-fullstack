@@ -434,14 +434,14 @@
                                         <ul id="navigation">                                                                                                                                     
                                             <li><a href="/user/home">Home</a></li>
                                             <li><a href="/user/shop">Shop</a></li>
-                                            <li class=""><a href="#">Products</a>
+                                            <!-- <li class=""><a href="#">Products</a>
                                                 <ul class="submenu">
                                                     <li><a href=""> camera</a></li>
                                                     <li><a href=""> lens</a></li>
                                                     <li><a href=""> Bag</a></li>
                                                     <li><a href=""> Others</a></li>
                                                 </ul>
-                                            </li>
+                                            </li> -->
                                             <!-- <li><a href="">Blog</a>
                                                 <ul class="submenu">
                                                     <li><a href="">Blog</a></li>
@@ -577,7 +577,7 @@
 
                     <div style="display: flex; align-items: center;">
                         <!-- Minus Button -->
-                        <button style="padding: 5px 10px;" 
+                        <button style="padding: 5px 10px; background: #007bff;border: none;" 
                                 onclick="decreaseQuantity('<%= prodata.count %>')">-</button>
                     
                         <!-- Quantity Input Field -->
@@ -590,7 +590,7 @@
                                onchange="countfun('<%= prodata.count %>')">
                     
                         <!-- Plus Button -->
-                        <button style="padding: 5px 10px;" 
+                        <button style="padding: 5px 10px; background: #007bff; border: none;" 
                                 onclick="increaseQuantity('<%= prodata.count %>')">+</button>
                     </div>
                     
