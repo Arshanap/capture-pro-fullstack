@@ -209,7 +209,7 @@ const editProduct = async (req, res) => {
             return res.status(statusCodes.BAD_REQUEST).render('errorPage', { message: 'Product not found' }); 
         }
         
-        res.render('admin/ProductEdit', { product, categories });
+        res.render('admin/productEdit', { product, categories });
     } catch (error) {
         console.error('Error fetching product data:', error);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).render('errorPage', { message: 'Server error' }); 
