@@ -70,48 +70,48 @@
 
 
 <script>
-let timerValue = 20;
 let timerInterval;
 
 // Start the timer countdown
 function startTimer() {
-    clearInterval(timerInterval); // Clear any previous timer
+    const timerDisplay = document.getElementById("timerValue");
+    const resendButton = document.getElementById("resend-link");
 
-    // Update the timer display immediately
-    document.getElementById("timerValue").textContent = timerValue;
+    const timerEnd = parseInt(localStorage.getItem('otpTimerEnd'));
+    if (timerEnd) {
+        const now = Date.now();
+        let timeLeft = Math.floor((timerEnd - now) / 1000);
+        if (timeLeft > 0) {
+            resendButton.disabled = true;
 
-    // Start a new timer interval
-    timerInterval = setInterval(function() {
-        timerValue--;
-        document.getElementById("timerValue").textContent = timerValue;
+            function updateTimer() {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    resendButton.disabled = false;
+                    timerDisplay.textContent = '0';
+                    localStorage.removeItem('otpTimerEnd');
+                } else {
+                    timerDisplay.textContent = timeLeft;
+                    timeLeft -= 1;
+                }
+            }
 
-        if (timerValue === 0) {
-            clearInterval(timerInterval);
-            enableResendButton();
+            // Initial update
+            updateTimer();
+
+            // Countdown function
+            timerInterval = setInterval(updateTimer, 1000);
+        } else {
+            localStorage.removeItem('otpTimerEnd');
         }
-    }, 1000);
-}
-
-// Enable the resend button and input fields
-function enableResendButton() {
-    document.getElementById("resend-link").disabled = false;
-    document.getElementById("otp").disabled = false;
-    document.getElementById("verify-btn").disabled = false;
-}
-
-// Disable the resend button, reset timer, and start countdown
-function disableResendButton() {
-    document.getElementById("resend-link").disabled = true;
-    document.getElementById("otp").disabled = false;
-    document.getElementById("verify-btn").disabled = false;
-    timerValue = 20;
-    startTimer(); // Start the countdown
+    }
 }
 
 // Resend OTP handler
 function resendOTP(event) {
     event.preventDefault();
-    disableResendButton();
+    const resendButton = document.getElementById("resend-link");
+    resendButton.disabled = true;
     const email = "<%=email%>"
     axios.post(`/user/forgotResendOtp?id=${email}`)
         .then(function(response) {
@@ -119,10 +119,12 @@ function resendOTP(event) {
             if (response.data.success) {
                 customAlert.textContent = "OTP Resent Successfully!";
                 customAlert.style.backgroundColor = "#4CAF50";
-                disableResendButton();
+                localStorage.setItem('otpTimerEnd', (Date.now() + 60000).toString());
+                startTimer();
             } else {
                 customAlert.textContent = "Error occurred while resending OTP. Please try again.";
                 customAlert.style.backgroundColor = "#f44336";
+                resendButton.disabled = false;
             }
             customAlert.style.display = 'block';
 
@@ -132,6 +134,7 @@ function resendOTP(event) {
         })
         .catch(function(error) {
             alert("An error occurred while resending OTP.");
+            resendButton.disabled = false;
         });
 }
 
@@ -184,13 +187,15 @@ function hideMessageAfterDelay() {
 
 // Combined window.onload function
 window.onload = function() {
-    disableResendButton();
+    const timerEnd = localStorage.getItem('otpTimerEnd');
+    if (!timerEnd) {
+        // Set the timer end if it's not already set
+        let timeLeft = 60;
+        const newTimerEnd = Date.now() + (timeLeft * 1000);
+        localStorage.setItem('otpTimerEnd', newTimerEnd.toString());
+    }
     startTimer();
     hideMessageAfterDelay();
+    document.getElementById('otpForm').addEventListener('submit', verifyOTP);
 };
-
-// Attach event listener for OTP form submission
-document.getElementById('otpForm').addEventListener('submit', verifyOTP);
-
 </script>
-

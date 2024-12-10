@@ -124,26 +124,31 @@ function generateOtp(){
 }
 
 
-const loadForgotOTP = async (req,res)=>{
+const loadForgotOTP = async (req, res) => {
     try {
         const email = req.query.id;
-        req.session.forgotUser=email
-        const otp = generateOtp()
-        console.log("forgot OTP:",otp)
-        const emailSent = await sendVerificationEmail(email,otp);
-        const successMessage = req.session.successMessage || "";
-        const errorMessage = req.session.errorMessage || "";
-        if(!emailSent){
-            return res.json("email-error")
+        req.session.forgotUser = email;
+        
+        // Check if OTP is already in session and not expired
+        if (!req.session.userOTP || Date.now() > req.session.expire) {
+            const otp = generateOtp();
+            console.log("forgot OTP:", otp);
+            const emailSent = await sendVerificationEmail(email, otp);
+            if (!emailSent) {
+                return res.json("email-error");
+            }
+            req.session.userOTP = otp;
+            req.session.expire = Date.now() + 1000 * 60 * 3; // 3 minutes expiry
         }
 
-        req.session.userOTP = otp;
-        req.session.expire = Date.now()+1000*60*3
-        res.render(`user/forgotOTP`, {successMessage,errorMessage,email})
+        const successMessage = req.session.successMessage || "";
+        const errorMessage = req.session.errorMessage || "";
+        req.session.successMessage = null;
+        req.session.errorMessage = null;
+        res.render(`user/forgotOTP`, { successMessage, errorMessage, email });
 
-        
     } catch (error) {
-        console.log("error for load forgot ",error)
+        console.log("error for load forgot ", error);
     }
 }
 
