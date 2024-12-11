@@ -8853,7 +8853,7 @@ del {
   }
   /* line 76, ../../SAIFUL/Running_project/250 eCommerce_HTML/250 eCommerce_HTML/250 eCommerce_HTML/assets/scss/_single_product.scss */
   .single_product_list .single_product_iner:nth-child(2n-2) .row .single_product_content .btn_3 {
-    padding: 13px 29px;
+    /* padding: 13px 29px; */
   }
 }
 
