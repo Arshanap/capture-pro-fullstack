@@ -2,6 +2,7 @@ const Product =require("../../model/userModel/productSchema")
 const Category = require("../../model/userModel/categorySchema")
 const User = require("../../model/userModel/userSchema")
 const {statusCodes} = require("../../config/key")
+const {productStrings} = require("../../config/key")
 
 
 
@@ -31,7 +32,7 @@ const loadProduct = async (req, res) => {
         
     } catch (error) {
         console.log("Error in loading product list for user side:", error);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).send("An error occurred while loading the product.");
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).send( productStrings.LOADPRODUCTERROR );
     }
 };
 
@@ -116,7 +117,7 @@ const loadShop = async (req, res) => {
         });
     } catch (error) {
         console.error("Error in loadShop:", error);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ message: "An error occurred while loading the products." });
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ message: productStrings.LOADSHOPERROR });
     }
 };
 

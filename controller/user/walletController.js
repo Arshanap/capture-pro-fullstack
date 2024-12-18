@@ -1,7 +1,7 @@
 const User = require("../../model/userModel/userSchema")
 const Wallet = require("../../model/userModel/walletSchema")
 const {statusCodes} = require("../../config/key")
-
+const {walletStrings} = require("../../config/key")
 
 
 const loadWallet = async (req, res) => {
@@ -21,7 +21,7 @@ const loadWallet = async (req, res) => {
             totalPages:1,
             currentPage:1,
               wallet: { balance: 0, transaction: [] }, // Default values
-              message: "Wallet not found. Please add funds to your wallet."
+              message: walletStrings.BALANCE
           });
       }
 
@@ -48,7 +48,7 @@ const loadWallet = async (req, res) => {
       res.render("user/wallet", {
           wallet: null,
           totalPages,
-          message: "An error occurred while loading the wallet.",
+          message: walletStrings.LOADWALLET,
           
       });
   }

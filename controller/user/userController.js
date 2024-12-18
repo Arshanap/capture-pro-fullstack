@@ -5,6 +5,7 @@ const env = require("dotenv").config()
 const Product = require("../../model/userModel/productSchema")
 const Category = require("../../model/userModel/categorySchema")
 const {statusCodes} = require("../../config/key")
+const {userController} = require("../../config/key")
 
 
 const loadsignup = (req, res) => {
@@ -103,7 +104,7 @@ const registerUser = async (req,res) =>{
 
     } catch (error) {
         console.log("Error for OTP creating",error)
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).send("Internal server error")
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).send(userController.INTERNAL)
     }
 }
 
@@ -191,7 +192,7 @@ const verifyOtp = async (req, res) => {
         req.session.userOtp = Date.now() > req.session.otpExpires ? null : req.session.userOtp
 
         if (!user) {
-            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Session expired. Please try again." });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: userController.SESSIONEXPIRED });
         }
 
         if (String(otp) === String(req.session.userOtp)) {
@@ -211,18 +212,18 @@ const verifyOtp = async (req, res) => {
             if(result){
                 req.session.successMessage1 = "user signup is successfully";
                 req.session.errorMessage1 = "";
-                return res.status(statusCodes.OK).json({ success: true, message: "User registered successfully!", redirectUrl: "/user/login" });
+                return res.status(statusCodes.OK).json({ success: true, message: userController.USERSUCCESS, redirectUrl: "/user/login" });
             }else{
                 req.session.successMessage1 = "";
                 req.session.errorMessage1 = "user singup not successfully";
             }
             
         } else {
-            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Invalid OTP, please try again." });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: userController.INVALIDOTP });
         }
     } catch (error) {
         console.error("Error verifying OTP", error);
-        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "An error occurred during OTP verification." });
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: userController.ERROROTP });
     }
 };
 
@@ -237,7 +238,7 @@ const resendOtp = async (req, res) => {
         
 
         if (!email) {
-            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Email not found in session" });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: userController.NOTFOUNDEMAIL });
         }
 
         const otp = generateOtp();
@@ -247,13 +248,13 @@ const resendOtp = async (req, res) => {
 
         if (emailSend) {
             console.log("Resent OTP:", otp);
-            return res.status(statusCodes.OK).json({ success: true, message: "OTP Resent Successfully" });
+            return res.status(statusCodes.OK).json({ success: true, message: userController.SUCCESSRESEND });
         } else {
-            return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to resend OTP, please try again." });
+            return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: userController.RENDTRY });
         }
     } catch (error) {
         console.error("Error resending OTP", error);
-        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error during OTP resend" });
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: userController.RESENDOTPERROR });
     }
 };
 
@@ -268,7 +269,7 @@ const loadHome = async (req, res) => {
         const category = await Category.find({ isListed: true });
         
         if (category.length === 0) {
-            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: 'No categories found' });
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: userController.NOTCATEGORY });
         }
 
         if (user && user.isBlocked) {
@@ -294,7 +295,7 @@ const loadHome = async (req, res) => {
 
     } catch (error) {
         console.log("Error rendering user home page:", error);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).send(userController.INTERNAL);
     }
 };
 
