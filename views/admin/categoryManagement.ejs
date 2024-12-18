@@ -485,33 +485,42 @@ document.getElementById('removeOfferButton').addEventListener('click', function(
         </script>
 
         <script>
-    document.getElementById('addCategoryForm').addEventListener('submit', async function(event) {
+     document.getElementById('addCategoryForm').addEventListener('submit', async function(event) {
         event.preventDefault(); 
 
         const validationDiv = document.getElementById('validationMessages');
-        validationDiv.style.display = 'none';
+        validationDiv.style.display = 'none'; // Hide validation messages initially
 
         if (!validateAddForm()) {
+            validationDiv.style.display = 'block';
+            validationDiv.style.color = 'red';
+            validationDiv.innerText = "Please fill out all required fields.";
             return;
         }
 
         const name = document.getElementById('categoryName').value.trim();
         const description = document.getElementById('categoryDescription').value.trim();
+        const statusCheckbox = document.getElementById('statusCheckbox'); // Assuming you have a checkbox for status
+        const cateOfferInput = document.getElementById('categoryOffer'); // Assuming you have an input for offer
 
         try {
             const response = await axios.post('/admin/addcategory', {
-                name: name,
-                description: description
+                name,
+                description,
+                status: statusCheckbox ? statusCheckbox.checked : true, // Default to true if status not provided
+                cateOffer: cateOfferInput ? parseFloat(cateOfferInput.value) : 0 // Default to 0 if not provided
             });
 
             validationDiv.style.display = 'block';
             if (response.data.success) {
                 validationDiv.style.color = 'green';
-                validationDiv.innerText = "Category added successfully!";
+                validationDiv.innerText = response.data.message;
+                setTimeout(() => location.reload(), 1000); // Reload page on success
             } else {
                 validationDiv.style.color = 'red';
-                validationDiv.innerText = response.data.message || "Category already exists.";
+                validationDiv.innerText = response.data.message;
             }
+
         } catch (error) {
             console.error('Error:', error);
             validationDiv.style.display = 'block';
@@ -519,6 +528,7 @@ document.getElementById('removeOfferButton').addEventListener('click', function(
             validationDiv.innerText = "Failed to add category. Please try again.";
         }
     });
+
 </script>
 
 

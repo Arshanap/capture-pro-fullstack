@@ -112,40 +112,72 @@ const customerunBlocked = async (req,res)=>{
     }
 }
 
-const addCategory = async (req,res)=>{
+// const addCategory = async (req, res) => {
+//     try {
+//         const { name, description, status, cateOffer } = req.body;
 
+//         // Use an upsert operation
+//         const result = await Category.updateOne(
+//             { name: { $regex: new RegExp(`^${name}$`, "i") } }, // Case-insensitive check
+//             { 
+//                 $setOnInsert: { 
+//                     name,
+//                     description,
+//                     isListed: status,
+//                     categoryOffer: cateOffer
+//                 }
+//             },
+//             { upsert: true } // Insert only if it doesn't exist
+//         );
+
+//         if (result.upsertedCount > 0) {
+//             
+//             return res.json({ success: true, message: "Category added successfully." });
+//             // res.redirect("/admin/category");
+//         } else {
+//             return res.json({ success: false, message: "Category already exists." });
+//         }
+//     } catch (error) {
+//         console.error("Error adding category:", error);
+//         
+//         res.redirect("/admin/category");
+//     }
+// };
+
+const addCategory = async (req, res) => {
     try {
-        const {name,description,status,cateOffer} = req.body;
-        // console.log(req.body);
+        const { name, description, status, cateOffer } = req.body;
 
-        const match = await Category.findOne({
-            name: { $regex: new RegExp(`^${name}$`, "i") } // "i" for case-insensitive match
-        });
-        if (match) {
+        // Use an upsert operation
+        const result = await Category.updateOne(
+            { name: { $regex: new RegExp(`^${name}$`, "i") } }, // Case-insensitive check
+            { 
+                $setOnInsert: { 
+                    name,
+                    description,
+                    isListed: status,
+                    categoryOffer: cateOffer
+                }
+            },
+            { upsert: true } // Insert only if it doesn't exist
+        );
+
+        if (result.upsertedCount > 0) {
+            req.session.successMessage = "Category added successfully.";
+            req.session.errorMessage = "";
+            return res.json({ success: true, message: "Category added successfully." });
+        } else {
+            req.session.successMessage = "";
+            req.session.errorMessage = "An error occurred. Please try again.";
             return res.json({ success: false, message: "Category already exists." });
         }
-        
-        const newcategory = new Category({
-            name:name,
-            description:description,
-            isListed:status,
-            categoryOffer:cateOffer,
-        })
-
-        const result = await newcategory.save()
-        if(result){
-            req.session.successMessage = "Category Adding is successful";
-            req.session.errorMessage = "";
-            res.redirect("/admin/category")
-        }else{
-            req.session.successMessage = "";
-            req.session.errorMessage = "Category Adding is Not successful";
-            res.redirect("/admin/category")
-        }
     } catch (error) {
-        console.log("error for addcategory:",error)
+        console.error("Error adding category:", error);
+        return res.status(500).json({ success: false, message: "An error occurred. Please try again." });
     }
-}
+};
+
+
 
 
 const getCategoryById = async (req, res) => {
