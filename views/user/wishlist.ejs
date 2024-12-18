@@ -648,7 +648,7 @@ body, html {
                                 <% if (Array.isArray(item.productItems) && item.productItems.length > 0) { %>
                                     <% const product = item.productItems[0].productId; %>
                                     <% if (product && product.count > 0) { %>
-                                        <a onclick="return addToCart('<%= product._id %>', 1)">
+                                        <a onclick="return addToCart('<%= product._id %>', 1 ,'<%= item._id %>')">
                                             <button class="btn btn-primary btn-sm">Add to Cart</button>
                                         </a>
                                     <% } else { %>
@@ -802,14 +802,15 @@ body, html {
         <script src="/assets1/js/plugins.js"></script>
     <script src="/assets1/js/main.js"></script>
     <script>
-        function addToCart(productI, value1) {
+        function addToCart(productI, value1, producTTD) {
+            
         // const value = document.getElementById("quantityInput").value.trim();
     const productId = productI 
     const value = value1
-    
+    const TD = producTTD
     axios.post("/user/addToCart", { value: value, id: productId })
+    
     .then(function(response) {
-        console.log("Response received:", response);
         if (response.data.success) {
             Swal.fire({
                 position: "top-end",
@@ -818,6 +819,7 @@ body, html {
                 showConfirmButton: false,
                 timer: 1500
             }).then(() => {
+                removeFromWishlist(TD)
                 window.reload()
             });
         } else {
@@ -831,7 +833,7 @@ body, html {
         }
     })
     .catch(function(error) {
-        console.error("Error adding to cart:", error);
+        // console.error("Error adding to cart:", error);
         Swal.fire({
             position: "top-end",
             icon: "warning",
@@ -843,7 +845,7 @@ body, html {
  }
 
 
-        async function removeFromWishlist(productId) {
+async function removeFromWishlist(productId) {
     try {
         const result = await Swal.fire({
             title: "Are you sure?",

@@ -89,10 +89,12 @@ const addWishlist = async (req, res) => {
 
 const removeProduct = async (req,res)=>{
     try {
-        console.log("ethi ethi ethi")
         const id = req.query.id;
         const email = req.session.User;
         const user = await User.findOne({email})
+        if(!id){
+            console.log("product id is not")
+        }
 
         const result = await Wishlist.deleteOne(
             {_id:id},

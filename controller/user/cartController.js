@@ -56,32 +56,22 @@ const addProduct = async (req, res) => {
     try {
         const { id, value } = req.body;
         const useremail = req.session.User;
-
-        // Retrieve the user object based on the email to get the ObjectId
         const user = await User.findOne({ email: useremail });
         if (!user) {
             return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "User not found" });
         }
-
-        // Check if a cart already exists for the user
         let cart = await Cart.findOne({ userId: user._id });
 
-        // Retrieve the product details
         const product = await Product.findOne({ _id: id });
         if (!product) {
             return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Product not found" });
         }
-
-        // If the cart exists, check if the product already exists
         if (cart) {
-            // Check if the product is already in the cart
             const productIndex = cart.items.findIndex(item => item.productId.toString() === id);
 
             if (productIndex > -1) {
-                // Product already exists in the cart, update the quantity and totalPrice
                 return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "This product is already in the cart." });
             } else {
-                // Product does not exist in the cart, add it
                 if (value > product.count) {
                     return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Not enough stock available" });
                 }
@@ -95,7 +85,6 @@ const addProduct = async (req, res) => {
                 });
             }
         } else {
-            // If no cart exists, create a new cart with the product in the items array
             if (value > product.count) {
                 return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Not enough stock available" });
             }
@@ -111,12 +100,9 @@ const addProduct = async (req, res) => {
                 }]
             });
         }
-
-        // Recalculate the total and grandTotal for the cart
         cart.total = cart.items.reduce((acc, item) => acc + item.totalPrice, 0);
         cart.grandTotal = cart.total;
 
-        // Save the cart
         const result = await cart.save();
         if (result) {
             req.session.successMessage = "";
@@ -150,21 +136,18 @@ const valueUpdate = async (req, res) => {
         const { productId, quantity } = req.body;
         const email = req.session.User;
 
-        // Retrieve the user object based on the email to get the ObjectId
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: 'User not found' });
         }
 
         const userId = user._id;
-        // Find the cart for the user that contains the specified product
         const cart = await Cart.findOne({ userId, 'items.productId': productId });
 
         if (!cart) {
             return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: 'Cart not found' });
         }
 
-        // Locate the item in the cart's items array
         const existingItemIndex = cart.items.findIndex(
             (item) => item.productId.toString() === productId
         );
@@ -173,11 +156,9 @@ const valueUpdate = async (req, res) => {
             return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: 'Product not found in cart' });
         }
 
-        // Update the quantity and recalculate the total price for the item
         cart.items[existingItemIndex].quantity = quantity;
         cart.items[existingItemIndex].totalPrice = quantity * cart.items[existingItemIndex].price;
 
-        // Save the updated cart to the database
         const result = await cart.save();
 
         if (result) {
@@ -198,6 +179,7 @@ const removeProduct = async (req, res) => {
     try {
         const productId = req.query.id; 
         const email = req.session.User; 
+        
 
         const user = await User.findOne({ email });
         if (!user) {
@@ -205,13 +187,11 @@ const removeProduct = async (req, res) => {
         }
         const userId = user._id;
 
-        // Check if the cart exists and contains the product
         const cart = await Cart.findOne({ userId, "items.productId": productId });
         if (!cart) {
             return res.status(statusCodes.BAD_REQUEST).json({ message: "Cart not found or product not in cart" });
         }
 
-        // Use $pull to remove the product from the items array
         const result = await Cart.updateOne(
             { userId },
             { $pull: { items: { productId } } }
