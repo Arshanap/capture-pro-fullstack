@@ -158,7 +158,7 @@
                 <!-- <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true"> -->
                     <div class="modal-dialog">
                       <div class="modal-content">
-                        <form id="editProductForm" method="post" action="/admin/productedit?id=<%= product._id %>" enctype="multipart/form-data" onclick="return validateForm()">
+                        <form id="editProductForm" method="post" action="/admin/productedit?id=<%= product._id %>" enctype="multipart/form-data" >
                             <div class="modal-header">
                                 <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
                                 <a href="/admin/products"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></a>
@@ -237,10 +237,12 @@
                                     <% } %>
                                 </div>
                             </div>
+                            <div id="images-error" class="error-message text-danger"></div>
+
                         
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary" id="saveChangesBtn">Save changes</button>
+                                <button type="submit" onclick="return validateForm()" class="btn btn-primary" id="saveChangesBtn">Save changes</button>
                             </div>
                         </form>
                         
@@ -320,16 +322,36 @@ function validateForm() {
     }
 
     // Image Validation
-    // const imageInputs = document.querySelectorAll('input[type="file"]');
-    // imageInputs.forEach((input, index) => {
-    //     const file = input.files[0];
-    //     if (file && !['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
-    //         document.getElementById(`images${index + 1}-error`).innerText = 'Only PNG, JPEG, and JPG formats are allowed.';
-    //         isValid = false;
-    //     } else {
-    //         document.getElementById(`images${index + 1}-error`).innerText = '';
-    //     }
-    // });
+    const existingImages = document.querySelectorAll('.image-container').length;
+    const newImageInputs = document.querySelectorAll('input[type="file"]');
+    let newImagesCount = 0;
+
+    // Count valid new images being uploaded
+    newImageInputs.forEach(input => {
+        if (input.files && input.files[0]) {
+            newImagesCount++;
+        }
+    });
+
+    const totalImages = existingImages + newImagesCount;
+    
+    if (totalImages < 3) {
+        document.getElementById('images-error').innerText = 'Please ensure there are at least 3 images for the product.';
+        return isValid = false;
+    } else {
+        document.getElementById('images-error').innerText = '';
+    }
+
+    // File type validation for new uploads
+    newImageInputs.forEach((input, index) => {
+        const file = input.files[0];
+        if (file && !['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
+            document.getElementById(`images${index + 1}-error`).innerText = 'Only PNG, JPEG, and JPG formats are allowed.';
+            isValid = false;
+        } else {
+            document.getElementById(`images${index + 1}-error`).innerText = '';
+        }
+    });
 
     return isValid;
 }
@@ -705,6 +727,202 @@ updateImageInputs();
         // Add the deleted images list to the form data
         if (deletedImagesList2.length > 0) {
             deletedImagesList2.forEach(img => {
+                formData.append('deletedImages[]', img);
+            });
+        }
+        
+        // Submit the form with AJAX
+        $.ajax({
+            url: this.action,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    window.location.href = '/admin/products';
+                } else {
+                    alert('Error updating product: ' + response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Error updating product: ' + error);
+            }
+        });
+        
+        return false;
+    };
+</script>
+
+<script>
+function updateImageInputs() {
+    const currentImageCount = document.querySelectorAll('.image-container').length;
+    const maxImages = 4;
+    for (let i = 0; i < maxImages; i++) {
+        const inputContainer = document.getElementById(`input-container-${i}`);
+        if (inputContainer) {
+            if (i < currentImageCount) {
+                inputContainer.style.display = 'none';
+            } else {
+                inputContainer.style.display = 'block';
+            }
+        }
+    }
+}
+
+function deleteSingleImage(imageId, productId, index) {
+    $.ajax({
+        url: "/admin/deleteSingleImage",
+        method: "post",
+        data: { imageNameToServer: imageId, productIdToServer: productId },
+        success: function(response) {
+            if (response.status === true) {
+                // Remove the specific image container and update inputs
+                document.getElementById(`image-container-${index}`).remove();
+                updateImageInputs();
+                // Reload the page after successful deletion
+                location.reload();
+            }
+        },
+        error: function(xhr, status, error) {
+            alert('Error deleting image: ' + error);
+        }
+    });
+}
+
+// Call this function on page load to set the initial state
+updateImageInputs();
+</script>
+                             
+                
+<script>
+    let deletedImagesList = [];
+
+    function markImageForDeletion(imageName, index) {
+        if (confirm('Are you sure you want to mark this image for deletion?')) {
+            const container = document.getElementById(`image-container-${index}`);
+            const overlay = document.getElementById(`overlay-${index}`);
+            
+            if (!deletedImagesList.includes(imageName)) {
+                deletedImagesList.push(imageName);
+                container.classList.add('marked-for-deletion');
+                document.getElementById(`deletedImage${index}`).value = imageName;
+            } else {
+                deletedImagesList = deletedImagesList.filter(img => img !== imageName);
+                container.classList.remove('marked-for-deletion');
+                document.getElementById(`deletedImage${index}`).value = '';
+            }
+        }
+    }
+
+    // Update the form submission
+    document.getElementById('editProductForm').onsubmit = function(e) {
+        e.preventDefault(); // Prevent the default form submission
+        
+        // Create FormData object
+        const formData = new FormData(this);
+        
+        // Add the deleted images list to the form data
+        if (deletedImagesList.length > 0) {
+            deletedImagesList.forEach(img => {
+                formData.append('deletedImages[]', img);
+            });
+        }
+        
+        // Submit the form with AJAX
+        $.ajax({
+            url: this.action,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    window.location.href = '/admin/products';
+                } else {
+                    alert('Error updating product: ' + response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Error updating product: ' + error);
+            }
+        });
+        
+        return false;
+    };
+</script>
+
+<script>
+function updateImageInputs() {
+    const currentImageCount = document.querySelectorAll('.image-container').length;
+    const maxImages = 4;
+    for (let i = 0; i < maxImages; i++) {
+        const inputContainer = document.getElementById(`input-container-${i}`);
+        if (inputContainer) {
+            if (i < currentImageCount) {
+                inputContainer.style.display = 'none';
+            } else {
+                inputContainer.style.display = 'block';
+            }
+        }
+    }
+}
+
+function deleteSingleImage(imageId, productId, index) {
+    $.ajax({
+        url: "/admin/deleteSingleImage",
+        method: "post",
+        data: { imageNameToServer: imageId, productIdToServer: productId },
+        success: function(response) {
+            if (response.status === true) {
+                // Remove the specific image container and update inputs
+                document.getElementById(`image-container-${index}`).remove();
+                updateImageInputs();
+                // Reload the page after successful deletion
+                location.reload();
+            }
+        },
+        error: function(xhr, status, error) {
+            alert('Error deleting image: ' + error);
+        }
+    });
+}
+
+// Call this function on page load to set the initial state
+updateImageInputs();
+</script>
+                             
+                
+<script>
+    let deletedImagesList = [];
+
+    function markImageForDeletion(imageName, index) {
+        if (confirm('Are you sure you want to mark this image for deletion?')) {
+            const container = document.getElementById(`image-container-${index}`);
+            const overlay = document.getElementById(`overlay-${index}`);
+            
+            if (!deletedImagesList.includes(imageName)) {
+                deletedImagesList.push(imageName);
+                container.classList.add('marked-for-deletion');
+                document.getElementById(`deletedImage${index}`).value = imageName;
+            } else {
+                deletedImagesList = deletedImagesList.filter(img => img !== imageName);
+                container.classList.remove('marked-for-deletion');
+                document.getElementById(`deletedImage${index}`).value = '';
+            }
+        }
+    }
+
+    // Update the form submission
+    document.getElementById('editProductForm').onsubmit = function(e) {
+        e.preventDefault(); // Prevent the default form submission
+        
+        // Create FormData object
+        const formData = new FormData(this);
+        
+        // Add the deleted images list to the form data
+        if (deletedImagesList.length > 0) {
+            deletedImagesList.forEach(img => {
                 formData.append('deletedImages[]', img);
             });
         }
