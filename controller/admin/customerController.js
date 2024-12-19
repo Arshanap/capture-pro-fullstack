@@ -229,32 +229,21 @@ const editCategory = async (req, res) => {
     }
 };
 
-const categoryListed = async (req,res) =>{
 
-    try {
-        let id = req.query.id;
-        await Category.updateOne({_id:id},{$set:{isListed:true}})
-        res.redirect("/admin/category")
-        
-    } catch (error) {
-        console.log("error for category listed :",error);
-        
-        
-    }
-}
-const categoryunListed = async (req,res) =>{
 
+
+const toggleCategory = async (req, res) => {
     try {
-        let id = req.query.id;
-        await Category.updateOne({_id:id},{$set:{isListed:false}})
-        res.redirect("/admin/category")
-        
+        const { id, isListing } = req.body;
+        // console.log(id, isListing)
+        let isListed = isListing
+        await Category.updateOne({ _id: id }, { $set: { isListed } });
+        res.json({ success: true, message: `Category ${isListing ? "listed" : "unlisted"} successfully` });
     } catch (error) {
-        console.log("error for category listed :",error);
-        
-        
+        console.error("Error toggling category:", error);
+        res.json({ success: false, message: "Failed to update category." });
     }
-}
+};
 
 const addCategoryOffer = async (req, res) => {
     try {
@@ -359,6 +348,6 @@ const removeCategoryOffer = async (req, res) => {
 
 
 
-module.exports ={customerInfo, customerBlocked, customerunBlocked, addCategory,
-     getCategoryById, categoryInfo, categoryunListed, categoryListed, editCategory, addCategoryOffer, removeCategoryOffer
+module.exports ={customerInfo, customerBlocked, customerunBlocked, addCategory,toggleCategory, 
+     getCategoryById, categoryInfo, editCategory, addCategoryOffer, removeCategoryOffer
     }

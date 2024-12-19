@@ -192,7 +192,7 @@
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="productTableBody">
+                            <tbody id="productTableBody" style="">
                                 <%for(let i=0;i<prodata.length;i++){%>
                                 <tr>
                                     <td><%=i+1%></td>
@@ -201,38 +201,41 @@
                                     <td><%= prodata[i].regularPrice.toLocaleString() %></td>
                                     <td><%= prodata[i].salePrice.toLocaleString() %></td>
                                     <td><%= prodata[i].count %></td>
-                                    <td><% if (prodata[i].isBlocked === false) { %>
-                                        <span id="listv" class="badge bg-success">listed</span>
-                                    <% } else { %>
-                                        <span id="listu" class="badge bg-danger">Unlisted</span>
-                                    <% } %></td>
-                                        <td>
-                                            <a href="/admin/productedit?id=<%=prodata[i]._id%>" class="btn btn-sm btn-primary">Edit</a>
+                                    <td id="status-<%=prodata[i]._id%>">
+                                        <% if (prodata[i].isBlocked === false) { %>
+                                            <span class="badge bg-success">listed</span>
+                                        <% } else { %>
+                                            <span class="badge bg-danger">Unlisted</span>
+                                        <% } %>
+                                    </td>
+                                        <td class="">
+                                            <a href="/admin/productedit?id=<%=prodata[i]._id%>" class="btn btn-xs btn-primary mx-1">Edit</a>
+
                                             <% if (prodata[i].isBlocked === false) { %>
-                                                <a href="/admin/unlistProduct?id=<%=prodata[i]._id%>" onclick="return unList(event, this.href)">
-                                                    <button style="margin-right: 10px;" id="newbtn1" class="btn btn-sm btn-danger">Unlist</button>
-                                                </a>
+                                                <div id="btn-<%=prodata[i]._id%>" class="d-inline">
+                                                    <a href="#" onclick="return unList(event, '<%=prodata[i]._id%>')">
+                                                        <button class="btn btn-xs bg-danger ">Unlist</button>
+                                                    </a>
+                                                </div>
                                             <% } else { %>
-                                                <a href="/admin/listProduct?id=<%=prodata[i]._id%>" onclick="return List(event, this.href)">
-                                                    <button style="margin-right: 10px;" id="newbtn" class="btn btn-sm btn-success">List</button>
-                                                </a>
+                                                <div id="btn-<%=prodata[i]._id%>" class="d-inline">
+                                                    <a href="#" onclick="return List(event, '<%=prodata[i]._id%>')">
+                                                        <button class="btn btn-xs bg-success ">List</button>
+                                                    </a>
+                                                </div>
                                             <% } %>
+
+                                            
                                             <!-- Offer Button with Product ID -->
                                             <% if(prodata[i].productOffer <= 0){ %>
-                                                <a href="#" onclick="openOfferModal('<%= prodata[i]._id %>')">
-                                                    <button type="button" style="width: 60px;" class=" btn-primary" data-bs-toggle="modal" data-bs-target="#productOfferModal">
-                                                        Offer
-                                                    </button>
-                                                </a>                                     
+                                                <a href="#" style="padding: 8px;" class=" btn-primary btn-xs mx-1" onclick="openOfferModal('<%= prodata[i]._id %>')">
+                                                    Offer
+                                                </a>
                                             <% }else{ %>
-                                                <a href="#" onclick="openRemoveOfferModal('<%= prodata[i]._id %>')">
-                                                    <button type="button" style="width: 60px;" class=" btn-danger" data-bs-toggle="modal" data-bs-target="#removeOfferModal">
-                                                        Remove
-                                                    </button>
-                                                </a>                                                
+                                                <a href="#" class="btn btn-danger btn-xs mx-1" onclick="openRemoveOfferModal('<%= prodata[i]._id %>')">
+                                                    Remove
+                                                </a>
                                             <% } %>
-
-
                                         </td>
                                         
                                 </tr>
@@ -584,38 +587,79 @@ function viewImage(event, index) {
 
 
 </script>
-
 <script>
-    function List(event, url) {
-    event.preventDefault(); 
+
+function List(event, productId) {
+    event.preventDefault();
 
     Swal.fire({
         title: "Are you sure?",
-        text: "You List this Product!",
+        text: "You want to list this Product!",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         confirmButtonText: "Yes, List it!"
     }).then((result) => {
         if (result.isConfirmed) {
-            // Show success message and then redirect
-            Swal.fire({
-                title: "Listed!",
-                text: "This Product has been Listed.",
-                icon: "success",
-                timer: 1500, 
-                showConfirmButton: false
-            }).then(() => {
-                // Redirect after success message is shown
-                window.location.href = url;
-            });
+            // Send Ajax request to list the product
+            fetch(`/admin/listProduct`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id: productId }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        // Show success message
+                        Swal.fire({
+                            title: "Listed!",
+                            text: "This Product has been Listed.",
+                            icon: "success",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
+                        // Update the status badge in the DOM
+                        const badge = document.querySelector(`#status-${productId}`);
+                        if (badge) {
+                            badge.innerHTML = `<span class="badge bg-success">listed</span>`;
+                        }
+
+                        // Update the button in the DOM
+                        const button = document.querySelector(`#btn-${productId}`);
+                        if (button) {
+                            button.innerHTML = `
+                                <a href="#" onclick="return unList(event, '${productId}')">
+                                    <button style="margin-right: 10px;" id="newbtn1" class="btn btn-sm btn-danger">Unlist</button>
+                                </a>
+                            `;
+                        }
+                    } else {
+                        Swal.fire({
+                            title: "Error!",
+                            text: data.message || "Failed to list the product.",
+                            icon: "error",
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    Swal.fire({
+                        title: "Error!",
+                        text: "Something went wrong.",
+                        icon: "error",
+                    });
+                });
         }
     });
 }
 
 
-    function unList(event, url) {
-    event.preventDefault(); 
+
+function unList(event, productId) {
+    event.preventDefault();
 
     Swal.fire({
         title: "Are you sure?",
@@ -626,17 +670,57 @@ function viewImage(event, index) {
         confirmButtonText: "Yes, unList it!"
     }).then((result) => {
         if (result.isConfirmed) {
-            // Show success message and then redirect
-            Swal.fire({
-                title: "UnListed!",
-                text: "This Product has been UnListed.",
-                icon: "success",
-                timer: 1500, // Display success message for 1.5 seconds
-                showConfirmButton: false
-            }).then(() => {
-                // Redirect after success message is shown
-                window.location.href = url;
-            });
+            // Send Ajax request to unlist the product
+            fetch(`/admin/unlistProduct`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id: productId }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        // Show success message
+                        Swal.fire({
+                            title: "UnListed!",
+                            text: "This Product has been UnListed.",
+                            icon: "success",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
+                        // Update the status badge in the DOM
+                        const badge = document.querySelector(`#status-${productId}`);
+                        if (badge) {
+                            badge.innerHTML = `<span class="badge bg-danger">Unlisted</span>`;
+                        }
+
+                        // Update the button in the DOM
+                        const button = document.querySelector(`#btn-${productId}`);
+                        if (button) {
+                            button.innerHTML = `
+                                <a href="#" onclick="return List(event, '${productId}')">
+                                    <button style="margin-right: 10px;" id="newbtn" class="btn btn-sm btn-success">List</button>
+                                </a>
+                            `;
+                        }
+                    } else {
+                        Swal.fire({
+                            title: "Error!",
+                            text: data.message || "Failed to unlist the product.",
+                            icon: "error",
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    Swal.fire({
+                        title: "Error!",
+                        text: "Something went wrong.",
+                        icon: "error",
+                    });
+                });
         }
     });
 }

@@ -160,27 +160,31 @@ const addProduct = async (req, res) => {
 
 
 
-const unlistProduct = async (req,res)=>{
-   try {
-    const id = req.query.id;
-    await Product.updateOne({_id:id},{$set:{isBlocked:true}})
-    res.redirect("/admin/products")
-   } catch (error) {
-    console.log("error for product unlist",error)
-   }
-
-}
-
-const listProduct = async (req,res)=>{
+const unlistProduct = async (req, res) => {
     try {
-        const id = req.query.id;
-        await Product.updateOne({_id:id},{$set:{isBlocked:false}})
-        res.redirect("/admin/products")
+        const { id } = req.body; 
+        // console.log("id un",id)
+        await Product.updateOne({ _id: id }, { $set: { isBlocked: true } });
+        res.json({ success: true, message: "Product unlisted successfully" }); // Send JSON response
     } catch (error) {
-        console.log("error for listProduct",error)
+        console.error("Error unlisting product:", error);
+        res.json({ success: false, message: "Failed to unlist the product" }); // Handle error
     }
+};
 
-}
+
+const listProduct = async (req, res) => {
+    try {
+        const { id } = req.body;
+        // console.log("id li",id)
+        await Product.updateOne({ _id: id }, { $set: { isBlocked: false } });
+        res.json({ success: true, message: "Product listed successfully" }); // Send JSON response
+    } catch (error) {
+        console.error("Error listing product:", error);
+        res.json({ success: false, message: "Failed to list the product" }); // Handle error
+    }
+};
+
 
 
 const getProductById = async (req, res) => {

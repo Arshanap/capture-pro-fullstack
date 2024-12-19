@@ -193,23 +193,26 @@
                                 <td><%=i+1%></td>
                                 <td><%=data[i].name%></td>
                                 <td><%=data[i].description%></td>
-                                <td><% if (data[i].isListed === true) { %>
-                                    <span id="listv" class="badge bg-success">listed</span>
-                                <% } else { %>
-                                    <span id="listu" class="badge bg-danger">Unlisted</span>
-                                <% } %></td>
+                                <td>
+                                    <span id="status-<%= data[i]._id %>" class="badge <%= data[i].isListed ? 'bg-success' : 'bg-danger' %>">
+                                        <%= data[i].isListed ? 'Listed' : 'Unlisted' %>
+                                    </span>
+                                </td>
                                 <!-- <td><%=data[i].categoryOffer%>%</td> -->
                                 <td>
                                     <a href="#" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editCategoryModal" onclick="populateEditForm('<%=data[i]._id%>')">Edit</a>
-                                    <% if (data[i].isListed === false) { %>
-                                        <a href="/admin/listed?id=<%=data[i]._id%>" onclick="return funBlock(event, this.href)">
-                                            <button style="margin-right: 25px;" id="newbtn" class="btn btn-sm btn-success">list</button>
+                                    
+                                    <% if (data[i].isListed) { %>
+                                        <a href="#" id="link-<%= data[i]._id %>" onclick="return toggleCategory(event, '<%= data[i]._id %>', false)">
+                                            <button id="btn-<%= data[i]._id %>" class="btn btn-sm btn-danger">Unlist</button>
                                         </a>
                                     <% } else { %>
-                                        <a href="/admin/unlisted?id=<%=data[i]._id%>" onclick="return fununBlock(event, this.href)">
-                                            <button style="margin-right: 25px;" id="newbtn1" class="btn btn-sm btn-danger">unlist</button>
+                                        <a href="#" id="link-<%= data[i]._id %>" onclick="return toggleCategory(event, '<%= data[i]._id %>', true)">
+                                            <button id="btn-<%= data[i]._id %>" class="btn btn-sm btn-success">List</button>
                                         </a>
                                     <% } %>
+                                    
+                                    
                                     <% if(data[i].categoryOffer <= 0){ %>
                                         <a href="#" onclick="openCategoryOfferModal('<%= data[i]._id %>')">
                                             <button type="button" style="width: 60px;" class="btn-primary" data-bs-toggle="modal" data-bs-target="#categoryOfferModal">
@@ -627,53 +630,72 @@ document.getElementById('removeOfferButton').addEventListener('click', function(
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-function funBlock(event, url) {
-    event.preventDefault(); // Prevent the default link action
+function toggleCategory(event, categoryId, isListing) {
+    event.preventDefault(); // Prevent default behavior
+
+    const action = isListing ? "List" : "Unlist";
+    const confirmText = `Are you sure you want to ${action.toLowerCase()} this category?`;
 
     Swal.fire({
-        title: "Are you sure?",
-        text: "You unBlock this Category!",
+        title: "Confirmation",
+        text: confirmText,
+        icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, unBlock it!"
+        confirmButtonText: `Yes, ${action} it!`
     }).then((result) => {
         if (result.isConfirmed) {
-            Swal.fire({
-            title: "unBlocked!",
-            text: "This Category has been unBlocked.",
-            icon: "success",
-            timer: 1500, 
-            showConfirmButton: false
-        }).then(() => {
-            // Redirect after success message is shown
-            window.location.href = url;
-        });
-        }
-    });
-}
+            // Send request to the server
+            fetch(`/admin/toggleCategory`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: categoryId, isListing })
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    // Update the DOM
+                    const button = document.querySelector(`#btn-${categoryId}`);
+                    const status = document.querySelector(`#status-${categoryId}`);
+                    const link = document.querySelector(`#link-${categoryId}`);
 
-function fununBlock(event, url) {
-    event.preventDefault(); // Prevent the default link action
+                    if (button && status && link) {
+                        if (isListing) {
+                            // Update for "Listed"
+                            button.textContent = "Unlist";
+                            button.className = "btn btn-sm btn-danger";
+                            link.setAttribute("onclick", `return toggleCategory(event, '${categoryId}', false)`);
 
-    Swal.fire({
-        title: "Are you sure?",
-        text: "You Block this Category!",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, Block it!"
-    }).then((result) => {
-        Swal.fire({
-                title: "Blocked!",
-                text: "This Category has been Blocked.",
-                icon: "success",
-                timer: 1500, 
-                showConfirmButton: false
-            }).then(() => {
-                // Redirect after success message is shown
-                window.location.href = url;
+                            status.textContent = "Listed";
+                            status.className = "badge bg-success";
+                        } else {
+                            // Update for "Unlisted"
+                            button.textContent = "List";
+                            button.className = "btn btn-sm btn-success";
+                            link.setAttribute("onclick", `return toggleCategory(event, '${categoryId}', true)`);
+
+                            status.textContent = "Unlisted";
+                            status.className = "badge bg-danger";
+                        }
+                    }
+                } else {
+                    Swal.fire({
+                        title: "Error!",
+                        text: data.message || "Failed to update category.",
+                        icon: "error"
+                    });
+                }
+            })
+            .catch((error) => {
+                Swal.fire({
+                    title: "Error!",
+                    text: "An unexpected error occurred.",
+                    icon: "error"
+                });
+                console.error(error);
             });
+        }
     });
 }
 

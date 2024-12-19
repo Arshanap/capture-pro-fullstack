@@ -39,8 +39,8 @@ router.get("/logout", adminController.loadlogout)
 // product
 router.get("/products",adminAuth.checkSession, productContoller.loadProducts)
 router.post('/addproduct', upload.array('images', 4), productContoller.addProduct)
-router.get("/listProduct",productContoller.listProduct)
-router.get("/unlistProduct",productContoller.unlistProduct)
+router.post("/listProduct",productContoller.listProduct)
+router.post("/unlistProduct",productContoller.unlistProduct)
 router.post("/deleteSingleImage", productContoller.deleteSingleImage)
 router.post('/productedit', upload.array('image', 4), productContoller.editProduct2)
 router.get('/getProductData', productContoller.editProduct);
@@ -53,8 +53,9 @@ router.get("/category",adminAuth.checkSession, customerController.categoryInfo)
 router.post("/addcategory", customerController.addCategory)
 router.get("/getCategoryById", adminAuth.checkSession, customerController.getCategoryById)
 router.post("/editcategory", customerController.editCategory)
-router.get("/listed", customerController.categoryListed)
-router.get("/unlisted", customerController.categoryunListed)
+
+router.post("/toggleCategory", customerController.toggleCategory)
+
 router.post("/addCategoryOffer", customerController.addCategoryOffer);
 router.delete('/removeCategoryOffer', customerController.removeCategoryOffer);
 
